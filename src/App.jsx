@@ -6,6 +6,7 @@ import Background from "./components/Background";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ListaClientes from "./pages/ListaClientes";
+import Profile from "./pages/Profile";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/lista-clientes" element={<ListaClientes />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </AuthProvider>
   );

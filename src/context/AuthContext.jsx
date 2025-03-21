@@ -9,11 +9,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
-        setUser(JSON.parse(storedUser)); // ✅ Solo parsea si no es null/undefined
+        setUser(JSON.parse(storedUser));
       }
     } catch (error) {
       console.error("Error al parsear user de localStorage:", error);
-      localStorage.removeItem("user"); // 🔥 Elimina el dato corrupto si hay error
+      localStorage.removeItem("user");
     }
   }, []);
 
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

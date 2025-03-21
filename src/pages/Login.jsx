@@ -3,31 +3,39 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import PrimaryButton from "../components/PrimaryButton";
+import InputField from "../components/InputField";
 import Lottie from "lottie-react";
 import loginAnimation from "../assets/login.json";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Limpiar error previo
+    setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/login", {
-        email,
-        password,
-      });
+      const res = await axios.post("http://localhost:5000/login", formData);
 
       if (res.data.token && res.data.role) {
-        login({ token: res.data.token, role: res.data.role, email: res.data.email, name: res.data.name });
-        navigate(
-          res.data.role === "admin" ? "/admin-dashboard" : "/dashboard"
-        );
+        login({
+          token: res.data.token,
+          role: res.data.role,
+          email: res.data.email,
+          name: res.data.name,
+          tlf: res.data.tlf,
+          dni: res.data.dni,
+          surname: res.data.surname,
+          id: res.data.id,
+        });
+
+        navigate(res.data.role === "admin" ? "/admin-dashboard" : "/dashboard");
       } else {
         setError("Respuesta inesperada del servidor.");
       }
@@ -48,33 +56,27 @@ const Login = () => {
         </div>
         {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
         <form onSubmit={handleSubmit}>
-          <input
+          <InputField
+            label="Correo electrónico"
             type="email"
-            placeholder="Correo electrónico"
-            className="w-full p-2 mb-3 border rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={formData.email}
+            onChange={(value) => setFormData({ ...formData, email: value })}
             required
           />
-          <input
+          <InputField
+            label="Contraseña"
             type="password"
-            placeholder="Contraseña"
-            className="w-full p-2 mb-3 border rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={formData.password}
+            onChange={(value) => setFormData({ ...formData, password: value })}
             required
           />
-          <PrimaryButton
-            text="Iniciar sesión"
-            classes={"w-full mt-4 p-2"}
-          ></PrimaryButton>
+          <PrimaryButton text="Iniciar sesión" classes="w-full mt-4 p-2" />
         </form>
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-500">
           ¿No tienes cuenta?{" "}
-          <a
-            href="register"
-            className="font-bold text-blue-500 hover:underline"
-          >
+          <a href="/register" className="font-bold text-blue-500 hover:underline">
             Regístrate aquí
           </a>
         </p>

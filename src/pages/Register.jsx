@@ -1,36 +1,64 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs-react";
 import Lottie from "lottie-react";
 import registerAnimation from "../assets/register.json";
 import PrimaryButton from "../components/PrimaryButton";
+import InputField from "../components/InputField";
+import { registerUser } from "../api";
 
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [surname, setSurname] = useState("");
-  const [dni, setDni] = useState("");
-  const [tlf, setTlf] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    surname: "",
+    dni: "",
+    tlf: "",
+    email: "",
+    password: "",
+    confirm_password: "",
+  });
+
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const validate = () => {
-    const newErrors = {};
-    if (!name.trim()) newErrors.name = "El nombre es obligatorio";
-    if (!surname.trim()) newErrors.surname = "Los apellidos son obligatorios";
-    if (!dni.trim() || !/^\d{8}[A-Za-z]$/.test(dni))
-      newErrors.dni = "DNI inválido";
-    if (!tlf.trim() || !/^\d{9}$/.test(tlf))
-      newErrors.tlf = "Teléfono inválido";
-    if (!email || !/\S+@\S+\.\S+/.test(email))
-      newErrors.email = "Email inválido";
-    if (!password || password.length < 6)
-      newErrors.password = "Contraseña débil";
-    if (password !== confirmPassword)
-      newErrors.confirmPassword = "No coinciden";
+    let newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "El nombre es obligatorio";
+    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/.test(formData.name)) {
+      newErrors.name = "El nombre solo debe contener letras";
+    }
+    if (!formData.surname.trim()) {
+      newErrors.surname = "Los apellidos son obligatorios";
+    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/.test(formData.surname)) {
+      newErrors.surname = "Los apellidos solo deben contener letras";
+    }
+    if (!formData.dni.trim()) {
+      newErrors.dni = "El DNI es obligatorio";
+    } else if (!/^[0-9]{8}[A-Z]$/i.test(formData.dni.trim())) {
+      newErrors.dni = "El DNI debe tener 8 números seguidos de una letra";
+    } else {
+      const dniNumber = formData.dni.slice(0, 8);
+      const dniLetter = formData.dni.slice(8, 9).toUpperCase();
+      const validLetters = "TRWAGMYFPDXBNJZSQVHLCKE";
+      const calculatedLetter = validLetters.charAt(dniNumber % 23);
+
+      if (dniLetter !== calculatedLetter) {
+        newErrors.dni = "La letra del DNI no es válida";
+      }
+    }
+    if (!formData.tlf.trim() || !/^\d{9}$/.test(formData.tlf))
+      newErrors.tlf = "El teléfono debe tener 9 dígitos";
+    if (
+      !formData.email.trim() ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+    )
+      newErrors.email = "Correo electrónico inválido";
+    if (formData.password && formData.password.length < 8)
+      newErrors.password = "La contraseña debe tener al menos 8 caracteres";
+    if (formData.password !== formData.confirm_password)
+      newErrors.confirm_password = "Las contraseñas no coinciden";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -39,20 +67,30 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+
     try {
-      const hashedPassword = bcrypt.hashSync(password, 10);
-      await axios.post("http://localhost:5000/register", {
-        name,
-        surname,
-        dni,
-        tlf,
-        email,
+      const hashedPassword = bcrypt.hashSync(formData.password, 10);
+      const response = await registerUser({
+        ...formData,
         password: hashedPassword,
       });
-      alert("¡Te has registrado con éxito!");
-      navigate("/");
+
+      if (response) {
+        alert("¡Te has registrado con éxito, bienvenido!");
+        navigate("/login");
+      }
     } catch (error) {
-      alert(`Error: ${error.response?.data?.message || error.message}`);
+      if (error.response?.data?.errno === 1062) {
+        if (error.response?.data?.sqlMessage.includes("users_email_unique")) {
+          alert(
+            "El correo electrónico ya está registrado. Por favor, utiliza otro correo."
+          );
+        } else {
+          alert("El DNI ya está registrado. Por favor, utiliza otro DNI.");
+        }
+      } else {
+        alert(`Error: ${error.response?.data?.message || error.message}`);
+      }
     }
   };
 
@@ -66,61 +104,63 @@ const Register = () => {
         <form onSubmit={handleSubmit}>
           <InputField
             label="Nombre"
-            value={name}
-            setValue={setName}
+            name="name"
+            value={formData.name}
+            onChange={(value) => setFormData({ ...formData, name: value })}
             error={errors.name}
           />
           <InputField
             label="Apellidos"
-            value={surname}
-            setValue={setSurname}
+            name="surname"
+            value={formData.surname}
+            onChange={(value) => setFormData({ ...formData, surname: value })}
             error={errors.surname}
           />
           <InputField
             label="DNI"
-            value={dni}
-            setValue={setDni}
+            name="dni"
+            value={formData.dni}
+            onChange={(value) => setFormData({ ...formData, dni: value })}
             error={errors.dni}
           />
           <InputField
             label="Teléfono"
-            value={tlf}
-            setValue={setTlf}
+            name="tlf"
+            value={formData.tlf}
+            onChange={(value) => setFormData({ ...formData, tlf: value })}
             error={errors.tlf}
           />
           <InputField
             label="Correo electrónico"
             type="email"
-            value={email}
-            setValue={setEmail}
+            name="email"
+            value={formData.email}
+            onChange={(value) => setFormData({ ...formData, email: value })}
             error={errors.email}
           />
           <InputField
             label="Contraseña"
             type="password"
-            value={password}
-            setValue={setPassword}
+            name="password"
+            value={formData.password}
+            onChange={(value) => setFormData({ ...formData, password: value })}
             error={errors.password}
           />
           <InputField
             label="Confirmar contraseña"
             type="password"
-            value={confirmPassword}
-            setValue={setConfirmPassword}
-            error={errors.confirmPassword}
+            name="confirm_password"
+            value={formData.confirm_password}
+            onChange={(value) =>
+              setFormData({ ...formData, confirm_password: value })
+            }
+            error={errors.confirm_password}
           />
-
-          <PrimaryButton
-            text="Registrar"
-            classes={"w-full p-2 mt-4"}
-          ></PrimaryButton>
+          <PrimaryButton text="Registrar" classes="w-full p-2 mt-4" />
         </form>
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-500">
           ¿Ya tienes cuenta?{" "}
-          <a
-            href="login"
-            className="font-bold text-blue-500 hover:underline"
-          >
+          <a href="login" className="font-bold text-blue-500 hover:underline">
             Inicia sesión
           </a>
         </p>
@@ -128,18 +168,5 @@ const Register = () => {
     </div>
   );
 };
-
-const InputField = ({ label, type = "text", value, setValue, error }) => (
-  <div className="mb-3">
-    <input
-      type={type}
-      placeholder={label}
-      className={`w-full p-2 border rounded ${error ? "border-red-500" : ""}`}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
-    {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-  </div>
-);
 
 export default Register;

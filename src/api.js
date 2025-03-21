@@ -8,9 +8,9 @@ export const getClientes = async () => {
   return res.data;
 };
 
-// Agregar cliente
-export const addCliente = async (cliente) => {
-  const res = await axios.post(`${API_URL}/clientes`, cliente);
+// Registrar usuario
+export const registerUser = async (userData) => {
+  const res = await axios.post(`${API_URL}/register`, userData);
   return res.data;
 };
 
