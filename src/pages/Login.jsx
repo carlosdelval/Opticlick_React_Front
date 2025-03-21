@@ -24,7 +24,7 @@ const Login = () => {
       });
 
       if (res.data.token && res.data.role) {
-        login({ token: res.data.token, role: res.data.role });
+        login({ token: res.data.token, role: res.data.role, email: res.data.email, name: res.data.name });
         navigate(
           res.data.role === "admin" ? "/admin-dashboard" : "/dashboard"
         );
