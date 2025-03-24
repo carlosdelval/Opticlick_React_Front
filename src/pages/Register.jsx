@@ -80,16 +80,23 @@ const Register = () => {
         navigate("/login");
       }
     } catch (error) {
-      if (error.response?.data?.errno === 1062) {
-        if (error.response?.data?.sqlMessage.includes("users_email_unique")) {
-          alert(
-            "El correo electrónico ya está registrado. Por favor, utiliza otro correo."
-          );
+      console.log(error); // Inspecciona la estructura del error
+    
+      if (error.response && error.response.data && error.response.data.errno === 1062) {
+        const newErrors = { ...errors };
+        if (error.response.data.sqlMessage.includes("email")) {
+          newErrors.dni = "";
+          newErrors.email = "El correo electrónico ya está registrado. Por favor, utiliza otro correo.";
+          setErrors(newErrors);
+        } else if (error.response.data.sqlMessage.includes("dni")) {
+          newErrors.email = "";
+          newErrors.dni = "El DNI ya está registrado. Por favor, utiliza otro DNI.";
+          setErrors(newErrors);
         } else {
-          alert("El DNI ya está registrado. Por favor, utiliza otro DNI.");
+          alert("Error de duplicación: " + error.response.data.sqlMessage);
         }
       } else {
-        alert(`Error: ${error.response?.data?.message || error.message}`);
+        alert("Se ha producido un error al registrar el usuario. Por favor, inténtalo de nuevo.");
       }
     }
   };

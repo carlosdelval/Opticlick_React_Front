@@ -14,11 +14,13 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
+  const [error_user, setError_user] = useState("");
+  const [error_pass, setError_pass] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError_user("");
+    setError_pass("");
 
     try {
       const res = await axios.post("http://localhost:5000/login", formData);
@@ -37,11 +39,16 @@ const Login = () => {
 
         navigate(res.data.role === "admin" ? "/admin-dashboard" : "/dashboard");
       } else {
-        setError("Respuesta inesperada del servidor.");
+        setError_user("Respuesta inesperada del servidor.");
       }
     } catch (err) {
       console.error("Error en el login:", err.response?.data || err.message);
-      setError(err.response?.data?.error || "Error desconocido");
+      if (err.response?.data.error === "Usuario no encontrado") {
+        setError_user("Usuario no encontrado");
+      }
+      if (err.response?.data.error === "Contraseña incorrecta") {
+        setError_pass("Contraseña incorrecta");
+      }
     }
   };
 
@@ -54,7 +61,6 @@ const Login = () => {
             Iniciar sesión
           </h2>
         </div>
-        {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
         <form onSubmit={handleSubmit}>
           <InputField
             label="Correo electrónico"
@@ -62,6 +68,7 @@ const Login = () => {
             name="email"
             value={formData.email}
             onChange={(value) => setFormData({ ...formData, email: value })}
+            error={error_user}
             required
           />
           <InputField
@@ -69,6 +76,7 @@ const Login = () => {
             type="password"
             name="password"
             value={formData.password}
+            error={error_pass}
             onChange={(value) => setFormData({ ...formData, password: value })}
             required
           />
