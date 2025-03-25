@@ -20,6 +20,12 @@ export const getCitas = async () => {
   return res.data;
 };
 
+// Obtener cliente de una cita
+export const getClienteCita = async (id) => {
+  const res = await axios.get(`${API_URL}/citas-user/${id}`);
+  return res.data;
+};
+
 // Agregar cita
 export const addCita = async (cita) => {
   const res = await axios.post(`${API_URL}/citas`, cita);

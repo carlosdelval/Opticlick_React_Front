@@ -33,7 +33,7 @@ const Navbar = () => {
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <img src="././public/logo.png" className="h-8" alt="OptiClick Logo" />
-          <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl dark:text-white hover:text-chryslerblue">
+          <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl dark:hover:text-vistablue dark:text-babypowder hover:text-chryslerblue">
             OptiClick
           </span>
         </a>
@@ -44,7 +44,7 @@ const Navbar = () => {
                 type="button"
                 className="hidden text-sm rounded-full md:flex bg-inherit md:me-0"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              ><div className="flex px-3 py-2 m-2 text-sm text-black duration-300 rounded-lg cursor pointer-xl hover:text-chryslerblue"><span className="p-1 font-medium">{user.name}</span>
+              ><div className="flex px-3 py-2 m-2 text-sm text-black duration-300 rounded-lg cursor pointer-xl hover:text-chryslerblue dark:text-babypowder"><span className="p-1 font-medium">{user.name}</span>
                 <svg
                   className="w-6 h-6 my-1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -133,7 +133,7 @@ const Navbar = () => {
           {user && (
             <button
               type="button"
-              className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue md:hidden"
+              className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder md:hidden"
               onClick={() => setIsNavOpen(!isNavOpen)}
             >
               <svg
@@ -165,7 +165,7 @@ const Navbar = () => {
                   href={
                     user?.role === "user" ? "/dashboard" : "/admin-dashboard"
                   }
-                  className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue"
+                  className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
                 >
                   <div className="flex items-center space-x-2">
                     <svg
@@ -195,7 +195,7 @@ const Navbar = () => {
                 <li>
                   <a
                     href="/mis-revisiones"
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
                   >
                     <div className="flex items-center space-x-2">
                       <svg
@@ -222,7 +222,7 @@ const Navbar = () => {
                 <li>
                   <a
                     href="/mis-citas"
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
                   >
                     <div className="flex items-center space-x-2">
                       <svg
@@ -252,7 +252,7 @@ const Navbar = () => {
               <li>
                 <a
                   href="/lista-clientes"
-                  className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue"
+                  className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
                 >
                   <div className="flex items-center space-x-2">
                     <svg
@@ -281,7 +281,7 @@ const Navbar = () => {
                 <li className="md:hidden">
                   <a
                     href="/profile"
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
                     aria-current="page"
                   >
                     <div className="flex items-center space-x-2">
@@ -310,7 +310,7 @@ const Navbar = () => {
                   <a
                     href="#"
                     onClick={logout}
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
                     aria-current="page"
                   >
                     <div className="flex items-center space-x-2">

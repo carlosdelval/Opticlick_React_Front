@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { getClientes } from "../api"; // Adjust the import path as needed
+import { getClientes } from "../api";
+import Lottie from "lottie-react";
+import teamAnimation from "../assets/clients.json";
 
 function Dashboard() {
   const [clientes, setClientes] = useState([]);
@@ -24,22 +26,21 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <div className="mb-10 text-center">
-        <h2 className="text-2xl font-semibold text-gray-700">
-          Lista de Clientes
-        </h2>
+      <div className="flex mb-10 space-x-3 text-start">
+        <Lottie animationData={teamAnimation} style={{ height: 60 }} />
+        <h2 className="my-2 text-4xl font-semibold">Todos tus clientes</h2>
       </div>
 
       {loading && (
         <div className="flex justify-center">
-          <div className="text-lg text-indigo-500 animate-pulse">
+          <div className="text-lg text-chryslerblue animate-pulse">
             Cargando clientes...
           </div>
         </div>
       )}
 
       {error && (
-        <div className="p-4 text-red-700 bg-red-100 border-l-4 border-red-500 rounded shadow-md">
+        <div className="p-4 border-l-4 rounded shadow-md border-redpantone bg-lightcoral text-redpantone">
           <p>{error}</p>
         </div>
       )}
@@ -49,18 +50,18 @@ function Dashboard() {
           {clientes.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-100">
+                <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
                   <tr>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    <th className="px-6 py-3">
                       ID
                     </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    <th className="px-6 py-3">
                       Nombre
                     </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    <th className="px-6 py-3">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    <th className="px-6 py-3">
                       Teléfono
                     </th>
                   </tr>
