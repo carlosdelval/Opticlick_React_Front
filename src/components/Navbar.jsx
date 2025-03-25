@@ -20,7 +20,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="border-gray-200 bg-inherit dark:bg-gray-900">
+    <nav className="bg-inherit">
       <div className="flex flex-wrap items-center justify-between max-w-screen-xl p-4 mx-auto">
         <a
           href={
@@ -33,7 +33,7 @@ const Navbar = () => {
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <img src="././public/logo.png" className="h-8" alt="OptiClick Logo" />
-          <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl dark:text-white hover:text-indigo-600">
+          <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl dark:text-white hover:text-chryslerblue">
             OptiClick
           </span>
         </a>
@@ -44,9 +44,9 @@ const Navbar = () => {
                 type="button"
                 className="hidden text-sm rounded-full md:flex bg-inherit md:me-0"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              >
+              ><div className="flex px-3 py-2 m-2 text-sm text-black duration-300 rounded-lg cursor pointer-xl hover:text-chryslerblue"><span className="p-1 font-medium">{user.name}</span>
                 <svg
-                  className="w-6 h-6 text-black duration-300 cursor-pointer rounded-xl hover:text-indigo-600 dark:text-white dark:hover:text-indigo-600"
+                  className="w-6 h-6 my-1"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
@@ -60,14 +60,11 @@ const Navbar = () => {
                     strokeWidth="2"
                     d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.948 8.948 0 0 0 12 21Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                   />
-                </svg>
+                </svg></div>
               </button>
               {isUserMenuOpen && (
-                <div className="absolute right-0 z-50 my-2 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm top-full dark:bg-gray-700 dark:divide-gray-600">
+                <div className="absolute right-0 z-50 my-2 text-base list-none divide-y divide-gray-100 rounded-lg shadow-sm bg-babypowder top-full dark:bg-gray-700 dark:divide-gray-600">
                   <div className="px-4 py-3">
-                    <span className="block text-sm text-gray-900 dark:text-white">
-                      {user.name}
-                    </span>
                     <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
                       {user.email}
                     </span>
@@ -136,7 +133,7 @@ const Navbar = () => {
           {user && (
             <button
               type="button"
-              className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-indigo-600 md:hidden"
+              className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue md:hidden"
               onClick={() => setIsNavOpen(!isNavOpen)}
             >
               <svg
@@ -168,7 +165,7 @@ const Navbar = () => {
                   href={
                     user?.role === "user" ? "/dashboard" : "/admin-dashboard"
                   }
-                  className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-indigo-600"
+                  className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue"
                 >
                   <div className="flex items-center space-x-2">
                     <svg
@@ -198,7 +195,7 @@ const Navbar = () => {
                 <li>
                   <a
                     href="/mis-revisiones"
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-indigo-600"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue"
                   >
                     <div className="flex items-center space-x-2">
                       <svg
@@ -225,7 +222,7 @@ const Navbar = () => {
                 <li>
                   <a
                     href="/mis-citas"
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-indigo-600"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue"
                   >
                     <div className="flex items-center space-x-2">
                       <svg
@@ -255,7 +252,7 @@ const Navbar = () => {
               <li>
                 <a
                   href="/lista-clientes"
-                  className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-indigo-600"
+                  className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue"
                 >
                   <div className="flex items-center space-x-2">
                     <svg
@@ -284,7 +281,7 @@ const Navbar = () => {
                 <li className="md:hidden">
                   <a
                     href="/profile"
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-indigo-600"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue"
                     aria-current="page"
                   >
                     <div className="flex items-center space-x-2">
@@ -313,7 +310,7 @@ const Navbar = () => {
                   <a
                     href="#"
                     onClick={logout}
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-indigo-600"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue"
                     aria-current="page"
                   >
                     <div className="flex items-center space-x-2">

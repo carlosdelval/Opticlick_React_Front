@@ -25,9 +25,6 @@ function Dashboard() {
   return (
     <div className="min-h-screen px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="mb-10 text-center">
-        <h1 className="mb-2 text-4xl font-bold text-indigo-600">
-          Bienvenido a la óptica y joyería
-        </h1>
         <h2 className="text-2xl font-semibold text-gray-700">
           Lista de Clientes
         </h2>
