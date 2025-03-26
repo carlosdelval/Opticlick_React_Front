@@ -1,16 +1,17 @@
 import React from "react";
-import { getCitas } from "../api";
-import { getClienteCita } from "../api";
-import { deleteCita } from "../api";
+import { getCitas, getClienteCita, deleteCita } from "../api";
 import Lottie from "lottie-react";
 import calendarAnimation from "../assets/calendar.json";
 import DangerButton from "../components/dangerbutton";
 import SecondaryButton from "../components/secondarybutton";
+import { Alert } from "flowbite-react";
+import { HiInformationCircle } from "react-icons/hi";
 
 const AdminDashboard = () => {
   const [citas, setCitas] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [success, setSuccess] = React.useState(null);
   React.useEffect(() => {
     const fetchCitas = async () => {
       try {
@@ -34,7 +35,7 @@ const AdminDashboard = () => {
             }
           })
         );
-
+        
         setCitas(citasWithClients);
         setLoading(false);
       } catch (err) {
@@ -45,16 +46,36 @@ const AdminDashboard = () => {
     };
     fetchCitas();
   }, []);
+  const handleDeleteCita = async (id) => {
+    if (!window.confirm("¿Está seguro que desea anular esta cita?")) {
+      return;
+    }
+    try {
+      await deleteCita(id);
+      setCitas(citas.filter((cita) => cita.id !== id));
+      setSuccess("Cita anulada correctamente.");
+    } catch (err) {
+      console.error("Error deleting appointment:", err);
+      setError("No se pudo anular la cita.");
+    }
+  };
+
   return (
     <div className="min-h-screen px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="flex mb-10 space-x-3 text-start">
         <Lottie animationData={calendarAnimation} style={{ height: 60 }} />
-        <h2 className="my-4 text-4xl font-semibold dark:text-babypowder">Citas actuales</h2>
+        <h2 className="my-4 text-4xl font-semibold dark:text-babypowder">
+          Citas actuales
+        </h2>
       </div>
       {loading && <p>Cargando citas...</p>}
-      {error && <p>Hubo un error al cargar las citas: {error}</p>}
-      <div className="overflow-hidden bg-white rounded-lg shadow-md">
-        {citas.length === 0 && !loading && <p>No hay citas programadas</p>}
+      {error && <Alert icon={HiInformationCircle} className="mb-4 rounded-lg shadow-md text-redpantone bg-lightcoral">
+            <span className="font-medium">{error}</span>
+          </Alert>}
+      {success && <Alert className="mb-4 rounded-lg shadow-md bg-aquamarine" icon={HiInformationCircle}>
+            <span className="font-medium">{success}</span>
+          </Alert>}
+      <div className="overflow-hidden rounded-lg shadow-lg">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:text-black dark:bg-vistablue">
@@ -66,6 +87,9 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+              {citas.length === 0 && !loading && (
+                <p>No hay citas programadas</p>
+              )}
               {citas.map((cita) => (
                 <tr
                   key={cita.id}
@@ -114,7 +138,8 @@ const AdminDashboard = () => {
                           </>
                         }
                       />
-                      <DangerButton action={() => deleteCita(cita.id)}
+                      <DangerButton
+                        action={() => handleDeleteCita(cita.id)}
                         text={
                           <>
                             <div className="flex space-x-2">

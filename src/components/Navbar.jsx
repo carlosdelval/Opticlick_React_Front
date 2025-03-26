@@ -133,7 +133,7 @@ const Navbar = () => {
           {user && (
             <button
               type="button"
-              className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder md:hidden"
+              className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder md:hidden"
               onClick={() => setIsNavOpen(!isNavOpen)}
             >
               <svg

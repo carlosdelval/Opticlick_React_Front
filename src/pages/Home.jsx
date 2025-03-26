@@ -1,5 +1,5 @@
 import React from "react";
-import SecondaryButton from "../components/SecondaryButton";
+import SecondaryButton from "../components/secondarybutton";
 
 const Home = () => {
   return (

@@ -37,3 +37,9 @@ export const deleteCita = async (id) => {
   const res = await axios.delete(`${API_URL}/citas/${id}`);
   return res.data;
 };
+
+// Eliminar user
+export const deleteUser = async (id) => {
+  const res = await axios.delete(`${API_URL}/users/${id}`);
+  return res.data;
+};

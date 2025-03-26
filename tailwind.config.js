@@ -11,7 +11,7 @@ export default {
         'babypowder': '#FDFFF7',
         'redpantone': '#E71D36',
         'lightcoral': '#F07C79',
-        
+        'aquamarine': '#23F0C7',
       }
     }
   },
