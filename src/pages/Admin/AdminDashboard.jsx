@@ -1,17 +1,34 @@
 import React from "react";
-import { getCitas, getClienteCita, deleteCita } from "../api";
+import {
+  getCitas,
+  getClienteCita,
+  deleteCita,
+  addGraduacion,
+  setGraduada,
+} from "../../api";
 import Lottie from "lottie-react";
-import calendarAnimation from "../assets/calendar.json";
-import DangerButton from "../components/dangerbutton";
-import SecondaryButton from "../components/secondarybutton";
-import { Alert } from "flowbite-react";
+import calendarAnimation from "../../assets/calendar.json";
+import glassesAnimation from "../../assets/Glasses.json";
+import callMissedAnimation from "../../assets/call-missed-red.json";
+import TransparentDanger from "../../components/TransparentButtonDanger";
+import TransparentPrimary from "../../components/TransparentButtonPrimary";
+import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
+import InputField from "../../components/InputField";
 
 const AdminDashboard = () => {
   const [citas, setCitas] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
+  const [openModal, setOpenModal] = React.useState(false);
+  const [openModalAnular, setOpenModalAnular] = React.useState(false);
+  const [id, setId] = React.useState(null);
+  const [formData, setFormData] = React.useState({
+    eje: "",
+    cilindro: "",
+    esfera: "",
+  });
   React.useEffect(() => {
     const fetchCitas = async () => {
       try {
@@ -35,7 +52,7 @@ const AdminDashboard = () => {
             }
           })
         );
-        
+
         setCitas(citasWithClients);
         setLoading(false);
       } catch (err) {
@@ -46,17 +63,47 @@ const AdminDashboard = () => {
     };
     fetchCitas();
   }, []);
+  const handleOpenModalAnular = (id) => {
+    setOpenModalAnular(true);
+    setId(id);
+  };
+  const handleOpenModal = (id) => {
+    setOpenModal(true);
+    setId(id);
+  };
   const handleDeleteCita = async (id) => {
-    if (!window.confirm("¿Está seguro que desea anular esta cita?")) {
-      return;
-    }
     try {
       await deleteCita(id);
       setCitas(citas.filter((cita) => cita.id !== id));
+      setOpenModalAnular(false);
       setSuccess("Cita anulada correctamente.");
+      setError(null);
     } catch (err) {
       console.error("Error deleting appointment:", err);
       setError("No se pudo anular la cita.");
+      setSuccess(null);
+      setOpenModalAnular(false);
+    }
+  };
+
+  const handleGraduarCita = async (id) => {
+    try {
+      await addGraduacion({
+        cita_id: id,
+        eje: formData.eje,
+        cilindro: formData.cilindro,
+        esfera: formData.esfera,
+      });
+      await setGraduada(id);
+      setCitas(citas.filter((c) => c.id !== id));
+      setOpenModal(false);
+      setSuccess("Graduación registrada correctamente.");
+      setError(null);
+    } catch (err) {
+      console.error("Error adding graduation:", err);
+      setError("No se pudo graduar la cita.");
+      setSuccess(null);
+      setOpenModal(false);
     }
   };
 
@@ -68,28 +115,38 @@ const AdminDashboard = () => {
           Citas actuales
         </h2>
       </div>
-      {loading && <p>Cargando citas...</p>}
-      {error && <Alert icon={HiInformationCircle} className="mb-4 rounded-lg shadow-md text-redpantone bg-lightcoral">
-            <span className="font-medium">{error}</span>
-          </Alert>}
-      {success && <Alert className="mb-4 rounded-lg shadow-md bg-aquamarine" icon={HiInformationCircle}>
-            <span className="font-medium">{success}</span>
-          </Alert>}
-      <div className="overflow-hidden rounded-lg shadow-lg">
+      {error && (
+        <Alert
+          icon={HiInformationCircle}
+          className="mb-4 rounded-lg shadow-md bg-lightcoral"
+        >
+          <span className="font-medium">{error}</span>
+        </Alert>
+      )}
+      {success && (
+        <Alert
+          className="mb-4 rounded-lg shadow-md bg-aquamarine"
+          icon={HiInformationCircle}
+        >
+          <span className="font-medium">{success}</span>
+        </Alert>
+      )}
+      <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg">
         <div className="overflow-x-auto">
+          {loading && <p className="text-center">Cargando citas...</p>}
+          {citas.length === 0 && !loading && (
+            <p className="text-center">No hay citas programadas</p>
+          )}
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:text-black dark:bg-vistablue">
               <tr>
                 <th className="px-6 py-3">Fecha</th>
                 <th className="px-6 py-3">Hora</th>
                 <th className="px-6 py-3">Cliente</th>
-                <th></th>
+                <th className="px-6 py-3 text-right"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-              {citas.length === 0 && !loading && (
-                <p>No hay citas programadas</p>
-              )}
               {citas.map((cita) => (
                 <tr
                   key={cita.id}
@@ -111,8 +168,9 @@ const AdminDashboard = () => {
                     {cita.cliente}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <div className="items-center justify-end space-x-2">
-                      <SecondaryButton
+                    <div className="flex justify-end space-x-2">
+                      <TransparentPrimary
+                        action={() => handleOpenModal(cita.id)}
                         text={
                           <>
                             <div className="flex space-x-2">
@@ -138,8 +196,8 @@ const AdminDashboard = () => {
                           </>
                         }
                       />
-                      <DangerButton
-                        action={() => handleDeleteCita(cita.id)}
+                      <TransparentDanger
+                        action={() => handleOpenModalAnular(cita.id)}
                         text={
                           <>
                             <div className="flex space-x-2">
@@ -171,6 +229,98 @@ const AdminDashboard = () => {
               ))}
             </tbody>
           </table>
+          {/* Modal graduaciones*/}
+          <Modal
+            className="justify-center bg-gray-200 bg-opacity-50"
+            show={openModal}
+            onClose={() => setOpenModal(false)}
+          >
+            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
+              <Modal.Header className="p-4">
+                <div className="flex">
+                  <Lottie
+                    animationData={glassesAnimation}
+                    style={{ height: 60 }}
+                  />
+                  <h2 className="my-4 text-2xl font-bold text-center">
+                    Graduar esta cita
+                  </h2>
+                </div>
+              </Modal.Header>
+              <Modal.Body className="justify-center p-4">
+                <form>
+                  <div className="my-2">
+                    <InputField
+                      type="number"
+                      label="Eje"
+                      value={formData.eje}
+                      onChange={(value) =>
+                        setFormData({ ...formData, eje: value })
+                      }
+                    />
+                    <InputField
+                      type="number"
+                      label="Cilindro"
+                      value={formData.cilindro}
+                      onChange={(value) =>
+                        setFormData({ ...formData, cilindro: value })
+                      }
+                    />
+                    <InputField
+                      type="number"
+                      label="Esfera"
+                      value={formData.esfera}
+                      onChange={(value) =>
+                        setFormData({ ...formData, esfera: value })
+                      }
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <TransparentPrimary
+                      action={() =>
+                        handleGraduarCita(id)
+                      }
+                      classes={"mt-4"}
+                      text="Graduar"
+                    />
+                  </div>
+                </form>
+              </Modal.Body>
+            </div>
+          </Modal>
+          {/* Modal anular cita*/}
+          <Modal
+            className="justify-center bg-gray-200 bg-opacity-50"
+            show={openModalAnular}
+            onClose={() => setOpenModalAnular(false)}
+          >
+            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
+              <Modal.Header className="p-4">
+                <div className="flex">
+                  <Lottie
+                    animationData={callMissedAnimation}
+                    style={{ height: 60 }}
+                  />
+                  <h2 className="my-4 text-2xl font-bold text-center">
+                    Anular esta cita
+                  </h2>
+                </div>
+              </Modal.Header>
+              <Modal.Body className="justify-center p-4">
+                <div className="my-2">
+                  <p>¿Está seguro de que desea anular esta cita?</p>
+                  <p>El cliente será notificado.</p>
+                </div>
+                <div className="flex justify-end">
+                  <TransparentDanger
+                    action={() => handleDeleteCita(id)}
+                    classes={"mt-4 "}
+                    text="Anular"
+                  />
+                </div>
+              </Modal.Body>
+            </div>
+          </Modal>
         </div>
       </div>
     </div>

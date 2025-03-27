@@ -5,8 +5,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Background from "./components/Background";
 import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import ListaClientes from "./pages/ListaClientes";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import ListaClientes from "./pages/Admin/ListaClientes";
+import Graduar from "./pages/Admin/Graduar";
 import Profile from "./pages/Profile";
 import "./index.css";
 import Navbar from "./components/Navbar";
@@ -42,6 +43,7 @@ function App() {
               <Route path="/admin-dashboard" element={<AdminDashboard />} />
               <Route path="/lista-clientes" element={<ListaClientes />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/graduar" element={<Graduar />} />
             </Routes>
           </>
         )}

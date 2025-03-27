@@ -103,7 +103,7 @@ const Register = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="p-8 bg-white rounded-lg shadow-lg w-96">
+      <div className="p-8 bg-white border-2 border-black rounded-lg shadow-lg w-96 dark:border-gray-700">
         <div className="flex">
           <Lottie animationData={registerAnimation} style={{ height: 60 }} />
           <h2 className="my-4 text-2xl font-bold text-center">Registro</h2>

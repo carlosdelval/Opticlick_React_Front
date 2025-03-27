@@ -43,3 +43,21 @@ export const deleteUser = async (id) => {
   const res = await axios.delete(`${API_URL}/users/${id}`);
   return res.data;
 };
+
+// Obtener graduación por id de cita
+export const getGraduacion = async (id) => {
+  const res = await axios.get(`${API_URL}/graduaciones/${id}`);
+  return res.data;
+};
+
+// Agregar graduación
+export const addGraduacion = async (graduacion) => {
+  const res = await axios.post(`${API_URL}/graduaciones`, graduacion);
+  return res.data;
+};
+
+// Marcar cita como graduada
+export const setGraduada = async (id) => {
+  const res = await axios.put(`${API_URL}/citas/${id}`);
+  return res.data;
+};

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { getClientes } from "../api";
+import { getClientes } from "../../api";
 import Lottie from "lottie-react";
-import teamAnimation from "../assets/clients.json";
+import teamAnimation from "../../assets/clients.json";
 
 function Dashboard() {
   const [clientes, setClientes] = useState([]);
@@ -46,15 +46,12 @@ function Dashboard() {
       )}
 
       {!loading && !error && (
-        <div className="overflow-hidden bg-white rounded-lg shadow-md">
+        <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg dark:border-gray-700">
           {clientes.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
+              <table className="min-w-full bg-white divide-y divide-gray-200">
                 <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
                   <tr>
-                    <th className="px-6 py-3">
-                      ID
-                    </th>
                     <th className="px-6 py-3">
                       Nombre
                     </th>
@@ -64,6 +61,9 @@ function Dashboard() {
                     <th className="px-6 py-3">
                       Teléfono
                     </th>
+                    <th className="px-6 py-3">
+                      DNI
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -72,9 +72,6 @@ function Dashboard() {
                       key={cliente.id}
                       className="transition-colors hover:bg-gray-50"
                     >
-                      <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
-                        {cliente.id}
-                      </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
                         {cliente.name} {cliente.surname}
                       </td>
@@ -83,6 +80,9 @@ function Dashboard() {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                         {cliente.tlf}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                        {cliente.dni}
                       </td>
                     </tr>
                   ))}

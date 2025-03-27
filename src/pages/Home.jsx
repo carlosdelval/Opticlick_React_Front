@@ -1,10 +1,10 @@
 import React from "react";
-import SecondaryButton from "../components/secondarybutton";
+import TransparentPrimary from "../components/TransparentButtonPrimary";
 
 const Home = () => {
   return (
     <div className="flex items-center justify-center h-screen">
-      <div className="z-10 max-w-md p-10 text-center bg-white shadow-xl rounded-2xl">
+      <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
         <div className="flex justify-center mb-4">
           <img src="./logo.png" alt="OptiClick" className="w-20"></img>
         </div>
@@ -17,7 +17,7 @@ const Home = () => {
           </p>
         </div>
         <a href="login">
-          <SecondaryButton text="Iniciar sesión" />
+          <TransparentPrimary text="Iniciar sesión" />
         </a>
         <p className="mt-4 text-sm text-gray-600">
           ¿No tienes cuenta?{" "}

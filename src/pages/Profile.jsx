@@ -4,7 +4,7 @@ import PrimaryButton from "../components/PrimaryButton";
 import DangerButton from "../components/DangerButton";
 import InputField from "../components/InputField";
 import Lottie from "lottie-react";
-import editAnimation from "../assets/edit.json";
+import userProfileAnimation from "../assets/profile.json";
 import { deleteUser } from "../api";
 
 const Profile = () => {
@@ -115,15 +115,15 @@ const Profile = () => {
       if (response.ok) {
         alert("Tu contraseña ha sido actualizada correctamente.");
         // Reset password fields
-        setFormData(prevData => ({
+        setFormData((prevData) => ({
           ...prevData,
           password: "",
           new_password: "",
-          confirm_password: ""
+          confirm_password: "",
         }));
         // Clear any errors related to password fields
-        setErrors(prevErrors => {
-          const newErrors = {...prevErrors};
+        setErrors((prevErrors) => {
+          const newErrors = { ...prevErrors };
           delete newErrors.password;
           delete newErrors.new_password;
           delete newErrors.confirm_password;
@@ -191,12 +191,12 @@ const Profile = () => {
   return (
     <div className="min-h-screen px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="flex mb-8 space-x-2 text-start">
-        <Lottie animationData={editAnimation} style={{ height: 80 }} />
-        <h2 className="text-4xl font-semibold my-7 dark:text-babypowder">
+        <Lottie animationData={userProfileAnimation} style={{ height: 70 }} />
+        <h2 className="my-5 text-4xl font-semibold dark:text-babypowder">
           Editar perfil
         </h2>
       </div>
-      <div className="p-6 mx-auto bg-white border rounded-lg shadow-md dark:bg-gray-800 max-w-7xl">
+      <div className="p-6 mx-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl sm:px-6 lg:px-8 dark:border-gray-700">
         <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
           Información
         </h2>
@@ -245,7 +245,7 @@ const Profile = () => {
           <PrimaryButton text="Guardar cambios" classes="py-2"></PrimaryButton>
         </form>
       </div>
-      <div className="p-6 mx-auto bg-white border rounded-lg shadow-md dark:bg-gray-800 max-w-7xl my-7">
+      <div className="p-6 mx-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl my-7 sm:px-6 lg:px-8 dark:border-gray-700">
         <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
           Contraseña
         </h2>
@@ -286,7 +286,7 @@ const Profile = () => {
           ></PrimaryButton>
         </form>
       </div>
-      <div className="p-6 mx-auto bg-white border rounded-lg shadow-md dark:bg-gray-800 max-w-7xl my-7">
+      <div className="p-6 mx-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl my-7 sm:px-6 lg:px-8 dark:border-gray-700">
         <h2 className="text-2xl font-semibold dark:text-babypowder">
           Eliminar mi cuenta
         </h2>
