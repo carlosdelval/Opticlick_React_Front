@@ -55,6 +55,9 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="p-8 bg-white border-2 border-black rounded-lg shadow-lg w-96 dark:border-gray-700">
+        <div className="flex justify-center mb-4">
+          <a href="/"><img src="./logo.png" alt="OptiClick" className="w-20"></img></a>
+        </div>
         <div className="flex">
           <Lottie animationData={loginAnimation} style={{ height: 60 }} />
           <h2 className="my-4 text-2xl font-bold text-center">
@@ -82,9 +85,12 @@ const Login = () => {
           />
           <PrimaryButton text="Iniciar sesión" classes="w-full mt-4 p-2" />
         </form>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="my-2 text-sm text-gray-500">
           ¿No tienes cuenta?{" "}
-          <a href="/register" className="font-bold duration-300 text-vistablue hover:text-chryslerblue hover:underline">
+          <a
+            href="/register"
+            className="font-bold duration-300 text-vistablue hover:text-chryslerblue hover:underline"
+          >
             Regístrate aquí
           </a>
         </p>

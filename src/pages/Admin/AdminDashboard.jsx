@@ -34,7 +34,6 @@ const AdminDashboard = () => {
       try {
         const data = await getCitas();
 
-        // Fetch client info for each cita
         const citasWithClients = await Promise.all(
           data.map(async (cita) => {
             try {
@@ -107,11 +106,52 @@ const AdminDashboard = () => {
     }
   };
 
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 4;
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  // Resetear a la primera página cuando el término de búsqueda cambie
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Filtrar las citas por cliente o fecha
+  const filteredCitas = React.useMemo(() => {
+    return citas.filter((cita) => {
+      const normalizedCliente = cita.cliente
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      const normalizedSearchTerm = searchTerm
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      const normalizedFecha = new Date(cita.fecha)
+        .toLocaleDateString("es-ES")
+        .replace(/\//g, "-")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      return (
+        normalizedCliente.includes(normalizedSearchTerm) ||
+        normalizedFecha.includes(normalizedSearchTerm)
+      );
+    });
+  }, [citas, searchTerm]);
+
+  // Paginación de las citas filtradas
+  const totalFilteredPages = Math.ceil(filteredCitas.length / itemsPerPage);
+  const currentFilteredCitas = filteredCitas.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
-    <div className="min-h-screen px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="flex mb-10 space-x-3 text-start">
         <Lottie animationData={calendarAnimation} style={{ height: 60 }} />
-        <h2 className="my-4 text-4xl font-semibold dark:text-babypowder">
+        <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
           Citas actuales
         </h2>
       </div>
@@ -131,12 +171,41 @@ const AdminDashboard = () => {
           <span className="font-medium">{success}</span>
         </Alert>
       )}
+
+      {/* Barrita de búsqueda */}
+      <div className="mb-4">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg
+              className="w-4 h-4 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 20"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+              />
+            </svg>
+          </div>
+          <input
+            type="search"
+            id="search"
+            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-gray-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            placeholder="Buscar citas por cliente o fecha..."
+            autoComplete="off"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
       <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg">
-        <div className="overflow-x-auto">
-          {loading && <p className="text-center">Cargando citas...</p>}
-          {citas.length === 0 && !loading && (
-            <p className="text-center">No hay citas programadas</p>
-          )}
+        <div className="overflow-x-auto bg-white dark:bg-gray-800">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:text-black dark:bg-vistablue">
               <tr>
@@ -147,32 +216,32 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-              {citas.map((cita) => (
-                <tr
-                  key={cita.id}
-                  className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
-                    {new Date(cita.fecha)
-                      .toLocaleDateString("es-ES", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })
-                      .replace(/\//g, "-")}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
-                    {cita.hora ? cita.hora.substring(0, 5) : ""}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
-                    {cita.cliente}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <div className="flex justify-end space-x-2">
-                      <TransparentPrimary
-                        action={() => handleOpenModal(cita.id)}
-                        text={
-                          <>
+              {currentFilteredCitas.map((cita) => {
+                const date = new Date(cita.fecha);
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
+                const formattedDate = `${day}-${month}-${year}`;
+
+                return (
+                  <tr
+                    key={cita.id}
+                    className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
+                      {formattedDate}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
+                      {cita.hora ? cita.hora.substring(0, 5) : ""}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
+                      {cita.cliente}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                      <div className="flex justify-end space-x-2">
+                        <TransparentPrimary
+                          action={() => handleOpenModal(cita.id)}
+                          text={
                             <div className="flex space-x-2">
                               <span>Graduar</span>
                               <svg
@@ -193,13 +262,11 @@ const AdminDashboard = () => {
                                 />
                               </svg>
                             </div>
-                          </>
-                        }
-                      />
-                      <TransparentDanger
-                        action={() => handleOpenModalAnular(cita.id)}
-                        text={
-                          <>
+                          }
+                        />
+                        <TransparentDanger
+                          action={() => handleOpenModalAnular(cita.id)}
+                          text={
                             <div className="flex space-x-2">
                               <span>Anular</span>
                               <svg
@@ -220,18 +287,96 @@ const AdminDashboard = () => {
                                 />
                               </svg>
                             </div>
-                          </>
-                        }
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                          }
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
+          {loading && <p className="text-center">Cargando citas...</p>}
+          {filteredCitas.length === 0 && !loading && (
+            <p className="p-4 my-4 text-center">
+              No hay citas que coincidan con la búsqueda
+            </p>
+          )}
+
+          {/* Pagination */}
+          {!loading && filteredCitas.length > 0 && (
+            <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+              <nav className="flex items-center space-x-2">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
+                    currentPage === 1
+                      ? "text-gray-400"
+                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+                {[...Array(totalFilteredPages)].map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
+                      currentPage === index + 1
+                        ? "bg-chryslerblue text-white"
+                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) =>
+                      Math.min(prev + 1, totalFilteredPages)
+                    )
+                  }
+                  disabled={currentPage === totalFilteredPages}
+                  className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
+                    currentPage === totalFilteredPages
+                      ? "text-gray-400"
+                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </nav>
+            </div>
+          )}
+
           {/* Modal graduaciones*/}
           <Modal
             className="justify-center bg-gray-200 bg-opacity-50"
+            size="md"
             show={openModal}
             onClose={() => setOpenModal(false)}
           >
@@ -277,9 +422,7 @@ const AdminDashboard = () => {
                   </div>
                   <div className="flex justify-end">
                     <TransparentPrimary
-                      action={() =>
-                        handleGraduarCita(id)
-                      }
+                      action={() => handleGraduarCita(id)}
                       classes={"mt-4"}
                       text="Graduar"
                     />
@@ -291,6 +434,7 @@ const AdminDashboard = () => {
           {/* Modal anular cita*/}
           <Modal
             className="justify-center bg-gray-200 bg-opacity-50"
+            size="md"
             show={openModalAnular}
             onClose={() => setOpenModalAnular(false)}
           >

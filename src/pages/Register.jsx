@@ -81,22 +81,30 @@ const Register = () => {
       }
     } catch (error) {
       console.log(error); // Inspecciona la estructura del error
-    
-      if (error.response && error.response.data && error.response.data.errno === 1062) {
+
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.errno === 1062
+      ) {
         const newErrors = { ...errors };
         if (error.response.data.sqlMessage.includes("email")) {
           newErrors.dni = "";
-          newErrors.email = "El correo electrónico ya está registrado. Por favor, utiliza otro correo.";
+          newErrors.email =
+            "El correo electrónico ya está registrado. Por favor, utiliza otro correo.";
           setErrors(newErrors);
         } else if (error.response.data.sqlMessage.includes("dni")) {
           newErrors.email = "";
-          newErrors.dni = "El DNI ya está registrado. Por favor, utiliza otro DNI.";
+          newErrors.dni =
+            "El DNI ya está registrado. Por favor, utiliza otro DNI.";
           setErrors(newErrors);
         } else {
           alert("Error de duplicación: " + error.response.data.sqlMessage);
         }
       } else {
-        alert("Se ha producido un error al registrar el usuario. Por favor, inténtalo de nuevo.");
+        alert(
+          "Se ha producido un error al registrar el usuario. Por favor, inténtalo de nuevo."
+        );
       }
     }
   };
@@ -104,6 +112,11 @@ const Register = () => {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="p-8 bg-white border-2 border-black rounded-lg shadow-lg w-96 dark:border-gray-700">
+        <div className="flex justify-center mb-4">
+          <a href="/">
+            <img src="./logo.png" alt="OptiClick" className="w-20"></img>
+          </a>
+        </div>
         <div className="flex">
           <Lottie animationData={registerAnimation} style={{ height: 60 }} />
           <h2 className="my-4 text-2xl font-bold text-center">Registro</h2>
@@ -167,7 +180,10 @@ const Register = () => {
         </form>
         <p className="mt-2 text-sm text-gray-500">
           ¿Ya tienes cuenta?{" "}
-          <a href="login" className="font-bold duration-300 text-vistablue hover:text-chryslerblue hover:underline">
+          <a
+            href="login"
+            className="font-bold duration-300 text-vistablue hover:text-chryslerblue hover:underline"
+          >
             Inicia sesión
           </a>
         </p>

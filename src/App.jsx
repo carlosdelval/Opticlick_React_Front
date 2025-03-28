@@ -12,42 +12,63 @@ import Profile from "./pages/Profile";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
-import AuthContext from "./context/AuthContext";
 
 function App() {
   return (
     <AuthProvider>
-      <AuthContext.Consumer>
-        {({ user }) => (
-          <>
-            <Navbar />
-            <Background />
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  user ? (
-                    user.role === "admin" ? (
-                      <AdminDashboard />
-                    ) : (
-                      <Dashboard />
-                    )
-                  ) : (
-                    <Home />
-                  )
-                }
-              />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
-              <Route path="/lista-clientes" element={<ListaClientes />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/graduar" element={<Graduar />} />
-            </Routes>
-          </>
-        )}
-      </AuthContext.Consumer>
+      <>
+        <Background />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/dashboard"
+            element={
+              <>
+                <Navbar />
+                <Dashboard />
+              </>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <>
+                <Navbar />
+                <AdminDashboard />
+              </>
+            }
+          />
+          <Route
+            path="/lista-clientes"
+            element={
+              <>
+                <Navbar />
+                <ListaClientes />
+              </>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <>
+                <Navbar />
+                <Profile />
+              </>
+            }
+          />
+          <Route
+            path="/graduar"
+            element={
+              <>
+                <Navbar />
+                <Graduar />
+              </>
+            }
+          />
+        </Routes>
+      </>
     </AuthProvider>
   );
 }
