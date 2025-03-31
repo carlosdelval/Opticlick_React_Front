@@ -5,10 +5,16 @@ import DangerButton from "../components/DangerButton";
 import InputField from "../components/InputField";
 import Lottie from "lottie-react";
 import userProfileAnimation from "../assets/profile.json";
+import deleteAnimation from "../assets/delete.json";
 import { deleteUser } from "../api";
+import { Modal, Alert } from "flowbite-react";
+import { HiInformationCircle } from "react-icons/hi";
 
 const Profile = () => {
   const { user, setUser } = React.useContext(AuthContext);
+  const [modalDelete, setModalDelete] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
@@ -33,6 +39,10 @@ const Profile = () => {
   }, [user]);
 
   const [errors, setErrors] = useState({});
+
+  const handleModalDelete = () => {
+    setModalDelete(!modalDelete);
+  };
 
   const validateFormInfo = () => {
     let newErrors = {};
@@ -113,7 +123,8 @@ const Profile = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Tu contraseña ha sido actualizada correctamente.");
+        setSuccess("Contraseña actualizada correctamente.");
+        setError(null);
         // Reset password fields
         setFormData((prevData) => ({
           ...prevData,
@@ -130,18 +141,16 @@ const Profile = () => {
           return newErrors;
         });
       } else {
-        alert(data.error || "Error al actualizar la contraseña");
+        setError(data.error || "Error al actualizar la contraseña");
+        setSuccess(null);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Hubo un problema con la actualización.");
+      setError("Hubo un problema con la actualización.");
     }
   };
 
   const handleDelete = () => async () => {
-    if (!window.confirm("¿Estás seguro que deseas eliminar tu cuenta?")) {
-      return;
-    }
     try {
       await deleteUser(user.id);
       setUser(null);
@@ -178,24 +187,44 @@ const Profile = () => {
         setUser(updatedUser);
         localStorage.setItem("user", JSON.stringify(updatedUser));
 
-        alert("Perfil actualizado correctamente.");
+        setSuccess("Perfil actualizado correctamente.");
+        setError(null);
       } else {
-        alert(data.error || "Error al actualizar el perfil");
+        setError(data.error || "Error al actualizar el perfil");
+        setSuccess(null);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Hubo un problema con la actualización.");
+      setError("Hubo un problema con la actualización.");
     }
   };
 
   return (
-    <div className="min-h-screen px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <div className="flex mb-8 space-x-2 text-start">
+    <div className="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="flex mb-4 space-x-2 text-start">
         <Lottie animationData={userProfileAnimation} style={{ height: 70 }} />
         <h2 className="my-5 text-4xl font-semibold dark:text-babypowder">
           Editar perfil
         </h2>
       </div>
+      {error && (
+        <Alert
+          icon={HiInformationCircle}
+          className="mb-4 rounded-lg shadow-md bg-lightcoral"
+          onDismiss={() => setError(null)}
+        >
+          <span className="font-medium">{error}</span>
+        </Alert>
+      )}
+      {success && (
+        <Alert
+          className="mb-4 space-x-4 rounded-lg shadow-md bg-aquamarine"
+          icon={HiInformationCircle}
+          onDismiss={() => setSuccess(null)}
+        >
+          <span className="font-medium">{success}</span>
+        </Alert>
+      )}
       <div className="p-6 mx-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl sm:px-6 lg:px-8 dark:border-gray-700">
         <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
           Información
@@ -293,9 +322,43 @@ const Profile = () => {
         <DangerButton
           text="Eliminar cuenta"
           classes="p-2 mt-4"
-          action={handleDelete()}
+          action={handleModalDelete}
         ></DangerButton>
       </div>
+      {/* Modal borrar cliente*/}
+      <Modal
+        className="justify-center bg-gray-200 bg-opacity-50"
+        size="md"
+        show={modalDelete}
+        onClose={() => setModalDelete(false)}
+      >
+        <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
+          <Modal.Header>
+            <div className="flex">
+              <Lottie animationData={deleteAnimation} style={{ height: 60 }} />
+              <h2 className="my-4 text-2xl font-bold text-center">
+                Eliminar mi cuenta
+              </h2>
+            </div>
+          </Modal.Header>
+          <Modal.Body className="justify-center p-4">
+            <div className="my-2">
+              <p>¿Está seguro de que desea borrar su cuenta?</p>
+              <p>
+                La información se eliminará de la base de datos y no podrá ser
+                recuperada.
+              </p>
+            </div>
+            <div className="flex justify-end">
+              <DangerButton
+                action={() => handleDelete()}
+                classes={"mt-6 "}
+                text="Eliminar"
+              />
+            </div>
+          </Modal.Body>
+        </div>
+      </Modal>
     </div>
   );
 };

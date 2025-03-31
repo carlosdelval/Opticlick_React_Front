@@ -14,15 +14,27 @@ export const registerUser = async (userData) => {
   return res.data;
 };
 
+// Editar usuario
+export const updateUser = async (userData) => {
+  const res = await axios.put(`${API_URL}/users`, userData);
+  return res.data;
+};
+
 // Obtener citas
 export const getCitas = async () => {
   const res = await axios.get(`${API_URL}/citas`);
   return res.data;
 };
 
+// Obtener citas de un usuario
+export const getCitasUser = async (id) => {
+  const res = await axios.get(`${API_URL}/citas-user/${id}`);
+  return res.data;
+};
+
 // Obtener cliente de una cita
 export const getClienteCita = async (id) => {
-  const res = await axios.get(`${API_URL}/citas-user/${id}`);
+  const res = await axios.get(`${API_URL}/user-citas/${id}`);
   return res.data;
 };
 

@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useMemo } from "react";
+import PropTypes from 'prop-types';
 
 const AuthContext = createContext();
 
@@ -28,11 +29,17 @@ export const AuthProvider = ({ children }) => {
     window.location.href = '/';
   };
 
+  const value = useMemo(() => {
+    return { user, login, logout, setUser };
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, setUser }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
-
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired
+};
 export default AuthContext;

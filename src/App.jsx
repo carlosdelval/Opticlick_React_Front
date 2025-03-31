@@ -4,10 +4,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Background from "./components/Background";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/User/Dashboard";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ListaClientes from "./pages/Admin/ListaClientes";
-import Graduar from "./pages/Admin/Graduar";
 import Profile from "./pages/Profile";
 import "./index.css";
 import Navbar from "./components/Navbar";
@@ -55,15 +54,6 @@ function App() {
               <>
                 <Navbar />
                 <Profile />
-              </>
-            }
-          />
-          <Route
-            path="/graduar"
-            element={
-              <>
-                <Navbar />
-                <Graduar />
               </>
             }
           />

@@ -7,9 +7,12 @@ const InputField = ({ label, text, type = "text", value, onChange, error }) => (
       type={type}
       name={label}
       placeholder={label}
-      className={`w-full p-2 focus:outline-none focus:ring-2 focus:ring-chryslerblue border rounded-lg ${error ? "border-redpantone" : ""}`}
+      className={`w-full p-2 focus:outline-none focus:ring-2 focus:ring-chryslerblue border rounded-lg ${
+        error ? "border-redpantone" : ""
+      }`}
       value={value || ""}
       onChange={(e) => onChange && onChange(e.target.value)}
+      autoComplete="off"
     />
     {error && <p className="mt-1 text-xs text-redpantone">{error}</p>}
   </div>
