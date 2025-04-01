@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
@@ -14,18 +14,56 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [remember, setRemember] = useState(false);
   const [error_user, setError_user] = useState("");
   const [error_pass, setError_pass] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Check for saved credentials when component mounts
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    const savedPassword = localStorage.getItem('rememberedPassword');
+    
+    if (savedEmail && savedPassword) {
+      setFormData({
+        email: savedEmail,
+        password: savedPassword
+      });
+      setRemember(true);
+    }
+  }, []);
+
+  const handleRememberChange = (e) => {
+    const isChecked = e.target.checked;
+    setRemember(isChecked);
+    
+    // Si se desmarca, eliminamos las credenciales guardadas
+    if (!isChecked) {
+      localStorage.removeItem('rememberedEmail');
+      localStorage.removeItem('rememberedPassword');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError_user("");
     setError_pass("");
+    setLoading(true);
 
     try {
       const res = await axios.post("http://localhost:5000/login", formData);
 
       if (res.data.token && res.data.role) {
+        // Guardar credenciales si "Recordar" está marcado
+        if (remember) {
+          localStorage.setItem('rememberedEmail', formData.email);
+          localStorage.setItem('rememberedPassword', formData.password);
+        } else {
+          // Si no está marcado, asegurarse de eliminar cualquier credencial previa
+          localStorage.removeItem('rememberedEmail');
+          localStorage.removeItem('rememberedPassword');
+        }
+
         login({
           token: res.data.token,
           role: res.data.role,
@@ -49,6 +87,8 @@ const Login = () => {
       if (err.response?.data.error === "Contraseña incorrecta") {
         setError_pass("Contraseña incorrecta");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,7 +96,9 @@ const Login = () => {
     <div className="flex items-center justify-center min-h-screen">
       <div className="p-8 bg-white border-2 border-black rounded-lg shadow-lg w-96 dark:border-gray-700">
         <div className="flex justify-center mb-4">
-          <a href="/"><img src="./logo.png" alt="OptiClick" className="w-20"></img></a>
+          <a href="/">
+            <img src="./logo.png" alt="OptiClick" className="w-20"></img>
+          </a>
         </div>
         <div className="flex">
           <Lottie animationData={loginAnimation} style={{ height: 60 }} />
@@ -83,7 +125,26 @@ const Login = () => {
             onChange={(value) => setFormData({ ...formData, password: value })}
             required
           />
-          <PrimaryButton text="Iniciar sesión" classes="w-full mt-4 p-2" />
+          <div className="flex items-center me-4">
+            <input
+              onChange={handleRememberChange}
+              checked={remember}
+              id="rememberCheckbox"
+              type="checkbox"
+              className="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-chryslerblue dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor="rememberCheckbox"
+              className="text-sm font-medium text-gray-700 ms-2 dark:text-gray-300"
+            >
+              Recordar contraseña
+            </label>
+          </div>
+          <PrimaryButton 
+            text={loading ? "Cargando..." : "Iniciar sesión"} 
+            classes="w-full mt-4 p-2" 
+            disabled={loading}
+          />
         </form>
         <p className="my-2 text-sm text-gray-500">
           ¿No tienes cuenta?{" "}

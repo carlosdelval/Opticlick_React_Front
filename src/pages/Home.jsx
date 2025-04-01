@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import AuthContext from "../context/AuthContext";
-import TransparentPrimary from "../components/TransparentButtonPrimary";
+import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -33,7 +33,7 @@ const Home = () => {
           </p>
         </div>
         <a href="login">
-          <TransparentPrimary text="Iniciar sesión" />
+          <PrimaryButton text="Iniciar sesión" />
         </a>
         <p className="mt-4 text-sm text-gray-600">
           ¿No tienes cuenta?{" "}

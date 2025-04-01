@@ -4,7 +4,6 @@ import Lottie from "lottie-react";
 import calendarAnimation from "../../assets/calendar.json";
 import callMissedAnimation from "../../assets/call-missed-red.json";
 import TransparentDanger from "../../components/TransparentButtonDanger";
-import TransparentPrimary from "../../components/TransparentButtonPrimary";
 import DangerButton from "../../components/DangerButton";
 import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
@@ -160,6 +159,7 @@ const AdminDashboard = () => {
               <tr>
                 <th className="px-6 py-3">Fecha</th>
                 <th className="px-6 py-3">Hora</th>
+                <th className="px-6 py-3">Óptica</th>
                 <th className="px-6 py-3 text-right"></th>
               </tr>
             </thead>
@@ -181,6 +181,9 @@ const AdminDashboard = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
                       {cita.hora ? cita.hora.substring(0, 5) : ""}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
+                      {cita.optica_nombre}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                       <div className="flex justify-end space-x-2">

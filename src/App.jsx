@@ -8,6 +8,7 @@ import Dashboard from "./pages/User/Dashboard";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ListaClientes from "./pages/Admin/ListaClientes";
 import Profile from "./pages/Profile";
+import Historial from "./pages/User/Historial";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
@@ -27,6 +28,15 @@ function App() {
               <>
                 <Navbar />
                 <Dashboard />
+              </>
+            }
+          />
+          <Route
+            path="/historial"
+            element={
+              <>
+                <Navbar />
+                <Historial />
               </>
             }
           />

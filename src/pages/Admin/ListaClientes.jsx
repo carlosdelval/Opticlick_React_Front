@@ -22,6 +22,13 @@ function Dashboard() {
   const [selectedName, setSelectedName] = React.useState("");
   const [selectedSurname, setSelectedSurname] = React.useState(null);
   const [selectedId, setSelectedId] = React.useState(null);
+  const [errorForm, setErrorForm] = React.useState({
+    name: "",
+    surname: "",
+    dni: "",
+    tlf: "",
+    email: "",
+  });
   const [formData, setFormData] = React.useState({
     id: "",
     name: "",
@@ -62,8 +69,69 @@ function Dashboard() {
     }
   };
 
+  // Validar formulario
+  const validateForm = () => {
+    let isValid = true;
+    const newErrorForm = {
+      name: "",
+      surname: "",
+      dni: "",
+      tlf: "",
+      email: "",
+    };
+    if (!formData.name) {
+      newErrorForm.name = "El nombre es obligatorio";
+      isValid = false;
+    } else if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(formData.name)) {
+      newErrorForm.name = "El nombre sólo puede contener letras.";
+      isValid = false;
+    }
+    if (!formData.surname) {
+      newErrorForm.surname = "Los apellidos son obligatorios";
+      isValid = false;
+    } else if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(formData.surname)) {
+      newErrorForm.surname = "Los apellidos sólo pueden contener letras.";
+      isValid = false;
+    }
+    if (!formData.dni) {
+      newErrorForm.dni = "El DNI es obligatorio";
+      isValid = false;
+    } else if (!/^\d{8}[A-HJ-NP-TV-Z]$/.test(formData.dni)) {
+      newErrorForm.dni = "El formato del DNI no es válido";
+      isValid = false;
+    }
+    if (!formData.tlf) {
+      newErrorForm.tlf = "El teléfono es obligatorio";
+      isValid = false;
+    } else if (!/^\d{9}$/.test(formData.tlf)) {
+      newErrorForm.tlf = "El formato de teléfono no es válido";
+      isValid = false;
+    }
+    if (!formData.email) {
+      newErrorForm.email = "El email es obligatorio";
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrorForm.email = "El formato de email no es válido.";
+      isValid = false;
+    }
+    setErrorForm(newErrorForm);
+    return isValid;
+  };
+
   const handleUpdateCliente = async (id) => {
+    setError(null);
+    setSuccess(null);
+    if (!validateForm()) {
+      return;
+    }
     try {
+      setErrorForm({
+        name: "",
+        surname: "",
+        dni: "",
+        tlf: "",
+        email: "",
+      });
       await updateUser(formData);
       setClientes((prev) =>
         prev.map((cliente) => {
@@ -86,9 +154,27 @@ function Dashboard() {
       setError(null);
     } catch (err) {
       console.error("Error updating client:", err);
-      setModalInfoCliente(false);
-      setError("No se pudo actualizar el cliente");
-      setSuccess(null);
+      if (err.response && err.response.status === 400) {
+        const errorMessage = err.response.data.error || "";
+        if (errorMessage.toLowerCase().includes("dni")) {
+          setErrorForm({
+            ...errorForm,
+            dni: "El DNI ya está en uso",
+          });
+          return;
+        }
+        if (errorMessage.toLowerCase().includes("email")) {
+          setErrorForm({
+            ...errorForm,
+            email: "El email ya está en uso",
+          });
+          return;
+        }
+      } else if (err.response && err.response.status === 500) {
+        setModalInfoCliente(false);
+        setError("No se pudo actualizar el cliente");
+        setSuccess(null);
+      }
     }
   };
 
@@ -394,8 +480,7 @@ function Dashboard() {
               <Modal.Body className="justify-center p-4">
                 <div className="flex items-center justify-center mb-4">
                   <span className="text-2xl font-semibold text-center text-redpantone">
-                    {selectedName}{" "}
-                    {selectedSurname}
+                    {selectedName} {selectedSurname}
                   </span>
                 </div>
                 <div className="my-2">
@@ -420,7 +505,7 @@ function Dashboard() {
             className="justify-center bg-gray-200 bg-opacity-50"
             size="md"
             show={modalInfoCliente}
-            onClose={() => setModalInfoCliente(false)}
+            onClose={() => {setModalInfoCliente(false),setErrorForm({})}}
           >
             <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
               <Modal.Header>
@@ -435,40 +520,45 @@ function Dashboard() {
                 </div>
               </Modal.Header>
               <Modal.Body>
-                  <form onSubmit={(e) => e.preventDefault()}>
-                    <InputField
-                      text={"Nombre"}
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e })}
+                <form onSubmit={(e) => e.preventDefault()}>
+                  <InputField
+                    text={"Nombre"}
+                    value={formData.name}
+                    error={errorForm.name}
+                    onChange={(e) => setFormData({ ...formData, name: e })}
+                  />
+                  <InputField
+                    text={"Apellidos"}
+                    value={formData.surname}
+                    error={errorForm.surname}
+                    onChange={(e) => setFormData({ ...formData, surname: e })}
+                  />
+                  <InputField
+                    text={"Email"}
+                    value={formData.email}
+                    error={errorForm.email}
+                    onChange={(e) => setFormData({ ...formData, email: e })}
+                  />
+                  <InputField
+                    text={"DNI"}
+                    value={formData.dni}
+                    error={errorForm.dni}
+                    onChange={(e) => setFormData({ ...formData, dni: e })}
+                  />
+                  <InputField
+                    text={"Teléfono"}
+                    value={formData.tlf}
+                    error={errorForm.tlf}
+                    onChange={(e) => setFormData({ ...formData, tlf: e })}
+                  />
+                  <div className="flex justify-end">
+                    <PrimaryButton
+                      classes="mt-6"
+                      text="Actualizar"
+                      action={() => handleUpdateCliente(formData.id)}
                     />
-                    <InputField
-                      text={"Apellidos"}
-                      value={formData.surname}
-                      onChange={(e) => setFormData({ ...formData, surname: e })}
-                    />
-                    <InputField
-                      text={"Email"}
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e })}
-                    />
-                    <InputField
-                      text={"DNI"}
-                      value={formData.dni}
-                      onChange={(e) => setFormData({ ...formData, dni: e })}
-                    />
-                    <InputField
-                      text={"Teléfono"}
-                      value={formData.tlf}
-                      onChange={(e) => setFormData({ ...formData, tlf: e })}
-                    />
-                    <div className="flex justify-end">
-                      <PrimaryButton
-                        classes="mt-6"
-                        text="Actualizar"
-                        action={() => handleUpdateCliente(formData.id)}
-                      />
-                    </div>
-                  </form>
+                  </div>
+                </form>
               </Modal.Body>
             </div>
           </Modal>

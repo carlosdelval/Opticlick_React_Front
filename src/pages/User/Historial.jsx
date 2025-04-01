@@ -1,71 +1,31 @@
-import React from "react";
-import AuthContext from "../../context/AuthContext";
-import {
-  getCitas,
-  getClienteCita,
-  deleteCita,
-  addGraduacion,
-  setGraduada,
-} from "../../api";
+import React, { useContext } from "react";
+import { getCitasGraduadasUser, getGraduacion } from "../../api";
 import Lottie from "lottie-react";
-import calendarAnimation from "../../assets/calendar.json";
-import glassesAnimation from "../../assets/Glasses.json";
-import callMissedAnimation from "../../assets/call-missed-red.json";
-import TransparentDanger from "../../components/TransparentButtonDanger";
-import TransparentPrimary from "../../components/TransparentButtonPrimary";
+import activityAnimation from "../../assets/activity.json";
+import fileAnimation from "../../assets/file.json";
 import PrimaryButton from "../../components/PrimaryButton";
-import DangerButton from "../../components/DangerButton";
+import TransparentPrimary from "../../components/TransparentButtonPrimary";
 import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
-import InputField from "../../components/InputField";
-import Documentacion from "../../pdf/GeneradorPdf";
-import ReactPDF from "@react-pdf/renderer";
-import { saveAs } from "file-saver";
+import AuthContext from "../../context/AuthContext";
 
-const AdminDashboard = () => {
-  const { user } = React.useContext(AuthContext);
+const Historial = () => {
+  const { user } = useContext(AuthContext);
   const [citas, setCitas] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
-  const [generatePdf, setGeneratePdf] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
-  const [openModalAnular, setOpenModalAnular] = React.useState(false);
-  const [id, setId] = React.useState(null);
-  const [formData, setFormData] = React.useState({
-    eje: "",
-    cilindro: "",
-    esfera: "",
-  });
-
-  const handleGeneratePdfChange = (e) => {
-    setGeneratePdf(e.target.checked);
-  };
+  const [graduacion, setGraduacion] = React.useState(null);
+  const [selectedFecha, setSelectedFecha] = React.useState(null);
+  const [selectedHora, setSelectedHora] = React.useState(null);
 
   React.useEffect(() => {
     const fetchCitas = async () => {
+      if (!user) return;
       try {
-        const data = await getCitas();
-
-        const citasWithClients = await Promise.all(
-          data.map(async (cita) => {
-            try {
-              const cliente = await getClienteCita(cita.user_id);
-              return {
-                ...cita,
-                cliente:
-                  cliente && cliente[0]
-                    ? `${cliente[0].name} ${cliente[0].surname}`
-                    : "Cliente desconocido",
-              };
-            } catch (err) {
-              console.error(`Error fetching client for cita ${cita.id}:`, err);
-              return { ...cita, cliente: "Error al cargar cliente" };
-            }
-          })
-        );
-
-        setCitas(citasWithClients);
+        const data = await getCitasGraduadasUser(user.id);
+        setCitas(data);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching citas:", err);
@@ -74,105 +34,24 @@ const AdminDashboard = () => {
       }
     };
     fetchCitas();
-  }, []);
-  const handleOpenModalAnular = (id) => {
-    setOpenModalAnular(true);
-    setId(id);
-  };
-  const handleOpenModal = (id) => {
+  }, [user?.id]);
+
+  const handleOpenModal = (id, fecha, hora) => {
+    const fetchGraduacion = async () => {
+      try {
+        const data = await getGraduacion(id);
+        setGraduacion(data);
+      } catch (err) {
+        console.error("Error fetching graduacion:", err);
+        setError("No se pudo cargar la graduación.");
+      }
+      setLoading(false);
+    };
+    fetchGraduacion();
+    // Obtener la fecha y hora de la cita seleccionada
+    setSelectedFecha(fecha);
+    setSelectedHora(hora);
     setOpenModal(true);
-    setId(id);
-  };
-  const handleDeleteCita = async (id) => {
-    try {
-      await deleteCita(id);
-      setCitas(citas.filter((cita) => cita.id !== id));
-      setOpenModalAnular(false);
-      setSuccess("Cita anulada correctamente.");
-      setError(null);
-    } catch (err) {
-      console.error("Error deleting appointment:", err);
-      setError("No se pudo anular la cita.");
-      setSuccess(null);
-      setOpenModalAnular(false);
-    }
-  };
-  
-  const handleGraduarCita = async (e, id) => {
-    e.preventDefault();
-    try {
-      // Validar datos antes de continuar
-      if (!formData.eje || !formData.cilindro || !formData.esfera) {
-        setError("Todos los campos de graduación son requeridos");
-        return;
-      }
-
-      // 1. Registrar la graduación
-      await addGraduacion({
-        cita_id: id,
-        eje: formData.eje,
-        cilindro: formData.cilindro,
-        esfera: formData.esfera,
-      });
-
-      // 2. Marcar la cita como graduada
-      await setGraduada(id);
-
-      // 3. Generar PDF si está marcado el checkbox
-      if (generatePdf) {
-        const citaActual = citas.find((c) => c.id === id);
-        if (citaActual) {
-          // Crear props para el documento
-            const docProps = {
-            nombre: citaActual.cliente || "Cliente",
-            eje: formData.eje,
-            cilindro: formData.cilindro,
-            esfera: formData.esfera,
-            fecha: new Date().toLocaleDateString("es-ES"),
-            hora: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
-            };
-
-          // Generar PDF de forma asíncrona
-          const pdfDoc = <Documentacion {...docProps} />;
-
-          // Crear blob y abrir en nueva pestaña
-          const blob = await ReactPDF.pdf(pdfDoc).toBlob();
-          const pdfUrl = URL.createObjectURL(blob);
-
-          // Solución alternativa para navegadores que bloquean popups
-          const newWindow = window.open();
-          if (newWindow) {
-            newWindow.location.href = pdfUrl;
-          } else {
-            // Descarga directa si no se puede abrir ventana
-            saveAs(
-              blob,
-              `graduacion_${docProps.nombre.replace(/\s+/g, "_")}.pdf`
-            );
-          }
-        }
-      }
-
-      // 4. Actualizar estado
-      setCitas(citas.filter((c) => c.id !== id));
-      setOpenModal(false);
-      setSuccess(
-        `Graduación registrada correctamente${
-          generatePdf ? " y PDF generado" : ""
-        }`
-      );
-      setError(null);
-
-      // 5. Resetear formulario
-      setFormData({ eje: "", cilindro: "", esfera: "" });
-      setGeneratePdf(false);
-    } catch (err) {
-      console.error("Error en handleGraduarCita:", err);
-      setError(
-        err.response?.data?.message || "Error al procesar la graduación"
-      );
-      setSuccess(null);
-    }
   };
 
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -184,10 +63,10 @@ const AdminDashboard = () => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // Filtrar las citas por cliente o fecha
+  // Filtrar las citas por fecha u hora
   const filteredCitas = React.useMemo(() => {
     return citas.filter((cita) => {
-      const normalizedCliente = cita.cliente
+      const normalizedHora = cita.hora
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
@@ -202,9 +81,15 @@ const AdminDashboard = () => {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
 
+      const normalizedOptica = cita.optica_nombre
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
       return (
-        normalizedCliente.includes(normalizedSearchTerm) ||
-        normalizedFecha.includes(normalizedSearchTerm)
+        normalizedFecha.includes(normalizedSearchTerm) ||
+        normalizedHora.includes(normalizedSearchTerm) ||
+        normalizedOptica.includes(normalizedSearchTerm)
       );
     });
   }, [citas, searchTerm]);
@@ -219,9 +104,9 @@ const AdminDashboard = () => {
   return (
     <div className="px-4 py-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="flex mb-4 space-x-3 text-start">
-        <Lottie animationData={calendarAnimation} style={{ height: 60 }} />
+        <Lottie animationData={activityAnimation} style={{ height: 70 }} />
         <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
-          Tus citas actuales, {user?.name}
+          Tu historial de revisiones graduadas, {user?.name}
         </h2>
       </div>
       {error && (
@@ -267,7 +152,7 @@ const AdminDashboard = () => {
             type="search"
             id="search"
             className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-gray-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="Buscar citas por cliente o fecha..."
+            placeholder="Buscar cita por fecha, hora u óptica..."
             autoComplete="off"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -282,7 +167,7 @@ const AdminDashboard = () => {
               <tr>
                 <th className="px-6 py-3">Fecha</th>
                 <th className="px-6 py-3">Hora</th>
-                <th className="px-6 py-3">Cliente</th>
+                <th className="px-6 py-3">Óptica</th>
                 <th className="px-6 py-3 text-right"></th>
               </tr>
             </thead>
@@ -306,42 +191,23 @@ const AdminDashboard = () => {
                       {cita.hora ? cita.hora.substring(0, 5) : ""}
                     </td>
                     <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
-                      {cita.cliente}
+                      {cita.optica_nombre}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                       <div className="flex justify-end space-x-2">
                         <TransparentPrimary
-                          action={() => handleOpenModal(cita.id)}
-                          text={
-                            <div className="flex space-x-2">
-                              <span>Graduar</span>
-                              <svg
-                                className="w-4 h-4 mt-1"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="m11.5 11.5 2.071 1.994M4 10h5m11 0h-1.5M12 7V4M7 7V4m10 3V4m-7 13H8v-2l5.227-5.292a1.46 1.46 0 0 1 2.065 2.065L10 17Zm-5 3h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
-                                />
-                              </svg>
-                            </div>
+                          action={() =>
+                            handleOpenModal(
+                              cita.id,
+                              formattedDate,
+                              cita.hora.substring(0, 5)
+                            )
                           }
-                        />
-                        <TransparentDanger
-                          action={() => handleOpenModalAnular(cita.id)}
                           text={
                             <div className="flex space-x-2">
-                              <span>Anular</span>
+                              <span>Ver graduación</span>
                               <svg
-                                className="w-4 h-4 mt-1"
+                                className="h-4 mt-1 w-4-"
                                 aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -354,7 +220,7 @@ const AdminDashboard = () => {
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth="2"
-                                  d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
+                                  d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
                                 />
                               </svg>
                             </div>
@@ -443,8 +309,6 @@ const AdminDashboard = () => {
               </nav>
             </div>
           )}
-
-          {/* Modal graduaciones*/}
           <Modal
             className="justify-center bg-gray-200 bg-opacity-50"
             size="md"
@@ -455,93 +319,70 @@ const AdminDashboard = () => {
               <Modal.Header className="p-4">
                 <div className="flex">
                   <Lottie
-                    animationData={glassesAnimation}
+                    animationData={fileAnimation}
                     style={{ height: 60 }}
                   />
                   <h2 className="my-4 text-2xl font-bold text-center">
-                    Graduar esta cita
+                    Graduación de cita:
                   </h2>
                 </div>
               </Modal.Header>
               <Modal.Body className="justify-center p-4">
-                <form onSubmit={(e) => handleGraduarCita(e, id)}>
-                  <div className="my-2">
-                    <InputField
-                      type="number"
-                      label="Eje"
-                      value={formData.eje}
-                      onChange={(value) =>
-                        setFormData({ ...formData, eje: value })
-                      }
-                    />
-                    <InputField
-                      type="number"
-                      label="Cilindro"
-                      value={formData.cilindro}
-                      onChange={(value) =>
-                        setFormData({ ...formData, cilindro: value })
-                      }
-                    />
-                    <InputField
-                      type="number"
-                      label="Esfera"
-                      value={formData.esfera}
-                      onChange={(value) =>
-                        setFormData({ ...formData, esfera: value })
-                      }
-                    />
-                  </div>
-                  <div className="flex items-center me-4">
-                    <input
-                      onChange={handleGeneratePdfChange}
-                      checked={generatePdf}
-                      id="generatePdfCheckbox"
-                      type="checkbox"
-                      className="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-chryslerblue dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                      htmlFor="generatePdfCheckbox"
-                      className="text-sm font-medium text-gray-700 ms-2 dark:text-gray-300"
-                    >
-                      Deseo descargar la graduación en PDF
-                    </label>
-                  </div>
-                  <div className="flex justify-end">
-                    <PrimaryButton classes={"mt-4"} text="Graduar" />
-                  </div>
-                </form>
-              </Modal.Body>
-            </div>
-          </Modal>
-          {/* Modal anular cita*/}
-          <Modal
-            className="justify-center bg-gray-200 bg-opacity-50"
-            size="md"
-            show={openModalAnular}
-            onClose={() => setOpenModalAnular(false)}
-          >
-            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-              <Modal.Header className="p-4">
-                <div className="flex">
-                  <Lottie
-                    animationData={callMissedAnimation}
-                    style={{ height: 60 }}
-                  />
-                  <h2 className="my-4 text-2xl font-bold text-center">
-                    Anular esta cita
-                  </h2>
+                <div className="flex items-center justify-center mb-4">
+                  <span className="text-2xl font-semibold text-center">
+                    Día{" "}
+                    <span className="text-chryslerblue">{selectedFecha}</span> a
+                    las{" "}
+                    <span className="text-chryslerblue">{selectedHora}</span>
+                  </span>
                 </div>
-              </Modal.Header>
-              <Modal.Body className="justify-center p-4">
                 <div className="my-2">
-                  <p>¿Está seguro de que desea anular esta cita?</p>
-                  <p>El cliente será notificado.</p>
+                  <div className="flex flex-col mt-4">
+                    <p className="text-lg font-semibold">
+                      Eje:{" "}
+                      <span className="font-bold text-chryslerblue">
+                        {graduacion?.eje}
+                      </span>
+                    </p>
+                    <p className="text-lg font-semibold">
+                      Esfera:{" "}
+                      <span className="font-bold text-chryslerblue">
+                        {graduacion?.esfera}
+                      </span>
+                    </p>
+                    <p className="text-lg font-semibold">
+                      Cilindro:{" "}
+                      <span className="font-bold text-chryslerblue">
+                        {graduacion?.cilindro}
+                      </span>
+                    </p>
+                  </div>
                 </div>
                 <div className="flex justify-end">
-                  <DangerButton
-                    action={() => handleDeleteCita(id)}
+                  <PrimaryButton
                     classes={"mt-4 "}
-                    text="Anular"
+                    text={
+                      <div className="flex space-x-2">
+                        <span>Descargar PDF</span>
+                        <svg
+                          className="w-4 h-4 mt-1"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
+                          />
+                        </svg>
+                      </div>
+                    }
                   />
                 </div>
               </Modal.Body>
@@ -553,4 +394,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default Historial;
