@@ -125,9 +125,7 @@ const AdminDashboard = () => {
           // Crear props para el documento
             const docProps = {
             nombre: citaActual.cliente || "Cliente",
-            eje: formData.eje,
-            cilindro: formData.cilindro,
-            esfera: formData.esfera,
+            graduacion: formData,
             fecha: new Date().toLocaleDateString("es-ES"),
             hora: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
             };

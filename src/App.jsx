@@ -12,8 +12,13 @@ import Historial from "./pages/User/Historial";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
+import { Buffer } from "buffer";
 
 function App() {
+  // Polyfill for Buffer
+  if (typeof window !== "undefined") {
+    window.Buffer = Buffer;
+  }
   return (
     <AuthProvider>
       <>

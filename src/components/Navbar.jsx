@@ -183,7 +183,7 @@ const Navbar = () => {
           }
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
-          <img src="././public/logo.png" className="h-8" alt="OptiClick Logo" />
+          <img src="./logo.png" className="h-8" alt="OptiClick Logo" />
           <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl dark:hover:text-vistablue dark:text-babypowder hover:text-chryslerblue">
             OptiClick
           </span>

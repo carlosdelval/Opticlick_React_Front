@@ -3,11 +3,13 @@ import { getCitasGraduadasUser, getGraduacion } from "../../api";
 import Lottie from "lottie-react";
 import activityAnimation from "../../assets/activity.json";
 import fileAnimation from "../../assets/file.json";
-import PrimaryButton from "../../components/PrimaryButton";
 import TransparentPrimary from "../../components/TransparentButtonPrimary";
 import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import AuthContext from "../../context/AuthContext";
+import { saveAs } from "file-saver";
+import Documentacion from "../../pdf/GeneradorPdf";
+import ReactPDF from "@react-pdf/renderer";
 
 const Historial = () => {
   const { user } = useContext(AuthContext);
@@ -16,7 +18,13 @@ const Historial = () => {
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [openModal, setOpenModal] = React.useState(false);
-  const [graduacion, setGraduacion] = React.useState(null);
+  const [graduacion, setGraduacion] = React.useState([
+    {
+      eje: "",
+      esfera: "",
+      cilindro: "",
+    },
+  ]);
   const [selectedFecha, setSelectedFecha] = React.useState(null);
   const [selectedHora, setSelectedHora] = React.useState(null);
 
@@ -52,6 +60,31 @@ const Historial = () => {
     setSelectedFecha(fecha);
     setSelectedHora(hora);
     setOpenModal(true);
+  };
+
+  // Handle para descarga de PDF
+  const handleDownloadPDF = async () => {
+    const docProps = {
+      nombre: user?.name + " " + user?.surname || "Cliente",
+      graduacion: graduacion,
+      fecha: selectedFecha,
+      hora: selectedHora,
+    };
+    // Generar PDF de forma asíncrona
+    const pdfDoc = <Documentacion {...docProps} />;
+
+    // Crear blob y abrir en nueva pestaña
+    const blob = await ReactPDF.pdf(pdfDoc).toBlob();
+    const pdfUrl = URL.createObjectURL(blob);
+
+    // Solución alternativa para navegadores que bloquean popups
+    const newWindow = window.open();
+    if (newWindow) {
+      newWindow.location.href = pdfUrl;
+    } else {
+      // Descarga directa si no se puede abrir ventana
+      saveAs(blob, `graduacion_${docProps.nombre.replace(/\s+/g, "_")}.pdf`);
+    }
   };
 
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -336,30 +369,33 @@ const Historial = () => {
                     <span className="text-chryslerblue">{selectedHora}</span>
                   </span>
                 </div>
-                <div className="my-2">
-                  <div className="flex flex-col mt-4">
-                    <p className="text-lg font-semibold">
-                      Eje:{" "}
-                      <span className="font-bold text-chryslerblue">
-                        {graduacion?.eje}
-                      </span>
-                    </p>
-                    <p className="text-lg font-semibold">
-                      Esfera:{" "}
-                      <span className="font-bold text-chryslerblue">
-                        {graduacion?.esfera}
-                      </span>
-                    </p>
-                    <p className="text-lg font-semibold">
-                      Cilindro:{" "}
-                      <span className="font-bold text-chryslerblue">
-                        {graduacion?.cilindro}
-                      </span>
-                    </p>
-                  </div>
+                <div className="my-6 overflow-x-auto rounded-lg shadow-md">
+                  <table className="min-w-full border-2 border-black divide-y divide-gray-200">
+                    <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
+                      <tr>
+                        <th className="px-6 py-3">Eje</th>
+                        <th className="px-6 py-3">Cilindro</th>
+                        <th className="px-6 py-3">Esfera</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 ">
+                      <tr>
+                        <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
+                          {graduacion.eje}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
+                          {graduacion.cilindro}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
+                          {graduacion.esfera}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
                 <div className="flex justify-end">
-                  <PrimaryButton
+                  <TransparentPrimary
+                    action={handleDownloadPDF}
                     classes={"mt-4 "}
                     text={
                       <div className="flex space-x-2">
