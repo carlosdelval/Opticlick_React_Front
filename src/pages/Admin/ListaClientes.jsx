@@ -1,5 +1,11 @@
 import React from "react";
-import { getClientes, deleteUser, updateUser } from "../../api";
+import {
+  getClientes,
+  deleteUser,
+  updateUser,
+  getOpticas,
+  getClientesOptica,
+} from "../../api";
 import { HiInformationCircle } from "react-icons/hi";
 import Lottie from "lottie-react";
 import teamAnimation from "../../assets/clients.json";
@@ -14,6 +20,7 @@ import InputField from "../../components/InputField";
 
 function Dashboard() {
   const [clientes, setClientes] = React.useState([]);
+  const [opticas, setOpticas] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
@@ -22,6 +29,10 @@ function Dashboard() {
   const [selectedName, setSelectedName] = React.useState("");
   const [selectedSurname, setSelectedSurname] = React.useState(null);
   const [selectedId, setSelectedId] = React.useState(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 4;
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [opticaSearch, setOpticaSearch] = React.useState("");
   const [errorForm, setErrorForm] = React.useState({
     name: "",
     surname: "",
@@ -43,16 +54,52 @@ function Dashboard() {
       try {
         const data = await getClientes();
         setClientes(data);
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
       } catch (err) {
         console.error("Error fetching clients:", err);
         setError("No se pudieron cargar los clientes");
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
       }
     };
 
-    fetchClientes();
-  }, []);
+    const fetchOpticas = async () => {
+      try {
+        const data = await getOpticas();
+        setOpticas(data);
+      } catch (err) {
+        console.error("Error fetching opticas:", err);
+        setError("No se pudieron cargar las ópticas");
+      }
+    };
+
+    const fetchClientesOptica = async () => {
+      try {
+        setLoading(true);
+        const data = await getClientesOptica(opticaSearch);
+        setClientes(data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 250);
+      } catch (err) {
+        console.error("Error fetching clients by optica:", err);
+        setError("No se pudieron cargar los clientes de esta óptica");
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+      }
+    };
+    if (opticaSearch) {
+      fetchClientesOptica();
+    } else {
+      fetchClientes();
+
+      fetchOpticas();
+    }
+  }, [opticaSearch]);
 
   const handleDeleteCliente = async (id) => {
     try {
@@ -197,17 +244,13 @@ function Dashboard() {
     setModalInfoCliente(true);
   };
 
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const itemsPerPage = 4;
-  const [searchTerm, setSearchTerm] = React.useState("");
-
   // Resetear a la primera página cuando el término de búsqueda cambie
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // Filtrar las citas por cliente o fecha
-  const filteredCitas = React.useMemo(() => {
+  // Filtrar los clientes por nombre, email o dni
+  const filteredClientes = React.useMemo(() => {
     return clientes.filter((cliente) => {
       const normalizedName = cliente.name
         .concat(" ", cliente.surname)
@@ -235,8 +278,8 @@ function Dashboard() {
   }, [clientes, searchTerm]);
 
   // Paginación de las citas filtradas
-  const totalFilteredPages = Math.ceil(filteredCitas.length / itemsPerPage);
-  const currentFilteredClientes = filteredCitas.slice(
+  const totalFilteredPages = Math.ceil(filteredClientes.length / itemsPerPage);
+  const currentFilteredClientes = filteredClientes.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -268,7 +311,7 @@ function Dashboard() {
       )}
 
       {/* Barrita de búsqueda */}
-      <div className="mb-4">
+      <div className="flex mb-4 space-x-3">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg
@@ -290,29 +333,46 @@ function Dashboard() {
           <input
             type="search"
             id="search"
-            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-gray-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            className="block p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg w-96 focus:bg-gray-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
             placeholder="Buscar clientes por nombre, e-mail o dni..."
             autoComplete="off"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        <div className="relative">
+          <select
+            className="block p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg w-96 focus:bg-gray-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            onChange={(e) => setOpticaSearch(e.target.value)}
+            value={opticaSearch}
+          >
+            <option value="" disabled>
+              Filtrar por óptica
+            </option>
+            <option value="">Todas las ópticas</option>
+            {opticas.map((optica) => (
+              <option key={optica.id} value={optica.id}>
+                {optica.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {!loading && (
-        <div className="overflow-hidden bg-white border-2 border-black rounded-lg shadow-lg dark:border-gray-700 dark:bg-gray-800">
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white divide-y divide-gray-200">
-              <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
-                <tr>
-                  <th className="px-6 py-3">Nombre</th>
-                  <th className="px-6 py-3">Email</th>
-                  <th className="px-6 py-3">Teléfono</th>
-                  <th className="px-6 py-3"></th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentFilteredClientes.map((cliente) => (
+      <div className="overflow-hidden bg-white border-2 border-black rounded-lg shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white divide-y divide-gray-200">
+            <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
+              <tr>
+                <th className="px-6 py-3">Nombre</th>
+                <th className="px-6 py-3">Email</th>
+                <th className="px-6 py-3">Teléfono</th>
+                <th className="px-6 py-3"></th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {!loading &&
+                currentFilteredClientes.map((cliente) => (
                   <tr
                     key={cliente.id}
                     className="transition-colors hover:bg-gray-50"
@@ -379,191 +439,210 @@ function Dashboard() {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-            {loading && <p className="text-center">Cargando citas...</p>}
-            {filteredCitas.length === 0 && !loading && (
-              <p className="p-4 my-4 text-center">
-                No hay clientes que coincidan con la búsqueda
-              </p>
-            )}
-          </div>
-
-          {/* Paginación */}
-          {!loading && filteredCitas.length > 0 && (
-            <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
-              <nav className="flex items-center space-x-2">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                  className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
-                    currentPage === 1
-                      ? "text-gray-400"
-                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-                {[...Array(totalFilteredPages)].map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
-                      currentPage === index + 1
-                        ? "bg-chryslerblue text-white"
-                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) =>
-                      Math.min(prev + 1, totalFilteredPages)
-                    )
-                  }
-                  disabled={currentPage === totalFilteredPages}
-                  className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
-                    currentPage === totalFilteredPages
-                      ? "text-gray-400"
-                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </nav>
-            </div>
+            </tbody>
+          </table>
+          {loading && (
+            <output className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
+              <svg
+                aria-hidden="true"
+                className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-chryslerblue"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="currentFill"
+                />
+              </svg>
+              <span className="sr-only">Loading...</span>
+            </output>
           )}
-          {/* Modal borrar cliente*/}
-          <Modal
-            className="justify-center bg-gray-200 bg-opacity-50"
-            size="md"
-            show={modalDelete}
-            onClose={() => setModalDelete(false)}
-          >
-            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-              <Modal.Header>
-                <div className="flex">
-                  <Lottie
-                    animationData={deleteAnimation}
-                    style={{ height: 60 }}
-                  />
-                  <h2 className="my-4 text-2xl font-bold text-center">
-                    Eliminar cliente:
-                  </h2>
-                </div>
-              </Modal.Header>
-              <Modal.Body className="justify-center p-4">
-                <div className="flex items-center justify-center mb-4">
-                  <span className="text-2xl font-semibold text-center text-redpantone">
-                    {selectedName} {selectedSurname}
-                  </span>
-                </div>
-                <div className="my-2">
-                  <p>¿Está seguro de que desea borrar este cliente?</p>
-                  <p>
-                    La información de este contacto se eliminará de la base de
-                    datos y no podrá ser recuperada.
-                  </p>
-                </div>
-                <div className="flex justify-end">
-                  <DangerButton
-                    action={() => handleDeleteCliente(selectedId)}
-                    classes={"mt-6 "}
-                    text="Eliminar"
-                  />
-                </div>
-              </Modal.Body>
-            </div>
-          </Modal>
-          {/* Modal de información del cliente */}
-          <Modal
-            className="justify-center bg-gray-200 bg-opacity-50"
-            size="md"
-            show={modalInfoCliente}
-            onClose={() => {setModalInfoCliente(false),setErrorForm({})}}
-          >
-            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-              <Modal.Header>
-                <div className="flex">
-                  <Lottie
-                    animationData={profileAnimation}
-                    style={{ height: 60 }}
-                  />
-                  <h2 className="my-4 text-2xl font-bold text-center">
-                    Datos del cliente
-                  </h2>
-                </div>
-              </Modal.Header>
-              <Modal.Body>
-                <form onSubmit={(e) => e.preventDefault()}>
-                  <InputField
-                    text={"Nombre"}
-                    value={formData.name}
-                    error={errorForm.name}
-                    onChange={(e) => setFormData({ ...formData, name: e })}
-                  />
-                  <InputField
-                    text={"Apellidos"}
-                    value={formData.surname}
-                    error={errorForm.surname}
-                    onChange={(e) => setFormData({ ...formData, surname: e })}
-                  />
-                  <InputField
-                    text={"Email"}
-                    value={formData.email}
-                    error={errorForm.email}
-                    onChange={(e) => setFormData({ ...formData, email: e })}
-                  />
-                  <InputField
-                    text={"DNI"}
-                    value={formData.dni}
-                    error={errorForm.dni}
-                    onChange={(e) => setFormData({ ...formData, dni: e })}
-                  />
-                  <InputField
-                    text={"Teléfono"}
-                    value={formData.tlf}
-                    error={errorForm.tlf}
-                    onChange={(e) => setFormData({ ...formData, tlf: e })}
-                  />
-                  <div className="flex justify-end">
-                    <PrimaryButton
-                      classes="mt-6"
-                      text="Actualizar"
-                      action={() => handleUpdateCliente(formData.id)}
-                    />
-                  </div>
-                </form>
-              </Modal.Body>
-            </div>
-          </Modal>
+          {filteredClientes.length === 0 && !loading && (
+            <p className="p-4 my-4 text-center">
+              No hay clientes que coincidan con la búsqueda
+            </p>
+          )}
         </div>
-      )}
+
+        {/* Paginación */}
+        {!loading && filteredClientes.length > 0 && (
+          <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+            <nav className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
+                  currentPage === 1
+                    ? "text-gray-400"
+                    : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                }`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+              {[...Array(totalFilteredPages)].map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
+                    currentPage === index + 1
+                      ? "bg-chryslerblue text-white"
+                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(prev + 1, totalFilteredPages)
+                  )
+                }
+                disabled={currentPage === totalFilteredPages}
+                className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
+                  currentPage === totalFilteredPages
+                    ? "text-gray-400"
+                    : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                }`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </nav>
+          </div>
+        )}
+        {/* Modal borrar cliente*/}
+        <Modal
+          className="justify-center bg-gray-200 bg-opacity-50"
+          size="md"
+          show={modalDelete}
+          onClose={() => setModalDelete(false)}
+        >
+          <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
+            <Modal.Header>
+              <div className="flex">
+                <Lottie
+                  animationData={deleteAnimation}
+                  style={{ height: 60 }}
+                />
+                <h2 className="my-4 text-2xl font-bold text-center">
+                  Eliminar cliente:
+                </h2>
+              </div>
+            </Modal.Header>
+            <Modal.Body className="justify-center p-4">
+              <div className="flex items-center justify-center mb-4">
+                <span className="text-2xl font-semibold text-center text-redpantone">
+                  {selectedName} {selectedSurname}
+                </span>
+              </div>
+              <div className="my-2">
+                <p>¿Está seguro de que desea borrar este cliente?</p>
+                <p>
+                  La información de este contacto se eliminará de la base de
+                  datos y no podrá ser recuperada.
+                </p>
+              </div>
+              <div className="flex justify-end">
+                <DangerButton
+                  action={() => handleDeleteCliente(selectedId)}
+                  classes={"mt-6 "}
+                  text="Eliminar"
+                />
+              </div>
+            </Modal.Body>
+          </div>
+        </Modal>
+        {/* Modal de información del cliente */}
+        <Modal
+          className="justify-center bg-gray-200 bg-opacity-50"
+          size="md"
+          show={modalInfoCliente}
+          onClose={() => {
+            setModalInfoCliente(false), setErrorForm({});
+          }}
+        >
+          <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
+            <Modal.Header>
+              <div className="flex">
+                <Lottie
+                  animationData={profileAnimation}
+                  style={{ height: 60 }}
+                />
+                <h2 className="my-4 text-2xl font-bold text-center">
+                  Datos del cliente
+                </h2>
+              </div>
+            </Modal.Header>
+            <Modal.Body>
+              <form onSubmit={(e) => e.preventDefault()}>
+                <InputField
+                  text={"Nombre"}
+                  value={formData.name}
+                  error={errorForm.name}
+                  onChange={(e) => setFormData({ ...formData, name: e })}
+                />
+                <InputField
+                  text={"Apellidos"}
+                  value={formData.surname}
+                  error={errorForm.surname}
+                  onChange={(e) => setFormData({ ...formData, surname: e })}
+                />
+                <InputField
+                  text={"Email"}
+                  value={formData.email}
+                  error={errorForm.email}
+                  onChange={(e) => setFormData({ ...formData, email: e })}
+                />
+                <InputField
+                  text={"DNI"}
+                  value={formData.dni}
+                  error={errorForm.dni}
+                  onChange={(e) => setFormData({ ...formData, dni: e })}
+                />
+                <InputField
+                  text={"Teléfono"}
+                  value={formData.tlf}
+                  error={errorForm.tlf}
+                  onChange={(e) => setFormData({ ...formData, tlf: e })}
+                />
+                <div className="flex justify-end">
+                  <PrimaryButton
+                    classes="mt-6"
+                    text="Actualizar"
+                    action={() => handleUpdateCliente(formData.id)}
+                  />
+                </div>
+              </form>
+            </Modal.Body>
+          </div>
+        </Modal>
+      </div>
     </div>
   );
 }

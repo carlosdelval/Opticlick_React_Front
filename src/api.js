@@ -2,11 +2,17 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000";
 
-// Obtener clientes
+// Obtener usuarios
 export const getClientes = async () => {
   const res = await axios.get(`${API_URL}/users`);
   return res.data;
 };
+
+// Obtener usuarios por óptica
+export const getClientesOptica = async (id) => {
+  const res = await axios.get(`${API_URL}/users/${id}`);
+  return res.data;
+}
 
 // Registrar usuario
 export const registerUser = async (userData) => {
