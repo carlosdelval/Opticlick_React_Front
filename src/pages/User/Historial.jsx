@@ -17,6 +17,7 @@ const Historial = () => {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
+  const [openAccordions, setOpenAccordions] = React.useState({});
   const [openModal, setOpenModal] = React.useState(false);
   const [graduacion, setGraduacion] = React.useState([
     {
@@ -64,6 +65,14 @@ const Historial = () => {
     setSelectedFecha(fecha);
     setSelectedHora(hora);
     setOpenModal(true);
+  };
+
+  //Gestionar apertura de acordeón
+  const toggleAccordion = (id) => {
+    setOpenAccordions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
 
   // Handle para descarga de PDF
@@ -199,77 +208,112 @@ const Historial = () => {
 
       <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg">
         <div className="overflow-x-auto bg-white dark:bg-gray-800">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:text-black dark:bg-vistablue">
-              <tr>
-                <th className="px-6 py-3">Fecha</th>
-                <th className="px-6 py-3">Hora</th>
-                <th className="px-6 py-3">Óptica</th>
-                <th className="px-6 py-3 text-right"></th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-              {!loading && currentFilteredCitas.map((cita) => {
-                const date = new Date(cita.fecha);
-                const day = date.getDate();
-                const month = date.getMonth() + 1;
-                const year = date.getFullYear();
-                const formattedDate = `${day}-${month}-${year}`;
+          <div className="hidden md:block">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:text-black dark:bg-vistablue">
+                <tr>
+                  <th className="px-6 py-3">Fecha</th>
+                  <th className="px-6 py-3">Hora</th>
+                  <th className="px-6 py-3">Óptica</th>
+                  <th className="px-6 py-3 text-right"></th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                {!loading &&
+                  currentFilteredCitas.map((cita) => {
+                    const date = new Date(cita.fecha);
+                    const day = date.getDate();
+                    const month = date.getMonth() + 1;
+                    const year = date.getFullYear();
+                    const formattedDate = `${day}-${month}-${year}`;
 
-                return (
-                  <tr
-                    key={cita.id}
-                    className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
-                      {formattedDate}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
-                      {cita.hora ? cita.hora.substring(0, 5) : ""}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
-                      {cita.optica_nombre}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                      <div className="flex justify-end space-x-2">
-                        <TransparentPrimary
-                          action={() =>
-                            handleOpenModal(
-                              cita.id,
-                              formattedDate,
-                              cita.hora.substring(0, 5)
-                            )
-                          }
-                          text={
-                            <div className="flex space-x-2">
-                              <span>Ver graduación</span>
-                              <svg
-                                className="h-4 mt-1 w-4-"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
-                                />
-                              </svg>
-                            </div>
-                          }
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    return (
+                      <tr
+                        key={cita.id}
+                        className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
+                        <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
+                          {formattedDate}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
+                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-2.5 h-2.5 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                            </svg>
+                            {cita.hora ? cita.hora.substring(0, 5) : ""}
+                            {"h"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
+                          <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-4 h-4 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M6 4h12M6 4v16M6 4H5m13 0v16m0-16h1m-1 16H6m12 0h1M6 20H5M9 7h1v1H9V7Zm5 0h1v1h-1V7Zm-5 4h1v1H9v-1Zm5 0h1v1h-1v-1Zm-3 4h2a1 1 0 0 1 1 1v4h-4v-4a1 1 0 0 1 1-1Z"
+                              />
+                            </svg>
+                            {cita.optica_nombre}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                          <div className="flex justify-end space-x-2">
+                            <TransparentPrimary
+                              action={() =>
+                                handleOpenModal(
+                                  cita.id,
+                                  formattedDate,
+                                  cita.hora.substring(0, 5)
+                                )
+                              }
+                              text={
+                                <div className="flex space-x-2">
+                                  <span>Ver graduación</span>
+                                  <svg
+                                    className="h-4 mt-1 w-4-"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
+                                    />
+                                  </svg>
+                                </div>
+                              }
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+          {/* Loader */}
           {loading && (
             <output className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
               <svg
@@ -296,7 +340,161 @@ const Historial = () => {
               No hay citas que coincidan con la búsqueda
             </p>
           )}
+          {/* Versión de acordeón para dispositivos móviles */}
+          <div
+            className="md:hidden"
+            id="accordion-color"
+            data-accordion="collapse"
+            data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
+          >
+            {!loading &&
+              currentFilteredCitas.map((cita, index) => {
+                const date = new Date(cita.fecha);
 
+                const day = date.getDate();
+                // Obtener el día de la semana
+                const dayOfWeek = new Intl.DateTimeFormat("es-ES", {
+                  weekday: "long",
+                }).format(date);
+                const capitalizedDayOfWeek =
+                  dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
+
+                // Obtener el mes
+                const month = date.toLocaleString("es-ES", {
+                  month: "long",
+                });
+                const capitalizedMonth =
+                  month.charAt(0).toUpperCase() + month.slice(1);
+                const year = date.getFullYear();
+                const formattedDate = `${capitalizedDayOfWeek}, ${day} de ${capitalizedMonth} de ${year}`;
+
+                return (
+                  <div
+                    key={cita.id}
+                    className="border-b border-gray-200 dark:border-gray-700"
+                  >
+                    <h2 id={`accordion-color-heading-${index}`}>
+                      <button
+                        type="button"
+                        className={`${
+                          openAccordions[cita.id]
+                            ? "bg-blue-50 dark:bg-gray-800"
+                            : ""
+                        }flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
+                        data-accordion-target={`#accordion-color-body-${index}`}
+                        onClick={() => toggleAccordion(cita.id)}
+                        aria-expanded={openAccordions[cita.id] || false}
+                      >
+                        <div className="space-y-4 text-left">
+                          <div className="font-medium text-gray-900 dark:text-babypowder">
+                            {formattedDate}
+                          </div>
+                          <div className="space-y-2">
+                            <div className="text-sm text-gray-500 dark:text-gray-200">
+                              <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                <svg
+                                  className="w-4 h-4 me-1.5"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 4h12M6 4v16M6 4H5m13 0v16m0-16h1m-1 16H6m12 0h1M6 20H5M9 7h1v1H9V7Zm5 0h1v1h-1V7Zm-5 4h1v1H9v-1Zm5 0h1v1h-1v-1Zm-3 4h2a1 1 0 0 1 1 1v4h-4v-4a1 1 0 0 1 1-1Z"
+                                  />
+                                </svg>
+                                {cita.optica_nombre}
+                              </span>
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-200">
+                              <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                <svg
+                                  className="w-2.5 h-2.5 me-1.5"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                                </svg>
+                                {cita.hora ? cita.hora.substring(0, 5) : ""}
+                                {"h"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <svg
+                          data-accordion-icon
+                          className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
+                            openAccordions[cita.id] ? "rotate-180" : ""
+                          }`}
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 10 6"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 5 5 1 1 5"
+                          />
+                        </svg>
+                      </button>
+                    </h2>
+                    <div
+                      className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
+                        openAccordions[cita.id] ? "max-h-96" : "max-h-0"
+                      }`}
+                      aria-hidden={!openAccordions[cita.id]}
+                    >
+                      <div className="flex p-4 border-t dark:border-gray-700">
+                        <div className="flex justify-end space-x-2">
+                          <TransparentPrimary
+                            action={() =>
+                              handleOpenModal(
+                                cita.id,
+                                formattedDate,
+                                cita.hora.substring(0, 5)
+                              )
+                            }
+                            text={
+                              <div className="flex space-x-2">
+                                <span>Ver graduación</span>
+                                <svg
+                                  className="h-4 mt-1 w-4-"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
+                                  />
+                                </svg>
+                              </div>
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
           {/* Paginación */}
           {!loading && filteredCitas.length > 0 && (
             <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
@@ -309,7 +507,7 @@ const Historial = () => {
                   className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                     currentPage === 1
                       ? "text-gray-400"
-                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
                   }`}
                 >
                   <svg
@@ -331,7 +529,7 @@ const Historial = () => {
                     className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
                       currentPage === index + 1
                         ? "bg-chryslerblue text-white"
-                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
                     }`}
                   >
                     {index + 1}
@@ -348,7 +546,7 @@ const Historial = () => {
                   className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                     currentPage === totalFilteredPages
                       ? "text-gray-400"
-                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
                   }`}
                 >
                   <svg

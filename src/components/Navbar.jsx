@@ -170,6 +170,23 @@ const Navbar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const userMenu = document.getElementById('user-menu-dropdown');
+      const userMenuButton = document.getElementById('user-menu-button');
+      
+      if (userMenu && !userMenu.contains(event.target) && 
+          userMenuButton && !userMenuButton.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <nav className="bg-inherit">
       <div className="flex flex-wrap items-center justify-between max-w-screen-xl p-4 mx-auto">
@@ -192,6 +209,7 @@ const Navbar = () => {
           {user && (
             <div className="relative flex items-center space-x-3 md:order-2 md:space-x-0 rtl:space-x-reverse">
               <button
+                id="user-menu-button"
                 type="button"
                 className="hidden text-sm rounded-full md:flex bg-inherit md:me-0"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -217,7 +235,7 @@ const Navbar = () => {
                 </div>
               </button>
               {isUserMenuOpen && (
-                <div className="absolute right-0 z-50 my-2 text-base list-none bg-white border-2 border-black divide-y divide-gray-100 rounded-lg shadow-sm top-full dark:bg-gray-700 dark:divide-gray-600">
+                <div id="user-menu-dropdown" className="absolute right-0 z-50 my-2 text-base list-none bg-white border-2 border-black divide-y divide-gray-100 rounded-lg shadow-sm top-full dark:bg-gray-700 dark:divide-gray-600">
                   <div className="px-4 py-3">
                     <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
                       {user.email}
@@ -460,8 +478,7 @@ const Navbar = () => {
                   </a>
                 </li>
                 <li className="md:hidden">
-                  <a
-                    href="#"
+                  <button
                     onClick={logout}
                     className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
                     aria-current="page"
@@ -486,7 +503,7 @@ const Navbar = () => {
                       </svg>
                       <span>Cerrar sesión</span>
                     </div>
-                  </a>
+                  </button>
                 </li>
               </>
             )}
