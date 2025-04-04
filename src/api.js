@@ -16,7 +16,7 @@ export const getCliente = async (id) => {
 
 // Obtener usuarios por óptica
 export const getClientesOptica = async (id) => {
-  const res = await axios.get(`${API_URL}/users/${id}`);
+  const res = await axios.get(`${API_URL}/users-optica/${id}`);
   return res.data;
 }
 

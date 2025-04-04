@@ -65,7 +65,11 @@ function Dashboard() {
         email: "",
       });
       const data = await registerUser(formData);
-      setClientes((prev) => [...prev, data]);
+      const newCliente = {
+        id: data.id,
+        ...formData,
+      };
+      setClientes((prev) => [...prev, newCliente]);
       setModalInfoCliente(false);
       setSuccess("Cliente registrado correctamente");
       setError(null);
@@ -249,6 +253,7 @@ function Dashboard() {
       if (err.response && err.response.status === 400) {
         const errorMessage = err.response.data.error || "";
         if (errorMessage.toLowerCase().includes("dni")) {
+          errorForm.
           setErrorForm({
             ...errorForm,
             dni: "El DNI ya está en uso",
