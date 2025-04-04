@@ -150,9 +150,9 @@ const Historial = () => {
   return (
     <div className="px-4 py-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="flex mb-4 space-x-3 text-start">
-        <Lottie animationData={activityAnimation} style={{ height: 70 }} />
+        <Lottie animationData={activityAnimation} style={{ height: 80 }} />
         <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
-          Tu historial de revisiones graduadas, {user?.name}
+          Tu historial de graduaciones, {user?.name}
         </h2>
       </div>
       {error && (
@@ -197,7 +197,7 @@ const Historial = () => {
           <input
             type="search"
             id="search"
-            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-gray-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
             placeholder="Buscar cita por fecha, hora u óptica..."
             autoComplete="off"
             value={searchTerm}
@@ -380,7 +380,7 @@ const Historial = () => {
                           openAccordions[cita.id]
                             ? "bg-blue-50 dark:bg-gray-800"
                             : ""
-                        }flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
+                        } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
                         data-accordion-target={`#accordion-color-body-${index}`}
                         onClick={() => toggleAccordion(cita.id)}
                         aria-expanded={openAccordions[cita.id] || false}

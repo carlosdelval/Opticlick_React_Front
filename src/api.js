@@ -8,6 +8,12 @@ export const getClientes = async () => {
   return res.data;
 };
 
+// Obtener usuario por id
+export const getCliente = async (id) => {
+  const res = await axios.get(`${API_URL}/users/${id}`);
+  return res.data;
+};
+
 // Obtener usuarios por óptica
 export const getClientesOptica = async (id) => {
   const res = await axios.get(`${API_URL}/users/${id}`);
@@ -95,6 +101,18 @@ export const getGraduacion = async (id) => {
 // Agregar graduación
 export const addGraduacion = async (graduacion) => {
   const res = await axios.post(`${API_URL}/graduaciones`, graduacion);
+  return res.data;
+};
+
+// Editar graduación
+export const updateGraduacion = async (id, graduacion) => {
+  const res = await axios.put(`${API_URL}/graduaciones/${id}`, graduacion);
+  return res.data;
+};
+
+// Eliminar graduación
+export const deleteGraduacion = async (id) => {
+  const res = await axios.delete(`${API_URL}/graduaciones/${id}`);
   return res.data;
 };
 

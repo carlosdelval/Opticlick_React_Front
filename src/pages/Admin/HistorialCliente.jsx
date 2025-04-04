@@ -1,59 +1,161 @@
 import React, { useContext } from "react";
-import { getCitasUser, deleteCita } from "../../api";
+import {
+  getCitasGraduadasUser,
+  getGraduacion,
+  getCliente,
+  updateGraduacion,
+  deleteGraduacion,
+  deleteCita,
+} from "../../api";
+import deleteAnimation from "../../assets/delete.json";
 import Lottie from "lottie-react";
-import calendarAnimation from "../../assets/calendar.json";
-import callMissedAnimation from "../../assets/call-missed-red.json";
-import TransparentDanger from "../../components/TransparentButtonDanger";
-import DangerButton from "../../components/DangerButton";
+import activityAnimation from "../../assets/activity.json";
+import fileAnimation from "../../assets/file.json";
+import TransparentPrimary from "../../components/TransparentButtonPrimary";
 import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import AuthContext from "../../context/AuthContext";
+import { saveAs } from "file-saver";
+import Documentacion from "../../pdf/GeneradorPdf";
+import ReactPDF from "@react-pdf/renderer";
+import { useParams } from "react-router-dom";
+import TransparentDanger from "../../components/TransparentButtonDanger";
+import DangerButton from "../../components/DangerButton";
+import InputField from "../../components/InputField";
+import PrimaryButton from "../../components/PrimaryButton";
 
-const AdminDashboard = () => {
+const HistorialCliente = () => {
   const { user } = useContext(AuthContext);
+  const { id } = useParams();
+  const [cliente, setCliente] = React.useState(null);
   const [citas, setCitas] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
-  const [openModalAnular, setOpenModalAnular] = React.useState(false);
-  const [id, setId] = React.useState(null);
   const [openAccordions, setOpenAccordions] = React.useState({});
+  const [openModal, setOpenModal] = React.useState(false);
+  const [modalDelete, setModalDelete] = React.useState(false);
+  const [graduacion, setGraduacion] = React.useState([
+    {
+      eje: "",
+      esfera: "",
+      cilindro: "",
+    },
+  ]);
+  const [selectedFecha, setSelectedFecha] = React.useState(null);
+  const [selectedHora, setSelectedHora] = React.useState(null);
+  const [selectedId, setSelectedId] = React.useState(null);
 
   React.useEffect(() => {
-    const fetchCitas = async () => {
-      if (!user) return;
+    if (!user || !id) return;
+
+    const fetchData = async () => {
       try {
-        const data = await getCitasUser(user.id);
-        setCitas(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
+        // Primero obtener el cliente
+        const clienteData = await getCliente(id);
+        setCliente(clienteData);
+
+        // Luego obtener las citas usando el ID del cliente recién obtenido
+        const citasData = await getCitasGraduadasUser(id);
+        setCitas(citasData);
       } catch (err) {
-        console.error("Error fetching citas:", err);
-        setError("No se pudieron cargar las citas.");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
+        console.error("Error fetching data:", err);
+        setError("No se pudo cargar la información");
+      } finally {
+        setLoading(false);
       }
     };
-    fetchCitas();
-  }, [user?.id]);
-  const handleOpenModalAnular = (id) => {
-    setOpenModalAnular(true);
-    setId(id);
+
+    fetchData();
+  }, [user?.id, id]);
+
+  const handleOpenModal = (id, fecha, hora) => {
+    const fetchGraduacion = async () => {
+      try {
+        const data = await getGraduacion(id);
+        setGraduacion(data);
+      } catch (err) {
+        console.error("Error fetching graduacion:", err);
+        setError("No se pudo cargar la graduación.");
+      }
+      setLoading(false);
+    };
+    fetchGraduacion();
+    // Obtener id, la fecha y hora de la cita seleccionada
+    setSelectedId(id);
+    setSelectedFecha(fecha);
+    setSelectedHora(hora);
+    setOpenModal(true);
   };
-  const handleDeleteCita = async (id) => {
+
+  const handleDeleteGraduacion = async (id) => {
     try {
+      await deleteGraduacion(id);
       await deleteCita(id);
-      setCitas(citas.filter((cita) => cita.id !== id));
-      setOpenModalAnular(false);
-      setSuccess("Cita anulada correctamente.");
+      setCitas((prev) => prev.filter((cita) => cita.id !== id));
+      setSuccess("Graduación eliminada con éxito");
       setError(null);
+      setModalDelete(false);
     } catch (err) {
-      console.error("Error deleting appointment:", err);
-      setError("No se pudo anular la cita.");
+      console.error("Error deleting graduacion:", err);
+      setError("No se pudo eliminar la graduación.");
       setSuccess(null);
-      setOpenModalAnular(false);
+      setModalDelete(false);
+    }
+  };
+
+  const handleUpdateGraduacion = async (id, graduacion) => {
+    try {
+      await updateGraduacion(id, graduacion);
+      setSuccess("Graduación actualizada con éxito");
+      setError(null);
+      setOpenModal(false);
+    } catch (err) {
+      console.error("Error updating graduacion:", err);
+      setError("No se pudo actualizar la graduación.");
+      setSuccess(null);
+      setOpenModal(false);
+    }
+  };
+
+  const handleOpenModalDelete = (id, fecha, hora) => {
+    setSelectedFecha(fecha);
+    setSelectedHora(hora);
+    setSelectedId(id);
+    setModalDelete(true);
+    setOpenModal(false);
+  };
+
+  //Gestionar apertura de acordeón
+  const toggleAccordion = (id) => {
+    setOpenAccordions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  // Handle para descarga de PDF
+  const handleDownloadPDF = async () => {
+    const docProps = {
+      nombre: user?.name + " " + user?.surname || "Cliente",
+      graduacion: graduacion,
+      fecha: selectedFecha,
+      hora: selectedHora,
+    };
+    // Generar PDF de forma asíncrona
+    const pdfDoc = <Documentacion {...docProps} />;
+
+    // Crear blob y abrir en nueva pestaña
+    const blob = await ReactPDF.pdf(pdfDoc).toBlob();
+    const pdfUrl = URL.createObjectURL(blob);
+
+    // Solución alternativa para navegadores que bloquean popups
+    const newWindow = window.open();
+    if (newWindow) {
+      newWindow.location.href = pdfUrl;
+    } else {
+      // Descarga directa si no se puede abrir ventana
+      saveAs(blob, `graduacion_${docProps.nombre.replace(/\s+/g, "_")}.pdf`);
     }
   };
 
@@ -66,7 +168,7 @@ const AdminDashboard = () => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // Filtrar las citas por cliente o fecha
+  // Filtrar las citas por fecha u hora
   const filteredCitas = React.useMemo(() => {
     return citas.filter((cita) => {
       const normalizedHora = cita.hora
@@ -84,9 +186,15 @@ const AdminDashboard = () => {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
 
+      const normalizedOptica = cita.optica_nombre
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
       return (
         normalizedFecha.includes(normalizedSearchTerm) ||
-        normalizedHora.includes(normalizedSearchTerm)
+        normalizedHora.includes(normalizedSearchTerm) ||
+        normalizedOptica.includes(normalizedSearchTerm)
       );
     });
   }, [citas, searchTerm]);
@@ -98,20 +206,12 @@ const AdminDashboard = () => {
     currentPage * itemsPerPage
   );
 
-  //Gestionar apertura de acordeón
-  const toggleAccordion = (id) => {
-    setOpenAccordions((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
   return (
     <div className="px-4 py-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="flex mb-4 space-x-3 text-start">
-        <Lottie animationData={calendarAnimation} style={{ height: 60 }} />
+        <Lottie animationData={activityAnimation} style={{ height: 80 }} />
         <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
-          Tus próximas citas, {user?.name}
+          Historial de graduaciones de {cliente?.name} {cliente?.surname}
         </h2>
       </div>
       {error && (
@@ -157,7 +257,7 @@ const AdminDashboard = () => {
             type="search"
             id="search"
             className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="Buscar cita por fecha u hora..."
+            placeholder="Buscar cita por fecha, hora u óptica..."
             autoComplete="off"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -189,27 +289,25 @@ const AdminDashboard = () => {
                     return (
                       <tr
                         key={cita.id}
-                        className="transition-colors hover:bg-blue-50 dark:hover:bg-gray-700"
+                        className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
                           {formattedDate}
                         </td>
                         <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
-                          <div className="text-sm text-gray-500 dark:text-gray-200">
-                            <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                              <svg
-                                className="w-2.5 h-2.5 me-1.5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                              </svg>
-                              {cita.hora ? cita.hora.substring(0, 5) : ""}
-                              {"h"}
-                            </span>
-                          </div>
+                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-2.5 h-2.5 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                            </svg>
+                            {cita.hora ? cita.hora.substring(0, 5) : ""}
+                            {"h"}
+                          </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
                           <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
@@ -235,13 +333,19 @@ const AdminDashboard = () => {
                         </td>
                         <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                           <div className="flex justify-end space-x-2">
-                            <TransparentDanger
-                              action={() => handleOpenModalAnular(cita.id)}
+                            <TransparentPrimary
+                              action={() =>
+                                handleOpenModal(
+                                  cita.id,
+                                  formattedDate,
+                                  cita.hora.substring(0, 5)
+                                )
+                              }
                               text={
                                 <div className="flex space-x-2">
-                                  <span>Anular</span>
+                                  <span>Ver graduación</span>
                                   <svg
-                                    className="w-4 h-4 mt-1"
+                                    className="h-4 mt-1 w-4-"
                                     aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
@@ -254,10 +358,38 @@ const AdminDashboard = () => {
                                       strokeLinecap="round"
                                       strokeLinejoin="round"
                                       strokeWidth="2"
-                                      d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
+                                      d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
                                     />
                                   </svg>
                                 </div>
+                              }
+                            />
+                            <TransparentDanger
+                              action={() =>
+                                handleOpenModalDelete(
+                                  cita.id,
+                                  formattedDate,
+                                  cita.hora.substring(0, 5)
+                                )
+                              }
+                              text={
+                                <svg
+                                  className="w-4 h-4 mt-1"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                                  />
+                                </svg>
                               }
                             />
                           </div>
@@ -268,6 +400,7 @@ const AdminDashboard = () => {
               </tbody>
             </table>
           </div>
+          {/* Loader */}
           {loading && (
             <output className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
               <svg
@@ -306,14 +439,14 @@ const AdminDashboard = () => {
                 const date = new Date(cita.fecha);
 
                 const day = date.getDate();
-                // Get day of the week
+                // Obtener el día de la semana
                 const dayOfWeek = new Intl.DateTimeFormat("es-ES", {
                   weekday: "long",
                 }).format(date);
                 const capitalizedDayOfWeek =
                   dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
 
-                // Get the month name in Spanish
+                // Obtener el mes
                 const month = date.toLocaleString("es-ES", {
                   month: "long",
                 });
@@ -334,7 +467,7 @@ const AdminDashboard = () => {
                           openAccordions[cita.id]
                             ? "bg-blue-50 dark:bg-gray-800"
                             : ""
-                        }flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
+                        } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
                         data-accordion-target={`#accordion-color-body-${index}`}
                         onClick={() => toggleAccordion(cita.id)}
                         aria-expanded={openAccordions[cita.id] || false}
@@ -411,9 +544,64 @@ const AdminDashboard = () => {
                     >
                       <div className="flex p-4 border-t dark:border-gray-700">
                         <div className="flex justify-end space-x-2">
+                          <TransparentPrimary
+                            action={() =>
+                              handleOpenModal(
+                                cita.id,
+                                formattedDate,
+                                cita.hora.substring(0, 5)
+                              )
+                            }
+                            text={
+                              <div className="flex space-x-2">
+                                <span>Ver graduación</span>
+                                <svg
+                                  className="h-4 mt-1 w-4-"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
+                                  />
+                                </svg>
+                              </div>
+                            }
+                          />
                           <TransparentDanger
-                            action={() => handleOpenModalAnular(cita.id)}
-                            text="Anular"
+                            action={() =>
+                              handleOpenModalDelete(
+                                cita.id,
+                                formattedDate,
+                                cita.hora.substring(0, 5)
+                              )
+                            }
+                            text={
+                              <svg
+                                className="w-4 h-4 mt-1"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                                />
+                              </svg>
+                            }
                           />
                         </div>
                       </div>
@@ -491,35 +679,187 @@ const AdminDashboard = () => {
               </nav>
             </div>
           )}
-          {/* Modal anular cita*/}
+          {/* Modal borrar graduacion*/}
           <Modal
             className="justify-center bg-gray-200 bg-opacity-50"
             size="md"
-            show={openModalAnular}
-            onClose={() => setOpenModalAnular(false)}
+            show={modalDelete}
+            onClose={() => setModalDelete(false)}
+          >
+            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
+              <Modal.Header>
+                <div className="flex">
+                  <Lottie
+                    animationData={deleteAnimation}
+                    style={{ height: 60 }}
+                  />
+                  <h2 className="my-4 text-2xl font-bold text-center">
+                    Eliminar graduación:
+                  </h2>
+                </div>
+              </Modal.Header>
+              <Modal.Body className="justify-center p-4">
+                <div className="flex items-center justify-center mb-4">
+                  <span className="text-2xl font-semibold text-center text-redpantone">
+                    {selectedFecha}
+                    <span className="font-normal text-black">{" a las "}</span>
+                    {selectedHora}
+                    {"h"}
+                  </span>
+                </div>
+                <div className="my-2">
+                  <p>¿Está seguro de que desea borrar esta graduación?</p>
+                  <p>
+                    La información de este registro se eliminará de la base de
+                    datos y no podrá ser recuperada.
+                  </p>
+                </div>
+                <div className="flex justify-end">
+                  <DangerButton
+                    action={() => handleDeleteGraduacion(selectedId)}
+                    classes={"mt-6 "}
+                    text="Eliminar"
+                  />
+                </div>
+              </Modal.Body>
+            </div>
+          </Modal>
+          {/* Modal graduacion */}
+          <Modal
+            className="justify-center bg-gray-200 bg-opacity-50"
+            size="lg"
+            show={openModal}
+            onClose={() => setOpenModal(false)}
           >
             <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
               <Modal.Header className="p-4">
                 <div className="flex">
                   <Lottie
-                    animationData={callMissedAnimation}
+                    animationData={fileAnimation}
                     style={{ height: 60 }}
                   />
                   <h2 className="my-4 text-2xl font-bold text-center">
-                    Anular esta cita
+                    Graduación de cita:
                   </h2>
                 </div>
               </Modal.Header>
               <Modal.Body className="justify-center p-4">
-                <div className="my-2">
-                  <p>¿Está seguro de que desea anular esta cita?</p>
-                  <p>La óptica será notificada.</p>
+                <div className="flex items-center justify-center mb-4">
+                  <span className="text-2xl font-semibold text-center">
+                    Día{" "}
+                    <span className="text-chryslerblue">{selectedFecha}</span> a
+                    las{" "}
+                    <span className="text-chryslerblue">{selectedHora}</span>
+                  </span>
+                </div>
+                <div className="my-6 overflow-x-auto border-2 border-black rounded-lg shadow-md">
+                  <form onSubmit={(e) => e.preventDefault()}>
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
+                        <tr>
+                          <th className="px-6 py-3">Eje</th>
+                          <th className="px-6 py-3">Cilindro</th>
+                          <th className="px-6 py-3">Esfera</th>
+                          <th className="px-6 py-3 text-right"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 ">
+                        <tr>
+                          <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
+                            <InputField
+                              type="number"
+                              name="eje"
+                              value={graduacion.eje}
+                              onChange={(e) =>
+                                setGraduacion({
+                                  ...graduacion,
+                                  eje: e,
+                                })
+                              }
+                            />
+                          </td>
+                          <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
+                            <InputField
+                              type="number"
+                              name="cilindro"
+                              value={graduacion.cilindro}
+                              onChange={(e) =>
+                                setGraduacion({
+                                  ...graduacion,
+                                  cilindro: e,
+                                })
+                              }
+                            />
+                          </td>
+                          <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
+                            <InputField
+                              type="number"
+                              name="esfera"
+                              value={graduacion.esfera}
+                              onChange={(e) =>
+                                setGraduacion({
+                                  ...graduacion,
+                                  esfera: e,
+                                })
+                              }
+                            />
+                          </td>
+                          <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                            <TransparentPrimary
+                              action={() =>
+                                handleUpdateGraduacion(selectedId, graduacion)
+                              }
+                              text={
+                                <svg
+                                  className="w-4 h-4"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeWidth="2"
+                                    d="M11 16h2m6.707-9.293-2.414-2.414A1 1 0 0 0 16.586 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7.414a1 1 0 0 0-.293-.707ZM16 20v-6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6h8ZM9 4h6v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Z"
+                                  />
+                                </svg>
+                              }
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </form>
                 </div>
                 <div className="flex justify-end">
-                  <DangerButton
-                    action={() => handleDeleteCita(id)}
+                  <PrimaryButton
+                    action={handleDownloadPDF}
                     classes={"mt-4 "}
-                    text="Anular"
+                    text={
+                      <div className="flex space-x-2">
+                        <span>Descargar PDF</span>
+                        <svg
+                          className="w-4 h-4 mt-1"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
+                          />
+                        </svg>
+                      </div>
+                    }
                   />
                 </div>
               </Modal.Body>
@@ -531,4 +871,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default HistorialCliente;

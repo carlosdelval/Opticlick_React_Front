@@ -76,7 +76,6 @@ const Navbar = () => {
     try {
       const response = await fetch(`http://localhost:5000/opticas`);
       const data = await response.json();
-      console.log("Raw fetch data:", data);
       setOpticas(data);
     } catch (error) {
       console.error("Simple fetch error:", error);
@@ -172,18 +171,22 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const userMenu = document.getElementById('user-menu-dropdown');
-      const userMenuButton = document.getElementById('user-menu-button');
-      
-      if (userMenu && !userMenu.contains(event.target) && 
-          userMenuButton && !userMenuButton.contains(event.target)) {
+      const userMenu = document.getElementById("user-menu-dropdown");
+      const userMenuButton = document.getElementById("user-menu-button");
+
+      if (
+        userMenu &&
+        !userMenu.contains(event.target) &&
+        userMenuButton &&
+        !userMenuButton.contains(event.target)
+      ) {
         setIsUserMenuOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -200,7 +203,7 @@ const Navbar = () => {
           }
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
-          <img src="./logo.png" className="h-8" alt="OptiClick Logo" />
+          <img src="/logo.png" className="h-8" alt="OptiClick Logo" />
           <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl dark:hover:text-vistablue dark:text-babypowder hover:text-chryslerblue">
             OptiClick
           </span>
@@ -235,7 +238,10 @@ const Navbar = () => {
                 </div>
               </button>
               {isUserMenuOpen && (
-                <div id="user-menu-dropdown" className="absolute right-0 z-50 my-2 text-base list-none bg-white border-2 border-black divide-y divide-gray-100 rounded-lg shadow-sm top-full dark:bg-gray-700 dark:divide-gray-600">
+                <div
+                  id="user-menu-dropdown"
+                  className="absolute right-0 z-50 my-2 text-base list-none bg-white border-2 border-black divide-y divide-gray-100 rounded-lg shadow-sm top-full dark:bg-gray-700 dark:divide-gray-600"
+                >
                   <div className="px-4 py-3">
                     <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
                       {user.email}
@@ -420,32 +426,68 @@ const Navbar = () => {
               </>
             )}
             {user?.role === "admin" && (
-              <li>
-                <a
-                  href="/lista-clientes"
-                  className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
-                >
-                  <div className="flex items-center space-x-2">
-                    <svg
-                      className="w-5 h-5"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeWidth="2"
-                        d="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3.05A2.5 2.5 0 1 1 9 5.5M19.5 17h.5a1 1 0 0 0 1-1 3 3 0 0 0-3-3h-1m0-3.05a2.5 2.5 0 1 0-2-4.45m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3 1 1 0 0 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
-                      />
-                    </svg>
-                    <span>Listado clientes</span>
-                  </div>
-                </a>
-              </li>
+              <>
+                <li>
+                  <a
+                    href="/lista-clientes"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <svg
+                        className="w-5 h-5"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeWidth="2"
+                          d="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3.05A2.5 2.5 0 1 1 9 5.5M19.5 17h.5a1 1 0 0 0 1-1 3 3 0 0 0-3-3h-1m0-3.05a2.5 2.5 0 1 0-2-4.45m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3 1 1 0 0 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
+                        />
+                      </svg>
+                      <span>Listado clientes</span>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/administracion"
+                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <svg
+                        className="w-5 h-5"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                        />
+                      </svg>
+                      <span>Administración</span>
+                    </div>
+                  </a>
+                </li>
+              </>
             )}
             {user && (
               <>

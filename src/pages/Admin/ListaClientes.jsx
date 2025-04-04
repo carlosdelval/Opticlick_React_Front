@@ -5,6 +5,7 @@ import {
   updateUser,
   getOpticas,
   getClientesOptica,
+  registerUser,
 } from "../../api";
 import { HiInformationCircle } from "react-icons/hi";
 import Lottie from "lottie-react";
@@ -48,7 +49,51 @@ function Dashboard() {
     dni: "",
     tlf: "",
     email: "",
+    password: "",
   });
+
+  const handleAddCliente = async () => {
+    try {
+      if (!validateForm()) {
+        return;
+      }
+      setErrorForm({
+        name: "",
+        surname: "",
+        dni: "",
+        tlf: "",
+        email: "",
+      });
+      const data = await registerUser(formData);
+      setClientes((prev) => [...prev, data]);
+      setModalInfoCliente(false);
+      setSuccess("Cliente registrado correctamente");
+      setError(null);
+    } catch (err) {
+      console.error("Error registering client:", err);
+      if (err.response && err.response.status === 400) {
+        const errorMessage = err.response.data.error || "";
+        if (errorMessage.toLowerCase().includes("dni")) {
+          setErrorForm({
+            ...errorForm,
+            dni: "El DNI ya está en uso",
+          });
+          return;
+        }
+        if (errorMessage.toLowerCase().includes("email")) {
+          setErrorForm({
+            ...errorForm,
+            email: "El email ya está en uso",
+          });
+          return;
+        }
+      } else if (err.response && err.response.status === 500) {
+        setModalInfoCliente(false);
+        setError("No se pudo registrar el cliente");
+        setSuccess(null);
+      }
+    }
+  };
 
   React.useEffect(() => {
     const fetchClientes = async () => {
@@ -97,7 +142,6 @@ function Dashboard() {
       fetchClientesOptica();
     } else {
       fetchClientes();
-
       fetchOpticas();
     }
   }, [opticaSearch]);
@@ -260,6 +304,7 @@ function Dashboard() {
 
   // Filtrar los clientes por nombre, email o dni
   const filteredClientes = React.useMemo(() => {
+    console.log(clientes);
     return clientes.filter((cliente) => {
       const normalizedName = cliente.name
         .concat(" ", cliente.surname)
@@ -342,7 +387,7 @@ function Dashboard() {
           <input
             type="search"
             id="search"
-            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-gray-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
             placeholder="Buscar clientes por nombre, e-mail o dni..."
             autoComplete="off"
             value={searchTerm}
@@ -351,7 +396,7 @@ function Dashboard() {
         </div>
         <div className="relative">
           <select
-            className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-gray-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
             onChange={(e) => setOpticaSearch(e.target.value)}
             value={opticaSearch}
           >
@@ -365,6 +410,44 @@ function Dashboard() {
               </option>
             ))}
           </select>
+        </div>
+        <div className="relative flex items-center justify-end w-full md:justify-center md:w-1/2">
+          <PrimaryButton
+            text={
+              <div className="flex p-2 space-x-2">
+                <span>Nuevo cliente</span>
+                <svg
+                  className="w-5 h-5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              </div>
+            }
+            action={() => {
+              setFormData({
+                id: "",
+                name: "",
+                surname: "",
+                dni: "",
+                tlf: "",
+                email: "",
+                password: "",
+              });
+              setModalInfoCliente(true);
+            }}
+          />
         </div>
       </div>
 
@@ -434,7 +517,7 @@ function Dashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                        <div className="flex justify-end space-x-2">
+                        <div className="flex justify-end">
                           <TransparentPrimary
                             text={
                               <div className="flex space-x-2">
@@ -459,6 +542,33 @@ function Dashboard() {
                               </div>
                             }
                             action={() => handleOpenModalInfoCliente(cliente)}
+                          />
+                          <TransparentPrimary
+                            text={
+                              <div className="flex space-x-2">
+                                <span>Ver historial</span>
+                                <svg
+                                  className="w-4 h-4 mt-1"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                                  />
+                                </svg>
+                              </div>
+                            }
+                            action={() =>
+                              (window.location.href = `/historial/${cliente.id}`)
+                            }
                           />
                           <TransparentDanger
                             action={() => handleOpenModalDelete(cliente)}
@@ -617,7 +727,7 @@ function Dashboard() {
                     }`}
                   >
                     <div className="flex p-4 border-t dark:border-gray-700">
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex justify-end">
                         <TransparentPrimary
                           text={
                             <div className="flex space-x-2">
@@ -642,6 +752,33 @@ function Dashboard() {
                             </div>
                           }
                           action={() => handleOpenModalInfoCliente(cliente)}
+                        />
+                        <TransparentPrimary
+                          text={
+                            <div className="flex space-x-2">
+                              <span>Ver historial</span>
+                              <svg
+                                className="w-4 h-4 mt-1"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                                />
+                              </svg>
+                            </div>
+                          }
+                          action={() =>
+                            (window.location.href = `/historial/${cliente.id}`)
+                          }
                         />
                         <TransparentDanger
                           action={() => handleOpenModalDelete(cliente)}
@@ -806,39 +943,43 @@ function Dashboard() {
               <form onSubmit={(e) => e.preventDefault()}>
                 <InputField
                   text={"Nombre"}
-                  value={formData.name}
+                  value={formData.name ? formData.name : ""}
                   error={errorForm.name}
                   onChange={(e) => setFormData({ ...formData, name: e })}
                 />
                 <InputField
                   text={"Apellidos"}
-                  value={formData.surname}
+                  value={formData.surname ? formData.surname : ""}
                   error={errorForm.surname}
                   onChange={(e) => setFormData({ ...formData, surname: e })}
                 />
                 <InputField
                   text={"Email"}
-                  value={formData.email}
+                  value={formData.email ? formData.email : ""}
                   error={errorForm.email}
                   onChange={(e) => setFormData({ ...formData, email: e })}
                 />
                 <InputField
                   text={"DNI"}
-                  value={formData.dni}
+                  value={formData.dni ? formData.dni : ""}
                   error={errorForm.dni}
                   onChange={(e) => setFormData({ ...formData, dni: e })}
                 />
                 <InputField
                   text={"Teléfono"}
-                  value={formData.tlf}
+                  value={formData.tlf ? formData.tlf : ""}
                   error={errorForm.tlf}
                   onChange={(e) => setFormData({ ...formData, tlf: e })}
                 />
                 <div className="flex justify-end">
                   <PrimaryButton
                     classes="mt-6"
-                    text="Actualizar"
-                    action={() => handleUpdateCliente(formData.id)}
+                    text={formData.id ? "Actualizar" : "Crear"}
+                    action={() =>
+                      formData.id
+                        ? handleUpdateCliente(formData.id)
+                        : [setFormData({...formData, password: formData.name+formData.name}), handleAddCliente()]
+                    }
                   />
                 </div>
               </form>

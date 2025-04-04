@@ -7,6 +7,7 @@ import Background from "./components/Background";
 import Dashboard from "./pages/User/Dashboard";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ListaClientes from "./pages/Admin/ListaClientes";
+import HistorialCliente from "./pages/Admin/HistorialCliente";
 import Profile from "./pages/Profile";
 import Historial from "./pages/User/Historial";
 import "./index.css";
@@ -69,6 +70,15 @@ function App() {
               <>
                 <Navbar />
                 <Profile />
+              </>
+            }
+          />
+          <Route
+            path="/historial/:id"
+            element={
+              <>
+                <Navbar />
+                <HistorialCliente />
               </>
             }
           />
