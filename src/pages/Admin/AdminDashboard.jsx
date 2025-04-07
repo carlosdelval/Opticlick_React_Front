@@ -11,8 +11,8 @@ import Lottie from "lottie-react";
 import calendarAnimation from "../../assets/calendar.json";
 import glassesAnimation from "../../assets/Glasses.json";
 import callMissedAnimation from "../../assets/call-missed-red.json";
-import TransparentDanger from "../../components/TransparentButtonDanger";
-import TransparentPrimary from "../../components/TransparentButtonPrimary";
+import SecondaryDanger from "../../components/SecondaryDanger";
+import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import DangerButton from "../../components/DangerButton";
 import { Alert, Modal } from "flowbite-react";
@@ -303,8 +303,8 @@ const AdminDashboard = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:text-black dark:bg-vistablue">
                 <tr>
-                  <th className="px-6 py-3">Fecha</th>
                   <th className="px-6 py-3">Cliente</th>
+                  <th className="px-6 py-3">Fecha</th>
                   <th className="px-6 py-3">Hora</th>
                   <th className="px-6 py-3 text-right"></th>
                 </tr>
@@ -316,7 +316,7 @@ const AdminDashboard = () => {
                     const day = date.getDate();
                     const month = date.getMonth() + 1;
                     const year = date.getFullYear();
-                    const formattedDate = `${day}-${month}-${year}`;
+                    const formattedDate = `${day}/${month}/${year}`;
 
                     return (
                       <tr
@@ -324,10 +324,7 @@ const AdminDashboard = () => {
                         className="transition-colors hover:bg-blue-50 dark:hover:bg-gray-700"
                       >
                         <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
-                          {formattedDate}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
-                          <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                             <svg
                               className="w-4 h-4 me-1.5"
                               aria-hidden="true"
@@ -347,72 +344,90 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
-                          <div className="text-sm text-gray-500 dark:text-gray-200">
-                            <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                              <svg
-                                className="w-2.5 h-2.5 me-1.5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                              </svg>
-                              {cita.hora ? cita.hora.substring(0, 5) : ""}
-                              {"h"}
-                            </span>
-                          </div>
+                          <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-3.5 h-3.5 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"
+                              />
+                            </svg>
+                            {formattedDate}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
+                          <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-2.5 h-2.5 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                            </svg>
+                            {cita.hora ? cita.hora.substring(0, 5) : ""}
+                            {"h"}
+                          </span>
                         </td>
                         <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                           <div className="flex justify-end space-x-2">
-                            <TransparentPrimary
+                            <SecondaryButton
                               action={() => handleOpenModal(cita.id)}
-                              text={
-                                <div className="flex space-x-2">
-                                  <span>Graduar</span>
-                                  <svg
-                                    className="w-4 h-4 mt-1"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="m11.5 11.5 2.071 1.994M4 10h5m11 0h-1.5M12 7V4M7 7V4m10 3V4m-7 13H8v-2l5.227-5.292a1.46 1.46 0 0 1 2.065 2.065L10 17Zm-5 3h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
-                                    />
-                                  </svg>
-                                </div>
+                              text="Graduar cita"
+                              classes={"px-4"}
+                              icon={
+                                <svg
+                                  className="w-6 h-6"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M18 5V4a1 1 0 0 0-1-1H8.914a1 1 0 0 0-.707.293L4.293 7.207A1 1 0 0 0 4 7.914V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5M9 3v4a1 1 0 0 1-1 1H4m11.383.772 2.745 2.746m1.215-3.906a2.089 2.089 0 0 1 0 2.953l-6.65 6.646L9 17.95l.739-3.692 6.646-6.646a2.087 2.087 0 0 1 2.958 0Z"
+                                  />
+                                </svg>
                               }
                             />
-                            <TransparentDanger
+                            <SecondaryDanger
                               action={() => handleOpenModalAnular(cita.id)}
-                              text={
-                                <div className="flex space-x-2">
-                                  <span>Anular</span>
-                                  <svg
-                                    className="w-4 h-4 mt-1"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
-                                    />
-                                  </svg>
-                                </div>
+                              text="Anular cita"
+                              classes={"px-4"}
+                              icon={
+                                <svg
+                                  className="w-6 h-6"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
+                                  />
+                                </svg>
                               }
                             />
                           </div>
@@ -495,9 +510,7 @@ const AdminDashboard = () => {
                               </span>
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-200">
-                              <span
-                                className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue"
-                              >
+                              <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                                 <svg
                                   className="w-2.5 h-2.5 me-1.5"
                                   aria-hidden="true"
@@ -541,13 +554,56 @@ const AdminDashboard = () => {
                     >
                       <div className="flex p-4 border-t dark:border-gray-700">
                         <div className="flex justify-end space-x-2">
-                          <TransparentPrimary
+                          <SecondaryButton
                             action={() => handleOpenModal(cita.id)}
-                            text="Graduar"
+                            text="Graduar cita"
+                            classes={"px-4"}
+                            icon={
+                              <svg
+                                className="w-6 h-6"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
+                                />
+                                <path
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                />
+                              </svg>
+                            }
                           />
-                          <TransparentDanger
+                          <SecondaryDanger
                             action={() => handleOpenModalAnular(cita.id)}
-                            text="Anular"
+                            text="Anular cita"
+                            classes={"px-4"}
+                            icon={
+                              <svg
+                                className="w-6 h-6"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
+                                />
+                              </svg>
+                            }
                           />
                         </div>
                       </div>

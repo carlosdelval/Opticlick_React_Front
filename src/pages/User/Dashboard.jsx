@@ -8,6 +8,7 @@ import DangerButton from "../../components/DangerButton";
 import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import AuthContext from "../../context/AuthContext";
+import SecondaryDanger from "../../components/SecondaryDanger";
 
 const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -184,15 +185,36 @@ const AdminDashboard = () => {
                     const day = date.getDate();
                     const month = date.getMonth() + 1;
                     const year = date.getFullYear();
-                    const formattedDate = `${day}-${month}-${year}`;
+                    const formattedDate = `${day}/${month}/${year}`;
 
                     return (
                       <tr
                         key={cita.id}
-                        className="transition-colors hover:bg-blue-50 dark:hover:bg-gray-700"
+                        className="transition-colors duration-300 hover:bg-blue-50 dark:hover:bg-gray-700"
                       >
                         <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
-                          {formattedDate}
+                          <div className="text-sm text-gray-500 dark:text-gray-200">
+                            <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                              <svg
+                                className="w-3.5 h-3.5 me-1.5"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"
+                                />
+                              </svg>
+                              {formattedDate}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
                           <div className="text-sm text-gray-500 dark:text-gray-200">
@@ -235,29 +257,28 @@ const AdminDashboard = () => {
                         </td>
                         <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                           <div className="flex justify-end space-x-2">
-                            <TransparentDanger
+                            <SecondaryDanger
                               action={() => handleOpenModalAnular(cita.id)}
-                              text={
-                                <div className="flex space-x-2">
-                                  <span>Anular</span>
-                                  <svg
-                                    className="w-4 h-4 mt-1"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
-                                    />
-                                  </svg>
-                                </div>
+                              text="Anular cita"
+                              classes={"px-5"}
+                              icon={
+                                <svg
+                                  className="w-6 h-6"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
+                                  />
+                                </svg>
                               }
                             />
                           </div>
@@ -334,7 +355,7 @@ const AdminDashboard = () => {
                           openAccordions[cita.id]
                             ? "bg-blue-50 dark:bg-gray-800"
                             : ""
-                        }flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
+                        } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
                         data-accordion-target={`#accordion-color-body-${index}`}
                         onClick={() => toggleAccordion(cita.id)}
                         aria-expanded={openAccordions[cita.id] || false}
@@ -411,9 +432,29 @@ const AdminDashboard = () => {
                     >
                       <div className="flex p-4 border-t dark:border-gray-700">
                         <div className="flex justify-end space-x-2">
-                          <TransparentDanger
+                          <SecondaryDanger
                             action={() => handleOpenModalAnular(cita.id)}
-                            text="Anular"
+                            classes={"px-5"}
+                            text="Anular cita"
+                            icon={
+                              <svg
+                                className="w-6 h-6"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
+                                />
+                              </svg>
+                            }
                           />
                         </div>
                       </div>

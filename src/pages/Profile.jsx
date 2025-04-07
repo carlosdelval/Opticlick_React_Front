@@ -25,6 +25,8 @@ const Profile = () => {
     confirm_password: "",
   });
 
+  console.log("user", user);
+
   useEffect(() => {
     if (user) {
       setFormData({

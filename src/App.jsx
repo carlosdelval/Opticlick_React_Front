@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import React from "react";
+import ProtectedRoute from "./middleware/ProtectedRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -31,55 +32,55 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <Navbar />
                 <Dashboard />
-              </>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/historial"
             element={
-              <>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <Navbar />
                 <Historial />
-              </>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/admin-dashboard"
             element={
-              <>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <Navbar />
                 <AdminDashboard />
-              </>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/lista-clientes"
             element={
-              <>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <Navbar />
                 <ListaClientes />
-              </>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/profile"
             element={
-              <>
+              <ProtectedRoute allowedRoles={["user", "admin"]}>
                 <Navbar />
                 <Profile />
-              </>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/historial/:id"
             element={
-              <>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <Navbar />
                 <HistorialCliente />
-              </>
+              </ProtectedRoute>
             }
           />
         </Routes>

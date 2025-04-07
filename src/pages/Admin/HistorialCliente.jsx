@@ -11,7 +11,6 @@ import deleteAnimation from "../../assets/delete.json";
 import Lottie from "lottie-react";
 import activityAnimation from "../../assets/activity.json";
 import fileAnimation from "../../assets/file.json";
-import TransparentPrimary from "../../components/TransparentButtonPrimary";
 import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import AuthContext from "../../context/AuthContext";
@@ -19,10 +18,11 @@ import { saveAs } from "file-saver";
 import Documentacion from "../../pdf/GeneradorPdf";
 import ReactPDF from "@react-pdf/renderer";
 import { useParams } from "react-router-dom";
-import TransparentDanger from "../../components/TransparentButtonDanger";
 import DangerButton from "../../components/DangerButton";
 import InputField from "../../components/InputField";
 import PrimaryButton from "../../components/PrimaryButton";
+import SecondaryButton from "../../components/SecondaryButton";
+import SecondaryDanger from "../../components/SecondaryDanger";
 
 const HistorialCliente = () => {
   const { user } = useContext(AuthContext);
@@ -284,7 +284,7 @@ const HistorialCliente = () => {
                     const day = date.getDate();
                     const month = date.getMonth() + 1;
                     const year = date.getFullYear();
-                    const formattedDate = `${day}-${month}-${year}`;
+                    const formattedDate = `${day}/${month}/${year}`;
 
                     return (
                       <tr
@@ -292,7 +292,26 @@ const HistorialCliente = () => {
                         className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
-                          {formattedDate}
+                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-3.5 h-3.5 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"
+                              />
+                            </svg>
+                            {formattedDate}
+                          </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
                           <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
@@ -333,7 +352,7 @@ const HistorialCliente = () => {
                         </td>
                         <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                           <div className="flex justify-end space-x-2">
-                            <TransparentPrimary
+                            <SecondaryButton
                               action={() =>
                                 handleOpenModal(
                                   cita.id,
@@ -341,30 +360,53 @@ const HistorialCliente = () => {
                                   cita.hora.substring(0, 5)
                                 )
                               }
-                              text={
-                                <div className="flex space-x-2">
-                                  <span>Ver graduación</span>
-                                  <svg
-                                    className="h-4 mt-1 w-4-"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
-                                    />
-                                  </svg>
-                                </div>
+                              text="Ver graduación"
+                              classes={"px-4"}
+                              icon={
+                                <svg
+                                  className="h-6"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
+                                  />
+                                </svg>
                               }
                             />
-                            <TransparentDanger
+                            <SecondaryButton
+                              action={handleDownloadPDF}
+                              classes={"px-5"}
+                              text="Descargar PDF"
+                              icon={
+                                <svg
+                                  className="w-6 h-6"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
+                                  />
+                                </svg>
+                              }
+                            />
+                            <SecondaryDanger
                               action={() =>
                                 handleOpenModalDelete(
                                   cita.id,
@@ -372,9 +414,10 @@ const HistorialCliente = () => {
                                   cita.hora.substring(0, 5)
                                 )
                               }
-                              text={
+                              text="Eliminar"
+                              icon={
                                 <svg
-                                  className="w-4 h-4 mt-1"
+                                  className="w-6 h-6"
                                   aria-hidden="true"
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="24"
@@ -544,7 +587,7 @@ const HistorialCliente = () => {
                     >
                       <div className="flex p-4 border-t dark:border-gray-700">
                         <div className="flex justify-end space-x-2">
-                          <TransparentPrimary
+                          <SecondaryButton
                             action={() =>
                               handleOpenModal(
                                 cita.id,
@@ -552,30 +595,53 @@ const HistorialCliente = () => {
                                 cita.hora.substring(0, 5)
                               )
                             }
-                            text={
-                              <div className="flex space-x-2">
-                                <span>Ver graduación</span>
-                                <svg
-                                  className="h-4 mt-1 w-4-"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
-                                  />
-                                </svg>
-                              </div>
+                            text="Ver graduación"
+                            classes={"px-4"}
+                            icon={
+                              <svg
+                                className="w-6 h-6"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
+                                />
+                              </svg>
                             }
                           />
-                          <TransparentDanger
+                          <SecondaryButton
+                            action={handleDownloadPDF}
+                            classes={"px-5"}
+                            text="Descargar PDF"
+                            icon={
+                              <svg
+                                className="w-6 h-6"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
+                                />
+                              </svg>
+                            }
+                          />
+                          <SecondaryDanger
                             action={() =>
                               handleOpenModalDelete(
                                 cita.id,
@@ -583,9 +649,10 @@ const HistorialCliente = () => {
                                 cita.hora.substring(0, 5)
                               )
                             }
-                            text={
+                            text="Eliminar"
+                            icon={
                               <svg
-                                className="w-4 h-4 mt-1"
+                                className="w-6 h-6"
                                 aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -727,7 +794,7 @@ const HistorialCliente = () => {
           {/* Modal graduacion */}
           <Modal
             className="justify-center bg-gray-200 bg-opacity-50"
-            size="lg"
+            size="md"
             show={openModal}
             onClose={() => setOpenModal(false)}
           >
@@ -752,115 +819,73 @@ const HistorialCliente = () => {
                     <span className="text-chryslerblue">{selectedHora}</span>
                   </span>
                 </div>
-                <div className="my-6 overflow-x-auto border-2 border-black rounded-lg shadow-md">
+                <div className="my-6 overflow-x-autoshadow-md">
                   <form onSubmit={(e) => e.preventDefault()}>
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
-                        <tr>
-                          <th className="px-6 py-3">Eje</th>
-                          <th className="px-6 py-3">Cilindro</th>
-                          <th className="px-6 py-3">Esfera</th>
-                          <th className="px-6 py-3 text-right"></th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 ">
-                        <tr>
-                          <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
-                            <InputField
-                              type="number"
-                              name="eje"
-                              value={graduacion.eje}
-                              onChange={(e) =>
-                                setGraduacion({
-                                  ...graduacion,
-                                  eje: e,
-                                })
-                              }
+                    <InputField
+                      type="number"
+                      text="Eje"
+                      name="eje"
+                      value={graduacion.eje}
+                      onChange={(e) =>
+                        setGraduacion({
+                          ...graduacion,
+                          eje: e,
+                        })
+                      }
+                    />
+
+                    <InputField
+                      type="number"
+                      name="cilindro"
+                      text="Cilindro"
+                      value={graduacion.cilindro}
+                      onChange={(e) =>
+                        setGraduacion({
+                          ...graduacion,
+                          cilindro: e,
+                        })
+                      }
+                    />
+                    <InputField
+                      type="number"
+                      text="Esfera"
+                      name="esfera"
+                      value={graduacion.esfera}
+                      onChange={(e) =>
+                        setGraduacion({
+                          ...graduacion,
+                          esfera: e,
+                        })
+                      }
+                    />
+                    <div className="flex justify-end">
+                      <SecondaryButton
+                        classes={"px-2"}
+                        action={() =>
+                          handleUpdateGraduacion(selectedId, graduacion)
+                        }
+                        text="Actualizar"
+                        icon={
+                          <svg
+                            className="w-6 h-6"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeWidth="2"
+                              d="M11 16h2m6.707-9.293-2.414-2.414A1 1 0 0 0 16.586 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7.414a1 1 0 0 0-.293-.707ZM16 20v-6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6h8ZM9 4h6v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Z"
                             />
-                          </td>
-                          <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
-                            <InputField
-                              type="number"
-                              name="cilindro"
-                              value={graduacion.cilindro}
-                              onChange={(e) =>
-                                setGraduacion({
-                                  ...graduacion,
-                                  cilindro: e,
-                                })
-                              }
-                            />
-                          </td>
-                          <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
-                            <InputField
-                              type="number"
-                              name="esfera"
-                              value={graduacion.esfera}
-                              onChange={(e) =>
-                                setGraduacion({
-                                  ...graduacion,
-                                  esfera: e,
-                                })
-                              }
-                            />
-                          </td>
-                          <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                            <TransparentPrimary
-                              action={() =>
-                                handleUpdateGraduacion(selectedId, graduacion)
-                              }
-                              text={
-                                <svg
-                                  className="w-4 h-4"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeWidth="2"
-                                    d="M11 16h2m6.707-9.293-2.414-2.414A1 1 0 0 0 16.586 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7.414a1 1 0 0 0-.293-.707ZM16 20v-6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6h8ZM9 4h6v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Z"
-                                  />
-                                </svg>
-                              }
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                          </svg>
+                        }
+                      />
+                    </div>
                   </form>
-                </div>
-                <div className="flex justify-end">
-                  <PrimaryButton
-                    action={handleDownloadPDF}
-                    classes={"mt-4 "}
-                    text={
-                      <div className="flex space-x-2">
-                        <span>Descargar PDF</span>
-                        <svg
-                          className="w-4 h-4 mt-1"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
-                          />
-                        </svg>
-                      </div>
-                    }
-                  />
                 </div>
               </Modal.Body>
             </div>

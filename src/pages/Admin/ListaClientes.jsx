@@ -11,13 +11,15 @@ import { HiInformationCircle } from "react-icons/hi";
 import Lottie from "lottie-react";
 import teamAnimation from "../../assets/clients.json";
 import profileAnimation from "../../assets/profile.json";
-import TransparentDanger from "../../components/TransparentButtonDanger";
-import TransparentPrimary from "../../components/TransparentButtonPrimary";
+import bcrypt from "bcryptjs-react";
+import SecondaryDanger from "../../components/SecondaryDanger";
+import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import DangerButton from "../../components/DangerButton";
 import deleteAnimation from "../../assets/delete.json";
 import { Modal, Alert } from "flowbite-react";
 import InputField from "../../components/InputField";
+import MenuButton from "../../components/MenuButton";
 
 function Dashboard() {
   const [clientes, setClientes] = React.useState([]);
@@ -64,6 +66,9 @@ function Dashboard() {
         tlf: "",
         email: "",
       });
+      const passwordToHash = formData.name.toLowerCase() + formData.name.toLowerCase();
+      const hashedPassword = bcrypt.hashSync(passwordToHash, 10);
+      setFormData(prev => ({...prev, password: hashedPassword}));
       const data = await registerUser(formData);
       const newCliente = {
         id: data.id,
@@ -253,8 +258,7 @@ function Dashboard() {
       if (err.response && err.response.status === 400) {
         const errorMessage = err.response.data.error || "";
         if (errorMessage.toLowerCase().includes("dni")) {
-          errorForm.
-          setErrorForm({
+          errorForm.setErrorForm({
             ...errorForm,
             dni: "El DNI ya está en uso",
           });
@@ -309,7 +313,6 @@ function Dashboard() {
 
   // Filtrar los clientes por nombre, email o dni
   const filteredClientes = React.useMemo(() => {
-    console.log(clientes);
     return clientes.filter((cliente) => {
       const normalizedName = cliente.name
         .concat(" ", cliente.surname)
@@ -417,28 +420,26 @@ function Dashboard() {
           </select>
         </div>
         <div className="relative flex items-center justify-end w-full md:justify-center md:w-1/2">
-          <PrimaryButton
-            text={
-              <div className="flex p-2 space-x-2">
-                <span>Nuevo cliente</span>
-                <svg
-                  className="w-5 h-5"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                </svg>
-              </div>
+          <MenuButton
+            text="Nuevo cliente"
+            icon={
+              <svg
+                className="w-5 h-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
             }
             action={() => {
               setFormData({
@@ -473,10 +474,27 @@ function Dashboard() {
                   currentFilteredClientes.map((cliente) => (
                     <tr
                       key={cliente.id}
-                      className="transition-colors hover:bg-blue-50"
+                      className="transition-colors duration-300 hover:bg-blue-50"
                     >
                       <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
-                        {cliente.name} {cliente.surname}
+                        <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                          <svg
+                            className="w-4 h-4 me-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                            />
+                          </svg>
+                          {cliente.name} {cliente.surname}
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                         <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
@@ -500,7 +518,7 @@ function Dashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                        <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                        <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                           <svg
                             className="w-4 h-4 me-1.5"
                             aria-hidden="true"
@@ -522,64 +540,63 @@ function Dashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                        <div className="flex justify-end">
-                          <TransparentPrimary
-                            text={
-                              <div className="flex space-x-2">
-                                <span>Ver perfil</span>
-                                <svg
-                                  className="w-4 h-4 mt-1"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M15 9h3m-3 3h3m-3 3h3m-6 1c-.306-.613-.933-1-1.618-1H7.618c-.685 0-1.312.387-1.618 1M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm7 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
-                                  />
-                                </svg>
-                              </div>
+                        <div className="flex justify-end space-x-3">
+                          <SecondaryButton
+                            text="Ver perfil"
+                            classes={"px-1"}
+                            icon={
+                              <svg
+                                className="w-6 h-6"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M15 9h3m-3 3h3m-3 3h3m-6 1c-.306-.613-.933-1-1.618-1H7.618c-.685 0-1.312.387-1.618 1M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm7 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                                />
+                              </svg>
                             }
                             action={() => handleOpenModalInfoCliente(cliente)}
                           />
-                          <TransparentPrimary
-                            text={
-                              <div className="flex space-x-2">
-                                <span>Ver historial</span>
-                                <svg
-                                  className="w-4 h-4 mt-1"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
-                                  />
-                                </svg>
-                              </div>
+                          <SecondaryButton
+                            text="Ver historial"
+                            classes={"px-3"}
+                            icon={
+                              <svg
+                                className="w-6 h-6"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                                />
+                              </svg>
                             }
                             action={() =>
                               (window.location.href = `/historial/${cliente.id}`)
                             }
                           />
-                          <TransparentDanger
+                          <SecondaryDanger
                             action={() => handleOpenModalDelete(cliente)}
-                            text={
+                            text="Eliminar"
+                            icon={
                               <svg
-                                className="w-4 h-4 mt-1"
+                                className="w-6 h-6"
                                 aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -732,64 +749,63 @@ function Dashboard() {
                     }`}
                   >
                     <div className="flex p-4 border-t dark:border-gray-700">
-                      <div className="flex justify-end">
-                        <TransparentPrimary
-                          text={
-                            <div className="flex space-x-2">
-                              <span>Ver perfil</span>
-                              <svg
-                                className="w-4 h-4 mt-1"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M15 9h3m-3 3h3m-3 3h3m-6 1c-.306-.613-.933-1-1.618-1H7.618c-.685 0-1.312.387-1.618 1M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm7 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
-                                />
-                              </svg>
-                            </div>
+                      <div className="flex justify-end space-x-3">
+                        <SecondaryButton
+                          text="Ver perfil"
+                          classes={"px-1"}
+                          icon={
+                            <svg
+                              className="w-6 h-6"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M15 9h3m-3 3h3m-3 3h3m-6 1c-.306-.613-.933-1-1.618-1H7.618c-.685 0-1.312.387-1.618 1M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm7 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                              />
+                            </svg>
                           }
                           action={() => handleOpenModalInfoCliente(cliente)}
                         />
-                        <TransparentPrimary
-                          text={
-                            <div className="flex space-x-2">
-                              <span>Ver historial</span>
-                              <svg
-                                className="w-4 h-4 mt-1"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
-                                />
-                              </svg>
-                            </div>
+                        <SecondaryButton
+                          text="Ver historial"
+                          classes={"px-3"}
+                          icon={
+                            <svg
+                              className="w-6 h-6"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                              />
+                            </svg>
                           }
                           action={() =>
                             (window.location.href = `/historial/${cliente.id}`)
                           }
                         />
-                        <TransparentDanger
+                        <SecondaryDanger
                           action={() => handleOpenModalDelete(cliente)}
-                          text={
+                          text="Eliminar"
+                          icon={
                             <svg
-                              className="w-4 h-4 mt-1"
+                              className="w-6 h-6"
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
                               width="24"
@@ -983,7 +999,13 @@ function Dashboard() {
                     action={() =>
                       formData.id
                         ? handleUpdateCliente(formData.id)
-                        : [setFormData({...formData, password: formData.name+formData.name}), handleAddCliente()]
+                        : [
+                            setFormData({
+                              ...formData,
+                              password: formData.name + formData.name,
+                            }),
+                            handleAddCliente(),
+                          ]
                     }
                   />
                 </div>

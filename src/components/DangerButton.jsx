@@ -5,10 +5,12 @@ const DangerButton = ({ text, classes, action }) => {
   return (
     <button
       onClick={action}
-      type="button"
-      className={`${classes} text-babypowder bg-gradient-to-br from-redpantone to-lightcoral hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">`}
+      className={` ${classes} relative h-12 px-8 py-2 overflow-hidden overflow-x-hidden rounded-md group bg-redpantone text-babypowder`}
     >
-      {text}
+      <span className="relative z-10">{text}</span>
+      <span className="absolute inset-0 overflow-hidden rounded-md">
+        <span className="absolute left-0 w-full transition-all duration-500 origin-center -translate-x-full rounded-full bg-lightcoral aspect-square group-hover:-translate-x-0 group-hover:scale-150"></span>
+      </span>
     </button>
   );
 };

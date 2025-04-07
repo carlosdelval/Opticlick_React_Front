@@ -96,7 +96,7 @@ const OpticaPDF = ({ nombre, fecha, hora, graduacion }) => (
     <Page style={styles.body} size="A4">
       {/* Encabezado */}
       <View style={styles.header}>
-        <Image style={styles.image} src="./logo.png" />
+        <Image style={styles.image} src="/logo.png" />
         <Text style={styles.title}>OptiClick</Text>
         <Text style={styles.subtitle}>
           Puente Genil, Córdoba | Tel: 123-456-789
