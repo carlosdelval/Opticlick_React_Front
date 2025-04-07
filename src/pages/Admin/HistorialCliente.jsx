@@ -20,7 +20,6 @@ import ReactPDF from "@react-pdf/renderer";
 import { useParams } from "react-router-dom";
 import DangerButton from "../../components/DangerButton";
 import InputField from "../../components/InputField";
-import PrimaryButton from "../../components/PrimaryButton";
 import SecondaryButton from "../../components/SecondaryButton";
 import SecondaryDanger from "../../components/SecondaryDanger";
 

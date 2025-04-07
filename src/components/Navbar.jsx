@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import timeNavigation from "../assets/time.json";
 import { Modal } from "flowbite-react";
@@ -17,6 +17,7 @@ const Navbar = () => {
   const [opticas, setOpticas] = React.useState([]);
   const [errors, setErrors] = React.useState({});
   const [horas, setHoras] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
   const [formData, setFormData] = React.useState({
     optica_id: "",
     user_id: "",
@@ -41,7 +42,6 @@ const Navbar = () => {
       }
 
       setHoras(slots);
-      // Reset hora when turno changes
       setFormData((prev) => ({ ...prev, hora: "" }));
     } else {
       setHoras([]);
@@ -58,15 +58,6 @@ const Navbar = () => {
     };
     try {
       await addCita(data);
-      setOpenModal(false);
-      setFormData({
-        optica_id: "",
-        user_id: "",
-        turno: "",
-        hora: "",
-        fecha: "",
-      });
-      navigate("/dashboard/success='¡Cita reservada con éxito!'");
     } catch (error) {
       console.error("Error reservando cita:", error);
     }
@@ -106,6 +97,10 @@ const Navbar = () => {
         newErrors.fecha = "La fecha no puede ser anterior a la fecha actual.";
       }
 
+      if(selectedDate.getDay() === 0) {
+        newErrors.fecha = "La fecha no puede ser domingo.";
+      } 
+
       // Si la fecha es hoy, validar que la hora no sea anterior a la actual
       if (
         selectedDate.toDateString() === today.toDateString() &&
@@ -114,7 +109,6 @@ const Navbar = () => {
         const [hours, minutes] = formData.hora.split(":").map(Number);
         const selectedTime = new Date();
         selectedTime.setHours(hours, minutes, 0, 0);
-
         const currentTime = new Date();
 
         if (selectedTime < currentTime) {
@@ -148,11 +142,25 @@ const Navbar = () => {
           setErrors(newErrors);
           return;
         }
-
+        setLoading(true);
         await handleReservarCita(id);
-        navigate("/dashboard/success='¡Cita reservada con éxito!'");
+        setTimeout(() => {
+          setLoading(false);
+          setOpenModal(false);
+          setFormData({
+            optica_id: "",
+            user_id: "",
+            turno: "",
+            hora: "",
+            fecha: "",
+          });
+        }, 500);
+        navigate("/dashboard", {
+          state: { reload: true, success: "¡Cita reservada con éxito!" },
+        });
       } catch (error) {
         console.error("Error reservando cita:", error);
+        setLoading(false);
       }
     }
   };
@@ -192,7 +200,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-inherit">
-      <div className="flex flex-wrap items-center justify-between max-w-screen-xl p-4 mx-auto">
+      <div className="flex flex-wrap items-center justify-between p-4 mx-auto max-w-7xl lg:px-8">
         <a
           href={
             user?.role === "user"
@@ -203,7 +211,11 @@ const Navbar = () => {
           }
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
-          <img src="/logo.png" className="h-8" alt="OptiClick Logo" />
+          <img
+            src="/logo.png"
+            className="h-8 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.chryslerblue)]"
+            alt="OptiClick Logo"
+          />
           <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl dark:hover:text-vistablue dark:text-babypowder hover:text-chryslerblue">
             OptiClick
           </span>
@@ -217,7 +229,7 @@ const Navbar = () => {
                 className="hidden text-sm rounded-full md:flex bg-inherit md:me-0"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               >
-                <div className="flex px-3 py-2 m-2 text-sm text-black duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder">
+                <div className="flex py-2 my-2 text-sm text-black duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder">
                   <span className="p-1 font-medium">{user.name}</span>
                   <svg
                     className="w-6 h-6 my-1"
@@ -251,7 +263,7 @@ const Navbar = () => {
                     <li>
                       <a
                         href="/profile"
-                        className="block px-4 py-2 text-sm font-semibold text-gray-700 duration-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white hover:text-chryslerblue"
+                        className="block px-4 py-2 text-sm font-semibold text-gray-700 duration-300 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white hover:text-chryslerblue"
                       >
                         <div className="flex space-x-2">
                           <svg
@@ -278,7 +290,7 @@ const Navbar = () => {
                     <li>
                       <button
                         onClick={logout}
-                        className="block w-full px-4 py-2 text-sm font-semibold text-gray-700 duration-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white hover:text-chryslerblue"
+                        className="block w-full px-4 py-2 text-sm font-semibold text-gray-700 duration-300 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white hover:text-chryslerblue"
                       >
                         <div className="flex space-x-2">
                           <svg
@@ -598,7 +610,7 @@ const Navbar = () => {
                   placeholder={"Seleccione un turno"}
                   value={[
                     { display: "Mañana", value: "mañana" },
-                    { display: "Tarde", value: "tarde" },
+                    ...(formData.fecha && new Date(formData.fecha).getDay() != 6 ? [{ display: "Tarde", value: "tarde" }] : []),
                   ]}
                   selectedValue={formData.turno}
                   error={errors.turno}
@@ -623,7 +635,31 @@ const Navbar = () => {
                 />
               </div>
               <div className="flex justify-end">
-                <PrimaryButton classes={"mt-4"} text="Reservar" />
+                <PrimaryButton
+                  classes={"mt-4"}
+                  text={
+                    loading ? (
+                      <svg
+                        aria-hidden="true"
+                        className="inline w-4 h-4 text-babypowder animate-spin dark:text-gray-600 fill-black dark:fill-white"
+                        viewBox="0 0 100 101"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentFill"
+                        />
+                      </svg>
+                    ) : (
+                      "Reservar"
+                    )
+                  }
+                />
               </div>
             </form>
           </Modal.Body>

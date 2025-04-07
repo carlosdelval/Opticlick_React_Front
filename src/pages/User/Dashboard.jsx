@@ -3,15 +3,16 @@ import { getCitasUser, deleteCita } from "../../api";
 import Lottie from "lottie-react";
 import calendarAnimation from "../../assets/calendar.json";
 import callMissedAnimation from "../../assets/call-missed-red.json";
-import TransparentDanger from "../../components/TransparentButtonDanger";
 import DangerButton from "../../components/DangerButton";
 import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import AuthContext from "../../context/AuthContext";
 import SecondaryDanger from "../../components/SecondaryDanger";
+import { useLocation } from "react-router-dom";
 
 const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
+  const location = useLocation();
   const [citas, setCitas] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
@@ -37,8 +38,19 @@ const AdminDashboard = () => {
         }, 500);
       }
     };
+    if (location.state?.reload) {
+      // Forzar recarga de datos
+      fetchCitas();
+      // Mostrar mensaje de éxito si existe
+      if (location.state.success) {
+        setSuccess(location.state.success);
+      }
+      // Limpiar el estado de navegación para evitar recargas múltiples
+      window.history.replaceState({}, document.title);
+    }
     fetchCitas();
-  }, [user?.id]);
+  }, [user?.id, location.state]);
+  
   const handleOpenModalAnular = (id) => {
     setOpenModalAnular(true);
     setId(id);

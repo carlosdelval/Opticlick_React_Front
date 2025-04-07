@@ -3,7 +3,6 @@ import { getCitasGraduadasUser, getGraduacion } from "../../api";
 import Lottie from "lottie-react";
 import activityAnimation from "../../assets/activity.json";
 import fileAnimation from "../../assets/file.json";
-import TransparentPrimary from "../../components/TransparentButtonPrimary";
 import { Alert, Modal } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import AuthContext from "../../context/AuthContext";

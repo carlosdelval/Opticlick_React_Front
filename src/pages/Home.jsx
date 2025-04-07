@@ -21,8 +21,12 @@ const Home = () => {
     <div className="flex items-center justify-center h-screen">
       <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
         <div className="flex justify-center mb-4">
-          <a href="/">
-            <img src="./logo.png" alt="OptiClick" className="w-20"></img>
+          <a href="/" className="inline-block">
+            <img
+              src="./logo.png"
+              alt="OptiClick"
+              className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
+            />
           </a>
         </div>
         <div className="mb-4 text-center">
