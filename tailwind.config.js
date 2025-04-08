@@ -2,7 +2,7 @@ import { Flowbite } from "flowbite-react";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./src/**/*.{js,jsx,ts,tsx}", Flowbite],
+  content: ["./src/**/*.{js,jsx,ts,tsx}", Flowbite, "./node_modules/tailwind-datepicker-react/dist/**/*.js",],
   theme: {
     extend: {
       colors: {

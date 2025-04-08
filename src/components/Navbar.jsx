@@ -7,6 +7,7 @@ import PrimaryButton from "./PrimaryButton";
 import InputField from "./InputField";
 import AuthContext from "../context/AuthContext";
 import { addCita, getCitaFechaHora } from "../api";
+import SelectorFecha from "./Datepicker";
 
 const Navbar = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -97,9 +98,9 @@ const Navbar = () => {
         newErrors.fecha = "La fecha no puede ser anterior a la fecha actual.";
       }
 
-      if(selectedDate.getDay() === 0) {
+      if (selectedDate.getDay() === 0) {
         newErrors.fecha = "La fecha no puede ser domingo.";
-      } 
+      }
 
       // Si la fecha es hoy, validar que la hora no sea anterior a la actual
       if (
@@ -585,6 +586,7 @@ const Navbar = () => {
                 <InputField
                   type="select"
                   text="Óptica"
+                  error={errors.optica_id}
                   placeholder={"Seleccione una óptica"}
                   value={opticas.map((optica) => ({
                     display: optica.nombre,
@@ -595,13 +597,10 @@ const Navbar = () => {
                     setFormData({ ...formData, optica_id: value })
                   }
                 />
-                <InputField
-                  type="date"
-                  text="Fecha"
-                  value={formData.fecha}
+                <SelectorFecha
                   error={errors.fecha}
-                  onChange={(value) =>
-                    setFormData({ ...formData, fecha: value })
+                  onChange={(date) =>
+                    setFormData({ ...formData, fecha: date })
                   }
                 />
                 <InputField
@@ -610,7 +609,9 @@ const Navbar = () => {
                   placeholder={"Seleccione un turno"}
                   value={[
                     { display: "Mañana", value: "mañana" },
-                    ...(formData.fecha && new Date(formData.fecha).getDay() != 6 ? [{ display: "Tarde", value: "tarde" }] : []),
+                    ...(formData.fecha && new Date(formData.fecha).getDay() != 6
+                      ? [{ display: "Tarde", value: "tarde" }]
+                      : []),
                   ]}
                   selectedValue={formData.turno}
                   error={errors.turno}
