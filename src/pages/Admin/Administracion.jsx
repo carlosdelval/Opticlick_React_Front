@@ -1,15 +1,16 @@
 import React from "react";
 import {
-  getClientes,
+  getAdmins,
   deleteUser,
   updateUser,
   getOpticas,
-  getClientesOptica,
+  getAdminsOptica,
   registerUser,
+  setOpticaAdmin,
 } from "../../api";
 import { HiInformationCircle } from "react-icons/hi";
 import Lottie from "lottie-react";
-import teamAnimation from "../../assets/clients.json";
+import dynamicRoleAnimation from "../../assets/admins.json";
 import profileAnimation from "../../assets/profile.json";
 import bcrypt from "bcryptjs-react";
 import SecondaryDanger from "../../components/SecondaryDanger";
@@ -17,18 +18,18 @@ import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import DangerButton from "../../components/DangerButton";
 import deleteAnimation from "../../assets/delete.json";
-import { Modal, Alert, Popover } from "flowbite-react";
+import { Modal, Alert } from "flowbite-react";
 import InputField from "../../components/InputField";
 import MenuButton from "../../components/MenuButton";
 
-function Dashboard() {
-  const [clientes, setClientes] = React.useState([]);
+function Administracion() {
+  const [admins, setAdmins] = React.useState([]);
   const [opticas, setOpticas] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [modalDelete, setModalDelete] = React.useState(false);
-  const [modalInfoCliente, setModalInfoCliente] = React.useState(false);
+  const [modalInfoAdmin, setModalInfoAdmin] = React.useState(false);
   const [selectedName, setSelectedName] = React.useState("");
   const [selectedSurname, setSelectedSurname] = React.useState(null);
   const [selectedId, setSelectedId] = React.useState(null);
@@ -43,6 +44,7 @@ function Dashboard() {
     dni: "",
     tlf: "",
     email: "",
+    optica: "",
   });
   const [formData, setFormData] = React.useState({
     id: "",
@@ -52,10 +54,11 @@ function Dashboard() {
     tlf: "",
     email: "",
     password: "",
-    role: "user",
+    optica: "",
+    role: "admin",
   });
 
-  const handleAddCliente = async () => {
+  const handleAddAdmin = async () => {
     try {
       if (!validateForm()) {
         return;
@@ -66,22 +69,41 @@ function Dashboard() {
         dni: "",
         tlf: "",
         email: "",
+        optica: "",
       });
+
+      // Generate password and set role BEFORE registering
       const passwordToHash =
         formData.name.toLowerCase() + formData.name.toLowerCase();
       const hashedPassword = bcrypt.hashSync(passwordToHash, 10);
-      setFormData((prev) => ({ ...prev, password: hashedPassword }));
-      const data = await registerUser(formData);
-      const newCliente = {
-        id: data.id,
+
+      const userData = {
         ...formData,
+        password: hashedPassword,
+        role: "admin",
       };
-      setClientes((prev) => [...prev, newCliente]);
-      setModalInfoCliente(false);
-      setSuccess("Cliente registrado correctamente");
+
+      const data = await registerUser(userData);
+      await setOpticaAdmin(data.id, formData.optica);
+
+      setAdmins((prev) => [
+        ...prev,
+        {
+          id: data.id,
+          name: formData.name,
+          surname: formData.surname,
+          dni: formData.dni,
+          tlf: formData.tlf,
+          email: formData.email,
+          optica_id: parseInt(formData.optica),
+        },
+      ]);
+
+      setModalInfoAdmin(false);
+      setSuccess("Admin registrado correctamente");
       setError(null);
     } catch (err) {
-      console.error("Error registering client:", err);
+      console.error("Error registering admin:", err);
       if (err.response && err.response.status === 400) {
         const errorMessage = err.response.data.error || "";
         if (errorMessage.toLowerCase().includes("dni")) {
@@ -99,24 +121,24 @@ function Dashboard() {
           return;
         }
       } else if (err.response && err.response.status === 500) {
-        setModalInfoCliente(false);
-        setError("No se pudo registrar el cliente");
+        setModalInfoAdmin(false);
+        setError("No se pudo registrar el admin");
         setSuccess(null);
       }
     }
   };
 
   React.useEffect(() => {
-    const fetchClientes = async () => {
+    const fetchAdmin = async () => {
       try {
-        const data = await getClientes();
-        setClientes(data);
+        const data = await getAdmins();
+        setAdmins(data);
         setTimeout(() => {
           setLoading(false);
         }, 500);
       } catch (err) {
-        console.error("Error fetching clients:", err);
-        setError("No se pudieron cargar los clientes");
+        console.error("Error fetching admins:", err);
+        setError("No se pudieron cargar los administradores");
         setTimeout(() => {
           setLoading(false);
         }, 500);
@@ -133,11 +155,11 @@ function Dashboard() {
       }
     };
 
-    const fetchClientesOptica = async () => {
+    const fetchAdminOptica = async () => {
       try {
         setLoading(true);
-        const data = await getClientesOptica(opticaSearch);
-        setClientes(data);
+        const data = await getAdminsOptica(opticaSearch);
+        setAdmins(data);
         setTimeout(() => {
           setLoading(false);
         }, 250);
@@ -150,24 +172,24 @@ function Dashboard() {
       }
     };
     if (opticaSearch) {
-      fetchClientesOptica();
+      fetchAdminOptica();
     } else {
-      fetchClientes();
+      fetchAdmin();
       fetchOpticas();
     }
   }, [opticaSearch]);
 
-  const handleDeleteCliente = async (id) => {
+  const handleDeleteAdmin = async (id) => {
     try {
       await deleteUser(id);
-      setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+      setAdmins((prev) => prev.filter((admin) => admin.id !== id));
       setModalDelete(false);
-      setSuccess("Cliente eliminado correctamente");
+      setSuccess("Admin eliminado correctamente");
       setError(null);
     } catch (err) {
       console.error("Error deleting client:", err);
       setModalDelete(false);
-      setError("No se pudo eliminar el cliente");
+      setError("No se pudo eliminar el Admin");
       setSuccess(null);
     }
   };
@@ -181,6 +203,7 @@ function Dashboard() {
       dni: "",
       tlf: "",
       email: "",
+      optica: "",
     };
     if (!formData.name) {
       newErrorForm.name = "El nombre es obligatorio";
@@ -217,11 +240,15 @@ function Dashboard() {
       newErrorForm.email = "El formato de email no es válido.";
       isValid = false;
     }
+    if (!formData.optica) {
+      newErrorForm.optica = "La óptica es obligatoria";
+      isValid = false;
+    }
     setErrorForm(newErrorForm);
     return isValid;
   };
 
-  const handleUpdateCliente = async (id) => {
+  const handleUpdateAdmin = async () => {
     setError(null);
     setSuccess(null);
     if (!validateForm()) {
@@ -234,29 +261,31 @@ function Dashboard() {
         dni: "",
         tlf: "",
         email: "",
+        optica: "",
       });
       await updateUser(formData);
-      setClientes((prev) =>
-        prev.map((cliente) => {
-          if (cliente.id === id) {
-            return {
-              ...cliente,
-              id: formData.id,
-              name: formData.name,
-              surname: formData.surname,
-              dni: formData.dni,
-              tlf: formData.tlf,
-              email: formData.email,
-            };
-          }
-          return cliente;
-        })
+      await setOpticaAdmin(formData.id, parseInt(formData.optica));
+      // Update admin in the UI
+      setAdmins((prevAdmins) =>
+        prevAdmins.map((admin) =>
+          admin.id === formData.id
+            ? {
+                ...admin,
+                name: formData.name,
+                surname: formData.surname,
+                dni: formData.dni,
+                tlf: formData.tlf,
+                email: formData.email,
+                optica_id: parseInt(formData.optica),
+              }
+            : admin
+        )
       );
-      setModalInfoCliente(false);
-      setSuccess("Cliente actualizado correctamente");
+      setModalInfoAdmin(false);
+      setSuccess("Admin actualizado correctamente");
       setError(null);
     } catch (err) {
-      console.error("Error updating client:", err);
+      console.error("Error updating admin:", err);
       if (err.response && err.response.status === 400) {
         const errorMessage = err.response.data.error || "";
         if (errorMessage.toLowerCase().includes("dni")) {
@@ -274,30 +303,31 @@ function Dashboard() {
           return;
         }
       } else if (err.response && err.response.status === 500) {
-        setModalInfoCliente(false);
-        setError("No se pudo actualizar el cliente");
+        setModalInfoAdmin(false);
+        setError("No se pudo actualizar el admin");
         setSuccess(null);
       }
     }
   };
 
-  const handleOpenModalDelete = (cliente) => {
-    setSelectedName(cliente.name);
-    setSelectedSurname(cliente.surname);
-    setSelectedId(cliente.id);
+  const handleOpenModalDelete = (admin) => {
+    setSelectedName(admin.name);
+    setSelectedSurname(admin.surname);
+    setSelectedId(admin.id);
     setModalDelete(true);
   };
 
-  const handleOpenModalInfoCliente = (cliente) => {
+  const handleOpenModalInfoAdmin = async (admin) => {
     setFormData({
-      id: cliente.id,
-      name: cliente.name,
-      surname: cliente.surname,
-      dni: cliente.dni,
-      tlf: cliente.tlf,
-      email: cliente.email,
+      id: admin.id,
+      name: admin.name,
+      surname: admin.surname,
+      dni: admin.dni,
+      tlf: admin.tlf,
+      email: admin.email,
+      optica: admin.optica_id,
     });
-    setModalInfoCliente(true);
+    setModalInfoAdmin(true);
   };
 
   //Gestionar apertura de acordeón
@@ -314,18 +344,18 @@ function Dashboard() {
   }, [searchTerm]);
 
   // Filtrar los clientes por nombre, email o dni
-  const filteredClientes = React.useMemo(() => {
-    return clientes.filter((cliente) => {
-      const normalizedName = cliente.name
-        .concat(" ", cliente.surname)
+  const filteredAdmins = React.useMemo(() => {
+    return admins.filter((admin) => {
+      const normalizedName = admin.name
+        .concat(" ", admin.surname)
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
-      const normalizedDni = cliente.dni
+      const normalizedDni = admin.dni
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
-      const normalizedEmail = cliente.email
+      const normalizedEmail = admin.email
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
@@ -339,20 +369,22 @@ function Dashboard() {
         normalizedEmail.includes(normalizedSearchTerm)
       );
     });
-  }, [clientes, searchTerm]);
+  }, [admins, searchTerm]);
 
   // Paginación de las citas filtradas
-  const totalFilteredPages = Math.ceil(filteredClientes.length / itemsPerPage);
-  const currentFilteredClientes = filteredClientes.slice(
+  const totalFilteredPages = Math.ceil(filteredAdmins.length / itemsPerPage);
+  const currentFilteredAdmins = filteredAdmins.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
   return (
     <div className="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <div className="flex mb-4 space-x-3 text-start">
-        <Lottie animationData={teamAnimation} style={{ height: 60 }} />
-        <h2 className="my-2 text-4xl font-semibold">Todos tus clientes</h2>
+      <div className="flex mb-2 space-x-3 text-start">
+        <Lottie animationData={dynamicRoleAnimation} style={{ height: 80 }} />
+        <h2 className="my-5 text-4xl font-semibold">
+          Lista de administradores
+        </h2>
       </div>
 
       {error && (
@@ -423,7 +455,7 @@ function Dashboard() {
         </div>
         <div className="relative flex items-center justify-end w-full md:justify-center md:w-1/2">
           <MenuButton
-            text="Nuevo cliente"
+            text="Añadir administrador"
             icon={
               <svg
                 className="w-5 h-5"
@@ -453,7 +485,7 @@ function Dashboard() {
                 email: "",
                 password: "",
               });
-              setModalInfoCliente(true);
+              setModalInfoAdmin(true);
             }}
           />
         </div>
@@ -473,62 +505,30 @@ function Dashboard() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {!loading &&
-                  currentFilteredClientes.map((cliente) => (
+                  currentFilteredAdmins.map((admin) => (
                     <tr
-                      key={cliente.id}
+                      key={admin.id}
                       className="transition-colors duration-300 hover:bg-blue-50"
                     >
                       <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
-                        <Popover
-                          arrow={false}
-                          trigger="hover"
-                          content={
-                            <div className="flex flex-col items-start p-2 text-xs bg-blue-100 border rounded-lg shadow-md border-vistablue text-chryslerblue dark:bg-gray-800 dark:text-white dark:border-gray-700">
-                              <div className="flex items-center space-x-2">
-                                <svg
-                                  className="w-4 h-4 dark:text-white"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
-                                  />
-                                </svg>
-
-                                <span className="font-semibold dark:text-gray-400">
-                                  {cliente.tlf}
-                                </span>
-                              </div>
-                            </div>
-                          }
-                        >
-                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                            <svg
-                              className="w-4 h-4 me-1.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                              />
-                            </svg>
-                            {cliente.name} {cliente.surname}
-                          </span>
-                        </Popover>
+                        <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                          <svg
+                            className="w-4 h-4 me-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                            />
+                          </svg>
+                          {admin.name} {admin.surname}
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                         <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
@@ -548,7 +548,7 @@ function Dashboard() {
                               d="m3.5 5.5 7.893 6.036a1 1 0 0 0 1.214 0L20.5 5.5M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
                             />
                           </svg>
-                          {cliente.email}
+                          {admin.email}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
@@ -567,10 +567,10 @@ function Dashboard() {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth="2"
-                              d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z"
+                              d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
                             />
                           </svg>
-                          {cliente.dni}
+                          {admin.dni}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
@@ -597,36 +597,10 @@ function Dashboard() {
                                 />
                               </svg>
                             }
-                            action={() => handleOpenModalInfoCliente(cliente)}
-                          />
-                          <SecondaryButton
-                            text="Ver historial"
-                            classes={"px-3"}
-                            icon={
-                              <svg
-                                className="w-6 h-6"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
-                                />
-                              </svg>
-                            }
-                            action={() =>
-                              (window.location.href = `/historial/${cliente.id}`)
-                            }
+                            action={() => handleOpenModalInfoAdmin(admin)}
                           />
                           <SecondaryDanger
-                            action={() => handleOpenModalDelete(cliente)}
+                            action={() => handleOpenModalDelete(admin)}
                             text="Eliminar"
                             icon={
                               <svg
@@ -676,7 +650,7 @@ function Dashboard() {
               <span className="sr-only">Loading...</span>
             </output>
           )}
-          {filteredClientes.length === 0 && !loading && (
+          {filteredAdmins.length === 0 && !loading && (
             <p className="p-4 my-4 text-center">
               No hay clientes que coincidan con la búsqueda
             </p>
@@ -689,30 +663,30 @@ function Dashboard() {
           data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
         >
           {!loading &&
-            currentFilteredClientes.map((cliente, index) => {
+            currentFilteredAdmins.map((admin, index) => {
               return (
                 <div
-                  key={cliente.id}
+                  key={admin.id}
                   className="border-b border-gray-200 dark:border-gray-700"
                 >
                   <h2 id={`accordion-color-heading-${index}`}>
                     <button
                       type="button"
                       className={`${
-                        openAccordions[cliente.id]
+                        openAccordions[admin.id]
                           ? "bg-blue-50 dark:bg-gray-800"
                           : ""
                       } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
                       data-accordion-target={`#accordion-color-body-${index}`}
-                      onClick={() => toggleAccordion(cliente.id)}
-                      aria-expanded={openAccordions[cliente.id] || false}
+                      onClick={() => toggleAccordion(admin.id)}
+                      aria-expanded={openAccordions[admin.id] || false}
                     >
                       <div className="space-y-4 text-left">
                         <div className="font-medium text-gray-900 dark:text-babypowder">
-                          {cliente.name} {cliente.surname}
+                          {admin.name} {admin.surname}
                         </div>
                         <div className="space-y-2">
-                          <div className="space-x-2">
+                          <div className="text-sm text-gray-500 dark:text-gray-200">
                             <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                               <svg
                                 className="w-4 h-4 me-1.5"
@@ -730,30 +704,10 @@ function Dashboard() {
                                   d="m3.5 5.5 7.893 6.036a1 1 0 0 0 1.214 0L20.5 5.5M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
                                 />
                               </svg>
-                              {cliente.email}
-                            </span>
-                            <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                              <svg
-                                className="w-4 h-4 me-1.5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z"
-                                />
-                              </svg>
-                              {cliente.dni}
+                              {admin.email}
                             </span>
                           </div>
-                          <div>
+                          <div className="text-sm text-gray-500 dark:text-gray-200">
                             <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                               <svg
                                 className="w-4 h-4 me-1.5"
@@ -772,7 +726,7 @@ function Dashboard() {
                                   d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
                                 />
                               </svg>
-                              {cliente.tlf}
+                              {admin.dni}
                             </span>
                           </div>
                         </div>
@@ -780,7 +734,7 @@ function Dashboard() {
                       <svg
                         data-accordion-icon
                         className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
-                          openAccordions[cliente.id] ? "rotate-180" : ""
+                          openAccordions[admin.id] ? "rotate-180" : ""
                         }`}
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
@@ -799,7 +753,7 @@ function Dashboard() {
                   </h2>
                   <div
                     className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
-                      openAccordions[cliente.id] ? "max-h-96" : "max-h-0"
+                      openAccordions[admin.id] ? "max-h-96" : "max-h-0"
                     }`}
                   >
                     <div className="flex p-4 border-t dark:border-gray-700">
@@ -826,36 +780,10 @@ function Dashboard() {
                               />
                             </svg>
                           }
-                          action={() => handleOpenModalInfoCliente(cliente)}
-                        />
-                        <SecondaryButton
-                          text="Ver historial"
-                          classes={"px-3"}
-                          icon={
-                            <svg
-                              className="w-6 h-6"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
-                              />
-                            </svg>
-                          }
-                          action={() =>
-                            (window.location.href = `/historial/${cliente.id}`)
-                          }
+                          action={() => handleOpenModalInfoAdmin(admin)}
                         />
                         <SecondaryDanger
-                          action={() => handleOpenModalDelete(cliente)}
+                          action={() => handleOpenModalDelete(admin)}
                           text="Eliminar"
                           icon={
                             <svg
@@ -885,7 +813,7 @@ function Dashboard() {
             })}
         </div>
         {/* Paginación */}
-        {!loading && filteredClientes.length > 0 && (
+        {!loading && filteredAdmins.length > 0 && (
           <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
             <nav className="flex items-center space-x-2">
               <button
@@ -966,7 +894,7 @@ function Dashboard() {
                   style={{ height: 60 }}
                 />
                 <h2 className="my-4 text-2xl font-bold text-center">
-                  Eliminar cliente:
+                  Eliminar admin:
                 </h2>
               </div>
             </Modal.Header>
@@ -977,7 +905,7 @@ function Dashboard() {
                 </span>
               </div>
               <div className="my-2">
-                <p>¿Está seguro de que desea borrar este cliente?</p>
+                <p>¿Está seguro de que desea borrar este administrador?</p>
                 <p>
                   La información de este contacto se eliminará de la base de
                   datos y no podrá ser recuperada.
@@ -985,7 +913,7 @@ function Dashboard() {
               </div>
               <div className="flex justify-end">
                 <DangerButton
-                  action={() => handleDeleteCliente(selectedId)}
+                  action={() => handleDeleteAdmin(selectedId)}
                   classes={"mt-6 "}
                   text="Eliminar"
                 />
@@ -997,9 +925,9 @@ function Dashboard() {
         <Modal
           className="justify-center bg-gray-200 bg-opacity-50"
           size="md"
-          show={modalInfoCliente}
+          show={modalInfoAdmin}
           onClose={() => {
-            setModalInfoCliente(false), setErrorForm({});
+            setModalInfoAdmin(false), setErrorForm({});
           }}
         >
           <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
@@ -1010,7 +938,7 @@ function Dashboard() {
                   style={{ height: 60 }}
                 />
                 <h2 className="my-4 text-2xl font-bold text-center">
-                  Datos del cliente
+                  Datos del admin
                 </h2>
               </div>
             </Modal.Header>
@@ -1034,33 +962,50 @@ function Dashboard() {
                   error={errorForm.email}
                   onChange={(e) => setFormData({ ...formData, email: e })}
                 />
+                <div className="flex space-x-3">
+                  <InputField
+                    text={"DNI"}
+                    value={formData.dni ? formData.dni : ""}
+                    error={errorForm.dni}
+                    onChange={(e) => setFormData({ ...formData, dni: e })}
+                  />
+                  <InputField
+                    text={"Teléfono"}
+                    value={formData.tlf ? formData.tlf : ""}
+                    error={errorForm.tlf}
+                    onChange={(e) => setFormData({ ...formData, tlf: e })}
+                  />
+                </div>
                 <InputField
-                  text={"DNI"}
-                  value={formData.dni ? formData.dni : ""}
-                  error={errorForm.dni}
-                  onChange={(e) => setFormData({ ...formData, dni: e })}
+                  text="Óptica"
+                  type={"select"}
+                  value={opticas.map((optica) => ({
+                    value: optica.id,
+                    display: optica.nombre,
+                  }))}
+                  defaultValue={formData.id ? formData.optica : ""}
+                  placeholder={"Selecciona una óptica"}
+                  error={errorForm.optica}
+                  onChange={(e) => setFormData({ ...formData, optica: e })}
                 />
-                <InputField
-                  text={"Teléfono"}
-                  value={formData.tlf ? formData.tlf : ""}
-                  error={errorForm.tlf}
-                  onChange={(e) => setFormData({ ...formData, tlf: e })}
-                />
+
                 <div className="flex justify-end">
                   <PrimaryButton
                     classes="mt-6"
                     text={formData.id ? "Actualizar" : "Crear"}
-                    action={() =>
-                      formData.id
-                        ? handleUpdateCliente(formData.id)
-                        : [
-                            setFormData({
-                              ...formData,
-                              password: formData.name + formData.name,
-                            }),
-                            handleAddCliente(),
-                          ]
-                    }
+                    action={() => {
+                      if (formData.id) {
+                        handleUpdateAdmin(formData.id);
+                      } else {
+                        // Set the role here before calling handleAddAdmin
+                        setFormData((prev) => ({
+                          ...prev,
+                          password: prev.name + prev.name,
+                          role: "admin",
+                        }));
+                        handleAddAdmin();
+                      }
+                    }}
                   />
                 </div>
               </form>
@@ -1072,4 +1017,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default Administracion;

@@ -26,7 +26,7 @@ const options = {
   clearBtnText: "Limpiar",
   todayBtnText: "Hoy",
   maxDate: new Date("2040-01-01"),
-  minDate: new Date(Date.now() - 86400000), // 86400000 ms = 1 day
+  minDate: new Date(Date.now()),
   formats: ["dd/mm/yyyy"],
   theme: {
     background: "bg-white dark:bg-gray-800",
@@ -83,7 +83,7 @@ const options = {
   },
   datepickerClassNames: "top-12",
   language: "es",
-  format: "dd/mm/yyyy",
+  format: "dd/MM/yyyy",
   disabledDates: [getDisabledSundays], // Disable Sunday
   weekDays: ["L", "M", "X", "J", "V", "S", "D"],
   inputNameProp: "date",
@@ -100,8 +100,16 @@ const SelectorFecha = ({ error, classes, onChange }) => {
   const [show, setShow] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const handleChange = (selectedDate) => {
-    setSelectedDate(selectedDate);
-    onChange(selectedDate);
+    // Crear nueva fecha sin problemas de zona horaria
+    const fixedDate = new Date(
+      Date.UTC(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      )
+    );
+    setSelectedDate(fixedDate);
+    onChange(fixedDate); // Pasar la fecha corregida al padre
   };
   const handleClose = (state) => {
     setShow(state);

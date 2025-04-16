@@ -3,12 +3,12 @@ const InputField = ({
   text,
   type,
   value,
-  selectedValue,
+  defaultValue,
   onChange,
   error,
   hidden,
   classes,
-  placeholder
+  placeholder,
 }) => (
   <div
     className={`${hidden || ""} mb-3
@@ -25,10 +25,12 @@ const InputField = ({
         } w-full p-2 focus:outline-none focus:ring-2 focus:ring-chryslerblue border rounded-lg ${
           error ? "border-redpantone" : ""
         }`}
-        value={selectedValue || ""}
+        defaultValue={defaultValue || ""}
         onChange={(e) => onChange && onChange(e.target.value)}
       >
-        <option value="" defaultValue disabled>{placeholder}</option>
+        <option value="" disabled>
+          {placeholder}
+        </option>
         {Array.isArray(value) &&
           value.map((option, index) => (
             <option key={index} value={option.value} disabled={option.disabled}>

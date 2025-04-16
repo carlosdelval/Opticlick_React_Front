@@ -2,9 +2,36 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000";
 
-// Obtener usuarios
+// Obtener usuarios clientes
 export const getClientes = async () => {
   const res = await axios.get(`${API_URL}/users`);
+  return res.data;
+};
+
+// Obtener usuarios administradores
+export const getAdmins = async () => {
+  const res = await axios.get(`${API_URL}/admins`);
+  return res.data;
+};
+
+// Obtener óptica de un admin
+export const getOpticaAdmin = async (id) => {
+  const res = await axios.get(`${API_URL}/optica-admin/${id}`);
+  return res.data;
+};
+
+// Obtener admins de una óptica
+export const getAdminsOptica = async (id) => {
+  const res = await axios.get(`${API_URL}/admins-optica/${id}`);
+  return res.data;
+};
+
+// Asignar óptica a un admin
+export const setOpticaAdmin = async (id, optica_id) => {
+  const res = await axios.put(`${API_URL}/admins-optica`, { 
+    user_id: id, 
+    optica_id: optica_id 
+  });
   return res.data;
 };
 

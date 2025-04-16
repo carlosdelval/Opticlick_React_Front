@@ -9,6 +9,7 @@ import Dashboard from "./pages/User/Dashboard";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ListaClientes from "./pages/Admin/ListaClientes";
 import HistorialCliente from "./pages/Admin/HistorialCliente";
+import Administracion from "./pages/Admin/Administracion";
 import Profile from "./pages/Profile";
 import Historial from "./pages/User/Historial";
 import "./index.css";
@@ -80,6 +81,15 @@ function App() {
               <ProtectedRoute allowedRoles={["admin"]}>
                 <Navbar />
                 <HistorialCliente />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/administracion"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <Navbar />
+                <Administracion />
               </ProtectedRoute>
             }
           />

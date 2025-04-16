@@ -126,18 +126,35 @@ const Navbar = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const formatDateToISO = (date) => {
+    if (!date) return null;
+
+    // Asegurarnos que es un objeto Date válido
+    const d = new Date(date);
+
+    // Obtener componentes de la fecha
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Meses son 0-11
+    const day = String(d.getDate()).padStart(2, "0");
+
+    // Formato YYYY-MM-DD
+    return `${year}-${month}-${day}`;
+  };
+
   const handleSubmit = async (e) => {
     const newErrors = {};
     e.preventDefault();
     if (validateForm()) {
       try {
-        const { fecha, hora, optica_id } = formData;
+        const fechaISO = formatDateToISO(formData.fecha);
+        console.log("Fecha a enviar al backend:", fechaISO); // Ej: "2025-04-11"
+
         const existingAppointments = await getCitaFechaHora(
-          fecha,
-          hora,
-          optica_id
+          fechaISO, // Enviamos solo la fecha en formato YYYY-MM-DD
+          formData.hora,
+          formData.optica_id
         );
-        if (existingAppointments.length > 0) {
+        if (existingAppointments != null) {
           newErrors.hora =
             "La hora para esta fecha ya está reservada en la óptica seleccionada.";
           setErrors(newErrors);
@@ -599,9 +616,7 @@ const Navbar = () => {
                 />
                 <SelectorFecha
                   error={errors.fecha}
-                  onChange={(date) =>
-                    setFormData({ ...formData, fecha: date })
-                  }
+                  onChange={(date) => setFormData({ ...formData, fecha: date })}
                 />
                 <InputField
                   type="select"

@@ -15,7 +15,7 @@ import SecondaryDanger from "../../components/SecondaryDanger";
 import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import DangerButton from "../../components/DangerButton";
-import { Alert, Modal } from "flowbite-react";
+import { Alert, Modal, Popover } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import InputField from "../../components/InputField";
 import Documentacion from "../../pdf/GeneradorPdf";
@@ -58,6 +58,8 @@ const AdminDashboard = () => {
                   cliente && cliente[0]
                     ? `${cliente[0].name} ${cliente[0].surname}`
                     : "Cliente desconocido",
+                telefono:
+                  cliente && cliente[0] ? cliente[0].tlf : "No disponible",
               };
             } catch (err) {
               console.error(`Error fetching client for cita ${cita.id}:`, err);
@@ -324,24 +326,56 @@ const AdminDashboard = () => {
                         className="transition-colors hover:bg-blue-50 dark:hover:bg-gray-700"
                       >
                         <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
-                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                            <svg
-                              className="w-4 h-4 me-1.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                              />
-                            </svg>
-                            {cita.cliente}
-                          </span>
+                          <Popover
+                            arrow={false}
+                            trigger="hover"
+                            content={
+                              <div className="flex flex-col items-start p-2 text-xs bg-blue-100 border rounded-lg shadow-md border-vistablue text-chryslerblue dark:bg-gray-800 dark:text-white dark:border-gray-700">
+                                <div className="flex items-center space-x-2">
+                                  <svg
+                                    className="w-4 h-4 dark:text-white"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                                    />
+                                  </svg>
+
+                                  <span className="font-semibold dark:text-gray-400">
+                                    {cita.telefono}
+                                  </span>
+                                </div>
+                              </div>
+                            }
+                          >
+                            <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                              <svg
+                                className="w-4 h-4 me-1.5"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                />
+                              </svg>
+                              {cita.cliente}
+                            </span>
+                          </Popover>
                         </td>
                         <td className="px-6 py-4 text-sm text-left text-gray-500 dark:text-gray-200 whitespace-nowrap">
                           <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
@@ -489,7 +523,7 @@ const AdminDashboard = () => {
                             {formattedDate}
                           </div>
                           <div className="space-y-2">
-                            <div className="text-sm text-gray-500 dark:text-gray-200">
+                            <div className="space-x-2">
                               <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                                 <svg
                                   className="w-4 h-4 me-1.5"
@@ -508,8 +542,28 @@ const AdminDashboard = () => {
                                 </svg>
                                 {cita.cliente}
                               </span>
+                              <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                <svg
+                                  className="w-4 h-4 me-1.5"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                                  />
+                                </svg>
+                                {cita.telefono}
+                              </span>
                             </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-200">
+                            <div>
                               <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                                 <svg
                                   className="w-2.5 h-2.5 me-1.5"

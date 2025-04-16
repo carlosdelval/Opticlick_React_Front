@@ -77,6 +77,7 @@ const Historial = () => {
 
   // Handle para descarga de PDF
   const handleDownloadPDF = async () => {
+    setLoading(true);
     const docProps = {
       nombre: user?.name + " " + user?.surname || "Cliente",
       graduacion: graduacion,
@@ -98,6 +99,9 @@ const Historial = () => {
       // Descarga directa si no se puede abrir ventana
       saveAs(blob, `graduacion_${docProps.nombre.replace(/\s+/g, "_")}.pdf`);
     }
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   };
 
   const [currentPage, setCurrentPage] = React.useState(1);
