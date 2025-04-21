@@ -351,7 +351,7 @@ const Profile = () => {
             </div>
             <div className="flex justify-end">
               <DangerButton
-                action={() => handleDelete()}
+                action={handleDelete()}
                 classes={"mt-6 "}
                 text="Eliminar"
               />

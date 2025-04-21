@@ -14,6 +14,7 @@ const Register = () => {
     dni: "",
     tlf: "",
     email: "",
+    role: "user",
     password: "",
     confirm_password: "",
   });

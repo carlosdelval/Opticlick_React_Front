@@ -73,6 +73,7 @@ const Login = () => {
           dni: res.data.dni,
           surname: res.data.surname,
           id: res.data.id,
+          email_verified: res.data.email_verified,
         });
 
         navigate(res.data.role === "user" ? "/dashboard" : "/admin-dashboard");

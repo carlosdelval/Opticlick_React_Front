@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ListaClientes from "./pages/Admin/ListaClientes";
 import HistorialCliente from "./pages/Admin/HistorialCliente";
 import Administracion from "./pages/Admin/Administracion";
+import VerifyEmail from "./pages/Verify_email";
 import Profile from "./pages/Profile";
 import Historial from "./pages/User/Historial";
 import "./index.css";
@@ -30,6 +31,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route
             path="/dashboard"
             element={

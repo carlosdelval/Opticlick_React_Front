@@ -2,6 +2,24 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000";
 
+// Verificar email
+export const verifyEmail = async (token) => {
+  const res = await axios.get(`${API_URL}/verify-email/${token}`);
+  return res.data;
+};
+
+// Reenviar email verificacion
+export const resendEmail = async (email) => {
+  const res = await axios.post(`${API_URL}/resend-email`, { email });
+  return res.data;
+};
+
+// Iniciar sesión
+export const login = async (userData) => {
+  const res = await axios.post(`${API_URL}/login`, userData);
+  return res.data;
+};
+
 // Obtener usuarios clientes
 export const getClientes = async () => {
   const res = await axios.get(`${API_URL}/users`);
@@ -28,9 +46,9 @@ export const getAdminsOptica = async (id) => {
 
 // Asignar óptica a un admin
 export const setOpticaAdmin = async (id, optica_id) => {
-  const res = await axios.put(`${API_URL}/admins-optica`, { 
-    user_id: id, 
-    optica_id: optica_id 
+  const res = await axios.put(`${API_URL}/admins-optica`, {
+    user_id: id,
+    optica_id: optica_id,
   });
   return res.data;
 };
@@ -45,7 +63,7 @@ export const getCliente = async (id) => {
 export const getClientesOptica = async (id) => {
   const res = await axios.get(`${API_URL}/users-optica/${id}`);
   return res.data;
-}
+};
 
 // Registrar usuario
 export const registerUser = async (userData) => {

@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import PropTypes from "prop-types";
 import Background from "../components/Background";
+import { resendEmail } from "../api";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user } = useContext(AuthContext);
@@ -37,6 +38,49 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
+  }
+
+  // Comprobamos si ha verificado el email
+  if (!user.email_verified) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+          <div className="flex justify-center mb-4">
+            <a href="/" className="inline-block">
+              <img
+                src="./logo.png"
+                alt="OptiClick"
+                className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
+              />
+            </a>
+          </div>
+          <div className="mb-4 text-center">
+            <h1 className="font-bold leading-none tracking-tight underline text-7xl md:text-5xl lg:text-6xl dark:text-white underline-offset-3 decoration-8 decoration-vistablue dark:decoration-blue-600">
+              OptiClick
+            </h1>
+            <p className="mt-2 text-gray-700">
+              Tu sistema de gestión de citas ópticas
+            </p>
+          </div>
+          <div className="mb-4 text-center">
+            <h1 className="text-2xl font-bold text-center text-chryslerblue">
+              Verifica tu correo electrónico para continuar
+            </h1>
+            <p className="mt-2 text-gray-600">
+              ¿No has recibido el correo?{" "}
+              <button
+                onClick={async () => {
+                  await resendEmail(user.email);
+                }}
+                className="font-bold duration-300 text-vistablue hover:underline hover:text-chryslerblue"
+              >
+                Reenviar
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return children;
