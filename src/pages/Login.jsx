@@ -75,7 +75,7 @@ const Login = () => {
           id: res.data.id,
         });
 
-        navigate(res.data.role === "admin" ? "/admin-dashboard" : "/dashboard");
+        navigate(res.data.role === "user" ? "/dashboard" : "/admin-dashboard");
       } else {
         setError_user("Respuesta inesperada del servidor.");
       }

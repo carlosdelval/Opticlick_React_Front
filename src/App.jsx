@@ -51,7 +51,7 @@ function App() {
           <Route
             path="/admin-dashboard"
             element={
-              <ProtectedRoute allowedRoles={["admin"]}>
+              <ProtectedRoute allowedRoles={["admin", "master"]}>
                 <Navbar />
                 <AdminDashboard />
               </ProtectedRoute>
@@ -60,7 +60,7 @@ function App() {
           <Route
             path="/lista-clientes"
             element={
-              <ProtectedRoute allowedRoles={["admin"]}>
+              <ProtectedRoute allowedRoles={["admin", "master"]}>
                 <Navbar />
                 <ListaClientes />
               </ProtectedRoute>
@@ -69,7 +69,7 @@ function App() {
           <Route
             path="/profile"
             element={
-              <ProtectedRoute allowedRoles={["user", "admin"]}>
+              <ProtectedRoute allowedRoles={["user", "admin", "master"]}>
                 <Navbar />
                 <Profile />
               </ProtectedRoute>
@@ -78,7 +78,7 @@ function App() {
           <Route
             path="/historial/:id"
             element={
-              <ProtectedRoute allowedRoles={["admin"]}>
+              <ProtectedRoute allowedRoles={["admin", "master"]}>
                 <Navbar />
                 <HistorialCliente />
               </ProtectedRoute>
@@ -87,7 +87,7 @@ function App() {
           <Route
             path="/administracion"
             element={
-              <ProtectedRoute allowedRoles={["admin"]}>
+              <ProtectedRoute allowedRoles={["master"]}>
                 <Navbar />
                 <Administracion />
               </ProtectedRoute>

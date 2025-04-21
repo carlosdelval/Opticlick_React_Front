@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from "react";
 import AuthContext from "../context/AuthContext";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
-import SecondaryButton from "../components/SecondaryButton";
 
 const Home = () => {
   const { user } = useContext(AuthContext);
@@ -10,7 +9,7 @@ const Home = () => {
 
   useEffect(() => {
     if (user) {
-      if (user.role === "admin") {
+      if (user.role === "admin" || user.role === "master") {
         navigate("/admin-dashboard");
       } else {
         navigate("/dashboard");
