@@ -15,7 +15,6 @@ const VerifyEmail = () => {
   const verificarEmail = async () => {
     try {
       const res = await verifyEmail(token);
-      console.log(res);
       if (res.token && res.id) {
         login({
           token: res.token,
@@ -26,7 +25,7 @@ const VerifyEmail = () => {
           dni: res.dni,
           surname: res.surname,
           id: res.id,
-          email_verified: res.email_verified,
+          email_verified: true,
         });
       }
       setTimeout(() => {
