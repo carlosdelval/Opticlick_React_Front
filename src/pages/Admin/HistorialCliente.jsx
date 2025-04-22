@@ -714,6 +714,7 @@ const HistorialCliente = () => {
                   <Lottie
                     animationData={deleteAnimation}
                     style={{ height: 60 }}
+                    loop={false}
                   />
                   <h2 className="my-4 text-2xl font-bold text-center">
                     Eliminar graduación:
@@ -759,6 +760,8 @@ const HistorialCliente = () => {
                   <Lottie
                     animationData={fileAnimation}
                     style={{ height: 60 }}
+                    loop={false}
+                    hover={true}
                   />
                   <h2 className="my-4 text-2xl font-bold text-center">
                     Graduación de cita:

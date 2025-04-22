@@ -2,10 +2,11 @@ import React from "react";
 import AuthContext from "../../context/AuthContext";
 import {
   getCitas,
-  getClienteCita,
   deleteCita,
   addGraduacion,
   setGraduada,
+  getOpticas,
+  getCitasOptica,
 } from "../../api";
 import Lottie from "lottie-react";
 import calendarAnimation from "../../assets/calendar.json";
@@ -25,6 +26,8 @@ import { saveAs } from "file-saver";
 const AdminDashboard = () => {
   const { user } = React.useContext(AuthContext);
   const [citas, setCitas] = React.useState([]);
+  const [opticas, setOpticas] = React.useState([]);
+  const [opticaSearch, setOpticaSearch] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
@@ -47,28 +50,8 @@ const AdminDashboard = () => {
     const fetchCitas = async () => {
       try {
         const data = await getCitas();
-
-        const citasWithClients = await Promise.all(
-          data.map(async (cita) => {
-            try {
-              const cliente = await getClienteCita(cita.user_id);
-              return {
-                ...cita,
-                cliente:
-                  cliente && cliente[0]
-                    ? `${cliente[0].name} ${cliente[0].surname}`
-                    : "Cliente desconocido",
-                telefono:
-                  cliente && cliente[0] ? cliente[0].tlf : "No disponible",
-              };
-            } catch (err) {
-              console.error(`Error fetching client for cita ${cita.id}:`, err);
-              return { ...cita, cliente: "Error al cargar cliente" };
-            }
-          })
-        );
-
-        setCitas(citasWithClients);
+        console.log("Citas:", data);
+        setCitas(data);
         setTimeout(() => {
           setLoading(false);
         }, 500);
@@ -80,8 +63,42 @@ const AdminDashboard = () => {
         }, 500);
       }
     };
-    fetchCitas();
-  }, []);
+
+    const fetchOpticas = async () => {
+      try {
+        const data = await getOpticas();
+        setOpticas(data);
+      } catch (err) {
+        console.error("Error fetching opticas:", err);
+        setError("No se pudieron cargar las ópticas");
+      }
+    };
+
+    const fetchCitasOptica = async () => {
+      try {
+        setLoading(true);
+        const data = await getCitasOptica(opticaSearch);
+        setCitas(data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 250);
+      } catch (err) {
+        console.error("Error fetching clients by optica:", err);
+        setError("No se pudieron cargar los clientes de esta óptica");
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+      }
+    };
+
+    if (opticaSearch) {
+      fetchCitasOptica();
+    } else {
+      fetchCitas();
+      fetchOpticas();
+    }
+  }, [opticaSearch]);
+
   const handleOpenModalAnular = (id) => {
     setOpenModalAnular(true);
     setId(id);
@@ -195,11 +212,16 @@ const AdminDashboard = () => {
   // Filtrar las citas por cliente o fecha
   const filteredCitas = React.useMemo(() => {
     return citas.filter((cita) => {
-      const normalizedCliente = cita.cliente
+      const normalizedCliente = cita.user_name
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
       const normalizedSearchTerm = searchTerm
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      const normalizedApellido = cita.user_surname
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
@@ -219,7 +241,8 @@ const AdminDashboard = () => {
       return (
         normalizedCliente.includes(normalizedSearchTerm) ||
         normalizedFecha.includes(normalizedSearchTerm) ||
-        normalizedHora.includes(normalizedSearchTerm)
+        normalizedHora.includes(normalizedSearchTerm) ||
+        normalizedApellido.includes(normalizedSearchTerm)
       );
     });
   }, [citas, searchTerm]);
@@ -267,7 +290,7 @@ const AdminDashboard = () => {
       )}
 
       {/* Barrita de búsqueda */}
-      <div className="mb-4">
+      <div className="mb-4 space-y-2 md:flex md:space-x-3 md:space-y-0">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg
@@ -289,12 +312,29 @@ const AdminDashboard = () => {
           <input
             type="search"
             id="search"
-            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
             placeholder="Buscar citas por cliente, fecha u hora..."
             autoComplete="off"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+        <div className="relative">
+          <select
+            className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            onChange={(e) => setOpticaSearch(e.target.value)}
+            value={opticaSearch}
+          >
+            <option value="" disabled>
+              Filtrar por óptica
+            </option>
+            <option value="">Todas las ópticas</option>
+            {opticas.map((optica) => (
+              <option key={optica.id} value={optica.id}>
+                {optica.nombre}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -373,7 +413,7 @@ const AdminDashboard = () => {
                                   d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                                 />
                               </svg>
-                              {cita.cliente}
+                              {cita.user_name} {cita.user_surname}
                             </span>
                           </Popover>
                         </td>
@@ -540,7 +580,7 @@ const AdminDashboard = () => {
                                     d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                                   />
                                 </svg>
-                                {cita.cliente}
+                                {cita.user_name} {cita.user_surname}
                               </span>
                               <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                                 <svg
@@ -771,10 +811,11 @@ const AdminDashboard = () => {
           >
             <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
               <Modal.Header className="p-4">
-                <div className="flex">
+                <div className="flex space-x-2">
                   <Lottie
                     animationData={glassesAnimation}
                     style={{ height: 60 }}
+                    loop={false}
                   />
                   <h2 className="my-4 text-2xl font-bold text-center">
                     Graduar esta cita
@@ -844,6 +885,7 @@ const AdminDashboard = () => {
                   <Lottie
                     animationData={callMissedAnimation}
                     style={{ height: 60 }}
+                    loop={false}
                   />
                   <h2 className="my-4 text-2xl font-bold text-center">
                     Anular esta cita

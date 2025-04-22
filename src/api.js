@@ -95,6 +95,12 @@ export const getCitas = async () => {
   return res.data;
 };
 
+// Obtener citas por óptica
+export const getCitasOptica = async (id) => {
+  const res = await axios.get(`${API_URL}/citas-optica/${id}`);
+  return res.data;
+};
+
 // Obtener cita por fecha y hora
 export const getCitaFechaHora = async (fecha, hora, optica_id) => {
   const res = await axios.get(`${API_URL}/citas/${fecha}/${hora}/${optica_id}`);

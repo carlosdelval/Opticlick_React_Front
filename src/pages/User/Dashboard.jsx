@@ -557,6 +557,7 @@ const AdminDashboard = () => {
                   <Lottie
                     animationData={callMissedAnimation}
                     style={{ height: 60 }}
+                    loop={false}
                   />
                   <h2 className="my-4 text-2xl font-bold text-center">
                     Anular esta cita

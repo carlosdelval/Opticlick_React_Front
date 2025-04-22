@@ -39,6 +39,7 @@ const Home = () => {
         <a href="login">
           <PrimaryButton
             text="Iniciar sesión"
+            classes="mt-2"
             icon={
               <svg
                 className="w-6 h-6"

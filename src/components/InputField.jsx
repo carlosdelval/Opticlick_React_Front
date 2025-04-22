@@ -51,6 +51,7 @@ const InputField = ({
         value={value || ""}
         onChange={(e) => onChange && onChange(e.target.value)}
         autoComplete="off"
+        maxLength={40}
       />
     )}
     {error && <p className="mt-1 text-xs text-redpantone">{error}</p>}

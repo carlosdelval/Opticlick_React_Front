@@ -590,8 +590,8 @@ const Navbar = () => {
       >
         <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
           <Modal.Header className="p-4">
-            <div className="flex">
-              <Lottie animationData={timeNavigation} style={{ height: 60 }} />
+            <div className="flex space-x-2">
+              <Lottie animationData={timeNavigation} style={{ height: 60 }} loop={false} />
               <h2 className="my-4 text-2xl font-bold text-center">
                 Reservar cita
               </h2>

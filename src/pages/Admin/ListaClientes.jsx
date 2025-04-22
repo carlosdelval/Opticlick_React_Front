@@ -964,6 +964,7 @@ function Dashboard() {
                 <Lottie
                   animationData={deleteAnimation}
                   style={{ height: 60 }}
+                  loop={false}
                 />
                 <h2 className="my-4 text-2xl font-bold text-center">
                   Eliminar cliente:
@@ -1008,6 +1009,7 @@ function Dashboard() {
                 <Lottie
                   animationData={profileAnimation}
                   style={{ height: 60 }}
+                  loop={false}
                 />
                 <h2 className="my-4 text-2xl font-bold text-center">
                   Datos del cliente
