@@ -181,10 +181,42 @@ const AdminDashboard = () => {
                               {/* Contenido base (oculto al hacer hover) */}
                               <div className="absolute inset-0 z-10 flex items-center justify-center px-1 text-[10px] font-medium text-chryslerblue transition duration-500 group-hover:-translate-y-[150%]">
                                 <div className="flex flex-col space-y-1 truncate">
-                                  <span className="bg-babypowder text-chryslerblue text-[10px] font-medium px-2.5 py-0.5 rounded-sm border border-vistablue truncate dark:bg-gray-700 dark:text-vistablue">
+                                  <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                    <svg
+                                      className="w-4 h-4 me-1.5"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="24"
+                                      height="24"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                      />
+                                    </svg>
                                     {cita.user_name} {cita.user_surname}
                                   </span>
-                                  <span className="bg-babypowder text-chryslerblue text-[10px] font-medium px-2.5 py-0.5 rounded-sm border border-vistablue truncate dark:bg-gray-700 dark:text-vistablue">
+                                  <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                    <svg
+                                      className="w-4 h-4 me-1.5"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="24"
+                                      height="24"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                                      />
+                                    </svg>
                                     {cita.telefono}
                                   </span>
                                 </div>
@@ -352,15 +384,57 @@ const AdminDashboard = () => {
                     <div className="space-y-2">
                       <div className="space-x-2">
                         <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                          <svg
+                            className="w-4 h-4 me-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                            />
+                          </svg>
                           {cita.user_name} {cita.user_surname}
                         </span>
                         <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                          <svg
+                            className="w-4 h-4 me-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                            />
+                          </svg>
                           {cita.telefono}
                         </span>
                       </div>
                       <div>
                         <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                          {cita.hora?.substring(0, 5)}h
+                          <svg
+                            className="w-2.5 h-2.5 me-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                          </svg>
+                          {cita.hora ? cita.hora.substring(0, 5) : ""}
+                          {"h"}
                         </span>
                       </div>
                     </div>
