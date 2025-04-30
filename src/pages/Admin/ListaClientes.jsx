@@ -421,7 +421,7 @@ function Dashboard() {
             ))}
           </select>
         </div>
-        <div className="relative flex items-center justify-end w-full md:justify-center md:w-1/2">
+        <div className="relative flex items-center justify-end w-full md:w-1/2">
           <MenuButton
             text="Nuevo cliente"
             icon={
