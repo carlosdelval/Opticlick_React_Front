@@ -38,6 +38,8 @@ const AdminDashboard = () => {
   const [openModal, setOpenModal] = React.useState(false);
   const [openModalAnular, setOpenModalAnular] = React.useState(false);
   const [vistaSemanal, setVistaSemanal] = React.useState(true);
+  const [turnos, setTurnos] = React.useState(true);
+  const [weekOffSet, setWeekOffSet] = React.useState(0);
   const [id, setId] = React.useState(null);
   const [openAccordions, setOpenAccordions] = React.useState({});
   const [formData, setFormData] = React.useState({
@@ -46,10 +48,15 @@ const AdminDashboard = () => {
     esfera: "",
   });
 
-  const WeeklyView = ({ citas }) => {
+  const WeeklyView = ({
+    citas,
+    turnos,
+    setTurnos,
+    weekOffSet,
+    setWeekOffSet,
+  }) => {
     const morningSlots = [];
     const afternoonSlots = [];
-    const [turnos, setTurnos] = React.useState(true);
     const turnosRef = React.useRef(turnos);
 
     React.useEffect(() => {
@@ -87,7 +94,10 @@ const AdminDashboard = () => {
     const today = new Date();
     const startOfWeek = new Date(today);
     startOfWeek.setDate(
-      today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)
+      today.getDate() -
+        today.getDay() +
+        (today.getDay() === 0 ? -6 : 1) +
+        weekOffSet * 7
     );
 
     const weekDates = Array.from({ length: 6 }, (_, i) => {
@@ -115,14 +125,106 @@ const AdminDashboard = () => {
 
     return (
       <div className="overflow-x-auto">
-        {citasSemana.length > 0 && (
+        <div className="flex items-center justify-between my-2">
+          <MenuButton
+            action={() => {
+              setLoading(true);
+              setWeekOffSet((prev) => prev - 1);
+              setTimeout(() => setLoading(false), 500);
+            }}
+            text="Semana anterior"
+            icon={
+              <svg
+                className="w-6 h-6"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 12h14M5 12l4-4m-4 4 4 4"
+                />
+              </svg>
+            }
+          />
+
+          <MenuButton
+            action={() => {
+              setLoading(true);
+              setWeekOffSet(0);
+              setTimeout(() => setLoading(false), 500);
+            }}
+            text="Semana actual"
+            icon={
+              <svg
+                className="w-5 h-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 8v4l3 3M3.22302 14C4.13247 18.008 7.71683 21 12 21c4.9706 0 9-4.0294 9-9 0-4.97056-4.0294-9-9-9-3.72916 0-6.92858 2.26806-8.29409 5.5M7 9H3V5"
+                />
+              </svg>
+            }
+          />
+
+          <MenuButton
+            action={() => {
+              setLoading(true);
+              setWeekOffSet((prev) => prev + 1);
+              setTimeout(() => setLoading(false), 500);
+            }}
+            text="Semana siguiente"
+            iconRight={true}
+            icon={
+              <svg
+                className="w-6 h-6"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 12H5m14 0-4 4m4-4-4-4"
+                />
+              </svg>
+            }
+          />
+        </div>
+        {citasSemana.length > 0 && !loading && (
           <table className="min-w-full border-2 border-black divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-chryslerblue dark:bg-vistablue">
               <tr>
                 <th className="px-2 py-3 text-[11px] font-bold tracking-wider text-center uppercase border border-black text-babypowder dark:text-black">
                   <div className="flex items-center justify-center space-x-2">
                     {turnos ? <span>Mañana</span> : <span>Tarde</span>}
-                    <button onClick={() => setTurnos(!turnos)}>
+                    <button
+                      onClick={() => {
+                        setLoading(true);
+                        setTurnos(!turnos);
+                        setTimeout(() => setLoading(false), 500);
+                      }}
+                    >
                       <svg
                         className="w-5 h-5 cursor-pointer"
                         fill="none"
@@ -164,7 +266,7 @@ const AdminDashboard = () => {
                     key={`${turnos ? "morning" : "afternoon"}-${timeIndex}`}
                     className="dark:hover:bg-gray-700"
                   >
-                    <td className="px-2 py-2 text-[11px] font-medium text-center border border-black hover:bg-blue-50 whitespace-nowrap h-[70px] max-h-[70px]">
+                    <td className="px-2 py-2 text-[14px] font-medium text-center border border-black hover:bg-blue-50 whitespace-nowrap h-[70px] max-h-[70px]">
                       {time}
                     </td>
                     {weekDates.map((date, dayIndex) => {
@@ -293,13 +395,13 @@ const AdminDashboard = () => {
         )}
 
         {citasSemana.length === 0 && !loading && (
-          <div className="flex flex-col items-center justify-center w-full h-64 border-2 border-black">
+          <div className="flex flex-col items-center justify-center w-full h-64 bg-white border-2 border-black">
             <Lottie
               animationData={glassesAnimation}
               style={{ height: 100, width: 100 }}
             />
             <p className="text-lg font-semibold text-gray-500 dark:text-gray-400">
-              No hay citas programadas para esta semana en esta óptica.
+              No hay citas programadas del {weekDates[0].getDate()}/{weekDates[0].getMonth()+1} al {weekDates[5].getDate()+1}/{weekDates[5].getMonth()+1} en esta óptica.
             </p>
           </div>
         )}
@@ -339,7 +441,7 @@ const AdminDashboard = () => {
 
     return (
       <div
-        className="border-2 border-black md:hidden"
+        className="bg-white border-2 border-black md:hidden"
         id="accordion-color"
         data-accordion="collapse"
         data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
@@ -525,7 +627,7 @@ const AdminDashboard = () => {
           );
         })}
         {citasSemana.length === 0 && !loading && (
-          <div className="flex flex-col items-center justify-center w-full h-64 border-2 border-black">
+          <div className="flex flex-col items-center justify-center w-full h-64 bg-white border-2 border-black">
             <Lottie
               animationData={glassesAnimation}
               style={{ height: 100, width: 100 }}
@@ -869,6 +971,7 @@ const AdminDashboard = () => {
             action={async () => {
               setLoading(true);
               setTimeout(() => {
+                setWeekOffSet(0);
                 setVistaSemanal(!vistaSemanal);
                 setLoading(false);
               }, 300);
@@ -901,7 +1004,7 @@ const AdminDashboard = () => {
           !vistaSemanal ? "border-2 border-black" : ""
         }`}
       >
-        <div className="overflow-x-auto bg-white dark:bg-gray-800">
+        <div className="overflow-x-auto">
           {vistaSemanal ? (
             <>
               {/* Vista móvil */}
@@ -911,7 +1014,13 @@ const AdminDashboard = () => {
 
               {/* Vista escritorio */}
               <div className="hidden md:block">
-                <WeeklyView citas={citas} />
+                <WeeklyView
+                  citas={citas}
+                  turnos={turnos}
+                  setTurnos={setTurnos}
+                  weekOffSet={weekOffSet}
+                  setWeekOffSet={setWeekOffSet}
+                />
               </div>
             </>
           ) : (
