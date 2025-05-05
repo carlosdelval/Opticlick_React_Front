@@ -7,7 +7,6 @@ import {
   getClientesOptica,
   registerUser,
 } from "../../api";
-import { HiInformationCircle } from "react-icons/hi";
 import Lottie from "lottie-react";
 import teamAnimation from "../../assets/clients.json";
 import profileAnimation from "../../assets/profile.json";
@@ -17,7 +16,8 @@ import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import DangerButton from "../../components/DangerButton";
 import deleteAnimation from "../../assets/delete.json";
-import { Modal, Alert, Popover } from "flowbite-react";
+import { Modal, Popover } from "flowbite-react";
+import Alert from "../../components/Alert";
 import InputField from "../../components/InputField";
 import MenuButton from "../../components/MenuButton";
 
@@ -356,22 +356,14 @@ function Dashboard() {
       </div>
 
       {error && (
-        <Alert
-          icon={HiInformationCircle}
-          className="mb-4 rounded-lg shadow-md bg-lightcoral"
-          onDismiss={() => setError(null)}
-        >
-          <span className="font-medium">{error}</span>
-        </Alert>
+        <Alert onDismiss={() => setError(null)} text={error} type="error" />
       )}
       {success && (
         <Alert
-          className="mb-4 space-x-4 rounded-lg shadow-md bg-aquamarine"
-          icon={HiInformationCircle}
           onDismiss={() => setSuccess(null)}
-        >
-          <span className="font-medium">{success}</span>
-        </Alert>
+          text={success}
+          type="success"
+        />
       )}
 
       {/* Barrita de búsqueda */}

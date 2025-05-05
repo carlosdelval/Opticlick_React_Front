@@ -11,8 +11,8 @@ import deleteAnimation from "../../assets/delete.json";
 import Lottie from "lottie-react";
 import activityAnimation from "../../assets/activity.json";
 import fileAnimation from "../../assets/file.json";
-import { Alert, Modal } from "flowbite-react";
-import { HiInformationCircle } from "react-icons/hi";
+import { Modal } from "flowbite-react";
+import Alert from "../../components/Alert";
 import AuthContext from "../../context/AuthContext";
 import { saveAs } from "file-saver";
 import Documentacion from "../../pdf/GeneradorPdf";
@@ -218,22 +218,14 @@ const HistorialCliente = () => {
         </h2>
       </div>
       {error && (
-        <Alert
-          icon={HiInformationCircle}
-          className="mb-4 rounded-lg shadow-md bg-lightcoral"
-          onDismiss={() => setError(null)}
-        >
-          <span className="font-medium">{error}</span>
-        </Alert>
+        <Alert onDismiss={() => setError(null)} text={error} type="error" />
       )}
       {success && (
         <Alert
-          className="mb-4 rounded-lg shadow-md bg-aquamarine"
-          icon={HiInformationCircle}
           onDismiss={() => setSuccess(null)}
-        >
-          <span className="font-medium">{success}</span>
-        </Alert>
+          text={success}
+          type="success"
+        />
       )}
 
       {/* Barrita de búsqueda */}

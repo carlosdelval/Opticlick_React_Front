@@ -4,11 +4,11 @@ import Lottie from "lottie-react";
 import calendarAnimation from "../../assets/calendar.json";
 import callMissedAnimation from "../../assets/call-missed-red.json";
 import DangerButton from "../../components/DangerButton";
-import { Alert, Modal } from "flowbite-react";
-import { HiInformationCircle } from "react-icons/hi";
+import {Modal} from "flowbite-react";
 import AuthContext from "../../context/AuthContext";
 import SecondaryDanger from "../../components/SecondaryDanger";
 import { useLocation } from "react-router-dom";
+import Alert from "../../components/Alert";
 
 const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -50,7 +50,7 @@ const AdminDashboard = () => {
     }
     fetchCitas();
   }, [user?.id, location.state]);
-  
+
   const handleOpenModalAnular = (id) => {
     setOpenModalAnular(true);
     setId(id);
@@ -128,22 +128,14 @@ const AdminDashboard = () => {
         </h2>
       </div>
       {error && (
-        <Alert
-          icon={HiInformationCircle}
-          className="mb-4 rounded-lg shadow-md bg-lightcoral"
-          onDismiss={() => setError(null)}
-        >
-          <span className="font-medium">{error}</span>
-        </Alert>
+        <Alert onDismiss={() => setError(null)} text={error} type="error" />
       )}
       {success && (
         <Alert
-          className="mb-4 rounded-lg shadow-md bg-aquamarine"
-          icon={HiInformationCircle}
           onDismiss={() => setSuccess(null)}
-        >
-          <span className="font-medium">{success}</span>
-        </Alert>
+          text={success}
+          type="success"
+        />
       )}
 
       {/* Barrita de búsqueda */}

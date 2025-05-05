@@ -18,7 +18,8 @@ import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import DangerButton from "../../components/DangerButton";
 import MenuButton from "../../components/MenuButton";
-import { Alert, Modal, Popover } from "flowbite-react";
+import { Modal, Popover } from "flowbite-react";
+import Alert from "../../components/Alert";
 import { HiInformationCircle } from "react-icons/hi";
 import InputField from "../../components/InputField";
 import Documentacion from "../../pdf/GeneradorPdf";
@@ -401,7 +402,9 @@ const AdminDashboard = () => {
               style={{ height: 100, width: 100 }}
             />
             <p className="text-lg font-semibold text-gray-500 dark:text-gray-400">
-              No hay citas programadas del {weekDates[0].getDate()}/{weekDates[0].getMonth()+1} al {weekDates[5].getDate()+1}/{weekDates[5].getMonth()+1} en esta óptica.
+              No hay citas programadas del {weekDates[0].getDate()}/
+              {weekDates[0].getMonth() + 1} al {weekDates[5].getDate() + 1}/
+              {weekDates[5].getMonth() + 1} en esta óptica.
             </p>
           </div>
         )}
@@ -892,22 +895,14 @@ const AdminDashboard = () => {
         </h2>
       </div>
       {error && (
-        <Alert
-          icon={HiInformationCircle}
-          className="mb-4 rounded-lg shadow-md bg-lightcoral"
-          onDismiss={() => setError(null)}
-        >
-          <span className="font-medium">{error}</span>
-        </Alert>
+        <Alert onDismiss={() => setError(null)} text={error} type="error" />
       )}
       {success && (
         <Alert
-          className="mb-4 rounded-lg shadow-md bg-aquamarine"
-          icon={HiInformationCircle}
           onDismiss={() => setSuccess(null)}
-        >
-          <span className="font-medium">{success}</span>
-        </Alert>
+          text={success}
+          type="success"
+        />
       )}
 
       {/* Barrita de búsqueda */}
