@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import AuthContext from "../context/AuthContext";
-import PrimaryButton from "../components/PrimaryButton";
-import DangerButton from "../components/DangerButton";
-import InputField from "../components/InputField";
+import AuthContext from "../../context/AuthContext";
+import PrimaryButton from "../../components/PrimaryButton";
+import DangerButton from "../../components/DangerButton";
+import InputField from "../../components/InputField";
 import Lottie from "lottie-react";
-import userProfileAnimation from "../assets/profile.json";
-import deleteAnimation from "../assets/delete.json";
-import { deleteUser } from "../api";
+import userProfileAnimation from "../../assets/profile.json";
+import deleteAnimation from "../../assets/delete.json";
+import { deleteUser } from "../../api";
 import { Modal, Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 

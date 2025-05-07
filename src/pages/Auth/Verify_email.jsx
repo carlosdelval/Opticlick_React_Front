@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from "react";
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert } from "flowbite-react";
-import { verifyEmail } from "../api";
-import AuthContext from "../context/AuthContext";
+import { verifyEmail } from "../../api";
+import AuthContext from "../../context/AuthContext";
 
 const VerifyEmail = () => {
   const { login } = useContext(AuthContext);

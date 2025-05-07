@@ -583,7 +583,7 @@ const Navbar = () => {
         </div>
       </div>
       <Modal
-        className="justify-center bg-gray-200 bg-opacity-50"
+        className="justify-center py-20 bg-gray-200 bg-opacity-50"
         size="md"
         show={openModal}
         onClose={() => setOpenModal(false)}

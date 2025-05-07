@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs-react";
 import Lottie from "lottie-react";
-import registerAnimation from "../assets/register.json";
-import PrimaryButton from "../components/PrimaryButton";
-import InputField from "../components/InputField";
-import { registerUser } from "../api";
+import registerAnimation from "../../assets/register.json";
+import PrimaryButton from "../../components/PrimaryButton";
+import InputField from "../../components/InputField";
+import { registerUser } from "../../api";
 
 const Register = () => {
   const [formData, setFormData] = useState({

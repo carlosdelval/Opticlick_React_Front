@@ -945,7 +945,7 @@ function Dashboard() {
         )}
         {/* Modal borrar cliente*/}
         <Modal
-          className="justify-center bg-gray-200 bg-opacity-50"
+          className="justify-center py-20 bg-gray-200 bg-opacity-50"
           size="md"
           show={modalDelete}
           onClose={() => setModalDelete(false)}
@@ -988,7 +988,7 @@ function Dashboard() {
         </Modal>
         {/* Modal de información del cliente */}
         <Modal
-          className="justify-center bg-gray-200 bg-opacity-50"
+          className="justify-center py-20 bg-gray-200 bg-opacity-50"
           size="md"
           show={modalInfoCliente}
           onClose={() => {

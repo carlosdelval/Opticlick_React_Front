@@ -1,11 +1,11 @@
 import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
-import PrimaryButton from "../components/PrimaryButton";
-import InputField from "../components/InputField";
+import AuthContext from "../../context/AuthContext";
+import PrimaryButton from "../../components/PrimaryButton";
+import InputField from "../../components/InputField";
 import Lottie from "lottie-react";
-import loginAnimation from "../assets/login.json";
+import loginAnimation from "../../assets/login.json";
 
 const Login = () => {
   const { login } = useContext(AuthContext);

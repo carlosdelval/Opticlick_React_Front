@@ -1490,7 +1490,7 @@ const AdminDashboard = () => {
 
           {/* Modal graduaciones*/}
           <Modal
-            className="justify-center bg-gray-200 bg-opacity-50"
+            className="justify-center py-20 bg-gray-200 bg-opacity-50"
             size="md"
             show={openModal}
             onClose={() => setOpenModal(false)}
@@ -1560,7 +1560,7 @@ const AdminDashboard = () => {
           </Modal>
           {/* Modal anular cita*/}
           <Modal
-            className="justify-center bg-gray-200 bg-opacity-50"
+            className="justify-center py-20 bg-gray-200 bg-opacity-50"
             size="md"
             show={openModalAnular}
             onClose={() => setOpenModalAnular(false)}
