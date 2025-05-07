@@ -277,7 +277,7 @@ const AdminDashboard = () => {
                           key={`${
                             turnos ? "morning" : "afternoon"
                           }-${timeIndex}-${dayIndex}`}
-                          className="relative group px-1 py-1 text-[11px] border border-black h-[70px] max-h-[70px] align-top overflow-hidden hover:bg-blue-50"
+                          className="transition-colors relative group px-1 py-1 text-[11px] border border-black h-[70px] max-h-[70px] align-top overflow-hidden hover:bg-blue-50"
                         >
                           {cita ? (
                             <>
