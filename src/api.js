@@ -101,11 +101,11 @@ export const getCitasOptica = async (id) => {
   return res.data;
 };
 
-// Obtener cita por fecha y hora
-export const getCitaFechaHora = async (fecha, hora, optica_id) => {
-  const res = await axios.get(`${API_URL}/citas/${fecha}/${hora}/${optica_id}`);
+// Obtener todas las citas reservadas en una fecha de una optica
+export const getCitasReservadasFecha = async (id, fecha) => {
+  const res = await axios.get(`${API_URL}/citas-reservadas/${id}/${fecha}`);
   return res.data;
-};
+}
 
 // Obtener citas de un usuario
 export const getCitasUser = async (id) => {

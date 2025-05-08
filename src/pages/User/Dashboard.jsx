@@ -331,14 +331,14 @@ const AdminDashboard = () => {
                 const date = new Date(cita.fecha);
 
                 const day = date.getDate();
-                // Get day of the week
+                // Día de la semana
                 const dayOfWeek = new Intl.DateTimeFormat("es-ES", {
                   weekday: "long",
                 }).format(date);
                 const capitalizedDayOfWeek =
                   dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
 
-                // Get the month name in Spanish
+                // Nombre del mes
                 const month = date.toLocaleString("es-ES", {
                   month: "long",
                 });
