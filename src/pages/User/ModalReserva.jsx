@@ -4,14 +4,16 @@ import es from "date-fns/locale/es";
 import { addCita, getCitasReservadasFecha, getOpticas } from "../../api";
 import InputField from "../../components/InputField";
 import Stepper, { Step } from "../../components/Stepper";
+import AuthContext from "../../context/AuthContext";
 import Lottie from "lottie-react";
-import { disableInstantTransitions } from "framer-motion";
+import Glasses from "../../assets/Glasses.json";
 
 const ModalReserva = () => {
   // Array de las fechas de los próximos 2 meses, días y meses
   const dias = Array.from({ length: 60 }, (_, i) =>
     startOfDay(addDays(new Date(), i))
   );
+  const { user } = React.useContext(AuthContext);
   const [opticas, setOpticas] = React.useState([]);
   const [errors, setErrors] = React.useState({});
   const [horas, setHoras] = React.useState([]);
@@ -21,11 +23,32 @@ const ModalReserva = () => {
   const [scrollContainerRef] = React.useState(null);
   const [formData, setFormData] = React.useState({
     optica_id: "",
-    user_id: "",
+    user_id: user.id,
     turno: "",
     hora: "",
     fecha: "",
   });
+
+  // Función para resetear el formulario
+  const resetForm = () => {
+    setFormData({
+      optica_id: "",
+      user_id: user.id,
+      turno: "",
+      hora: "",
+      fecha: "",
+    });
+    setErrors({});
+    setHoras([]);
+    setHorasReservadas([]);
+  };
+
+  // Resetear el formulario al desmontar el componente
+  React.useEffect(() => {
+    return () => {
+      resetForm(); // Se llama automáticamente al desmontarse el componente
+    };
+  }, []);
 
   // Obtener ópticas al cargar el componente
   React.useEffect(() => {
@@ -33,7 +56,6 @@ const ModalReserva = () => {
       try {
         const opticasData = await getOpticas();
         setOpticas(opticasData);
-        console.log("Opticas:", opticasData);
       } catch (error) {
         console.error("Error fetching opticas:", error);
       }
@@ -44,25 +66,29 @@ const ModalReserva = () => {
   // Obtener citas reservadas al cargar el componente
   React.useEffect(() => {
     const fetchCitasReservadas = async () => {
-      const fechaISO = new Date(formData.fecha.getTime() + 86400000).toISOString().split("T")[0];
+      const fechaISO = new Date(formData.fecha.getTime() + 86400000)
+        .toISOString()
+        .split("T")[0];
       try {
-        console.log(formData.optica_id, fechaISO);
         const citasReservadasData = await getCitasReservadasFecha(
           formData.optica_id,
           fechaISO
         );
         // Asegurándonos de que las horas estén en formato hh:mm
-        setHorasReservadas(citasReservadasData.map(cita => {
-          // Verifica si la hora ya está en formato hh:mm
-          const horaStr = cita.hora;
-          if (/^\d{2}:\d{2}$/.test(horaStr)) {
-            return horaStr;
-          }
-          // Si no, intenta convertirla
-          const [hour, minute] = horaStr.split(':').map(Number);
-          return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        }));
-        console.log("Citas reservadas:", citasReservadasData);
+        setHorasReservadas(
+          citasReservadasData.map((cita) => {
+            // Verifica si la hora ya está en formato hh:mm
+            const horaStr = cita.hora;
+            if (/^\d{2}:\d{2}$/.test(horaStr)) {
+              return horaStr;
+            }
+            // Si no, intenta convertirla
+            const [hour, minute] = horaStr.split(":").map(Number);
+            return `${hour.toString().padStart(2, "0")}:${minute
+              .toString()
+              .padStart(2, "0")}`;
+          })
+        );
       } catch (error) {
         console.error("Error fetching citas reservadas:", error);
       }
@@ -96,99 +122,23 @@ const ModalReserva = () => {
     }
   }, [formData.turno]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-
-    // Validaciones básicas
-    if (!formData.optica_id) {
-      newErrors.optica_id = "Debe seleccionar una óptica.";
-    }
-    if (!formData.fecha) {
-      newErrors.fecha = "Debe seleccionar una fecha.";
-    }
-    if (!formData.turno) {
-      newErrors.turno = "Debe seleccionar un turno.";
-    }
-    if (!formData.hora) {
-      newErrors.hora = "Debe seleccionar una hora.";
-    }
-
-    // Validaciones de fecha y hora
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const fechaSeleccionada = new Date(formData.fecha);
-    fechaSeleccionada.setHours(0, 0, 0, 0);
-
-    if (fechaSeleccionada < hoy) {
-      newErrors.fecha = "La fecha no puede ser anterior a hoy.";
-    }
-
-    if (getDay(fechaSeleccionada) === 0) {
-      newErrors.fecha = "No se puede reservar en domingo.";
-    }
-
-    if (
-      fechaSeleccionada.toDateString() === hoy.toDateString() &&
-      formData.hora
-    ) {
-      const [hh, mm] = formData.hora.split(":").map(Number);
-      const selectedTime = new Date();
-      selectedTime.setHours(hh, mm, 0, 0);
-      const now = new Date();
-      if (selectedTime < now) {
-        newErrors.hora = "No se puede reservar una hora anterior a la actual.";
-      }
-    }
-
-    // Si hay errores hasta ahora, los seteamos
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+  // Maneja el envío del formulario
+  const handleSubmit = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const fechaISO = formData.fecha.toISOString().split("T")[0];
-
-      // Obtenemos horas ya reservadas
-      const citasReservadas = await getCitasReservadasFecha(
-        formData.optica_id,
-        fechaISO
-      );
-
-      const horasReservadas = citasReservadas.map((cita) => cita.hora);
-
-      // Si ya existe la hora seleccionada
-      if (horasReservadas.includes(formData.hora)) {
-        setErrors({
-          hora: "Esta hora ya está reservada. Selecciona otra.",
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Si pasa todo, reservamos la cita
-      await addCita({
+      const cita = {
         ...formData,
-        fecha: fechaISO,
-      });
-
-      // Limpieza y cierre modal
-      setFormData({
-        optica_id: "",
-        user_id: "",
-        turno: "",
-        hora: "",
-        fecha: "",
-      });
-      setErrors({});
-      alert("Cita reservada con éxito."); // Cambiar por modal/toast si deseas
+        fecha: new Date(formData.fecha.getTime() + 86400000),
+      };
+      await addCita(cita);
     } catch (error) {
-      console.error("Error al reservar cita:", error);
-      alert("Error al reservar. Intenta más tarde.");
+      console.error("Error al agregar la cita:", error);
+      // Manejo de errores
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+        resetForm();
+      }, 2000);
     }
   };
 
@@ -256,15 +206,67 @@ const ModalReserva = () => {
       setErrors((prev) => ({ ...prev, hora: "Debe seleccionar una hora." }));
       return false;
     }
+    handleSubmit();
     return true;
   };
 
   const esSabado = formData.fecha && getDay(new Date(formData.fecha)) === 6;
+  const esHoy =
+    formData.fecha &&
+    new Date(formData.fecha).toDateString() === new Date().toDateString();
+  const now = new Date();
+  const horaActual = `${now.getHours().toString().padStart(2, "0")}:${now
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
 
   return (
     <Stepper
       initialStep={1}
-      onFinalStepCompleted={validatePaso4 ? handleSubmit : null}
+      validatePaso4={validatePaso4}
+      finalStepContent={
+        loading ? (
+          <output className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
+            <svg
+              aria-hidden="true"
+              className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-chryslerblue"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill"
+              />
+            </svg>
+            <span className="sr-only">Cargando...</span>
+          </output>
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
+            <Lottie
+              animationData={Glasses}
+              style={{ height: 100 }}
+              loop={true}
+              onComplete={() => {
+                setFormData({
+                  optica_id: "",
+                  user_id: user.id,
+                  turno: "",
+                  hora: "",
+                  fecha: "",
+                });
+              }}
+            />
+            <h2 className="text-lg font-semibold">
+              ¡Tu cita ha sido reservada con éxito!
+            </h2>
+          </div>
+        )
+      }
     >
       <Step>
         <div className="my-2 space-y-2">
@@ -356,8 +358,11 @@ const ModalReserva = () => {
           </h3>
           <button
             type="button"
-            className={`px-4 py-1 rounded-l bg-blue-50 ${
+            disabled={esHoy && horaActual >= "14:00"}
+            className={`px-4 py-1 rounded-l bg-blue-100 ${
               formData.turno === "mañana" ? "bg-chryslerblue text-white" : ""
+            } ${
+              esHoy && horaActual >= "14:00" ? "opacity-50" : ""
             }`}
             onClick={() => {
               handleTurno("mañana");
@@ -370,9 +375,9 @@ const ModalReserva = () => {
           <button
             type="button"
             disabled={esSabado}
-            className={`px-4 py-1 rounded-r bg-blue-50 ${
+            className={`px-4 py-1 rounded-r bg-blue-100 ${
               formData.turno === "tarde" ? "bg-chryslerblue text-white" : ""
-            } ${esSabado ? "opacity-50" : ""}`}
+            } ${esSabado ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={() => {
               !esSabado && handleTurno("tarde");
               setErrors({});
@@ -389,24 +394,34 @@ const ModalReserva = () => {
           className="flex space-x-2 overflow-x-auto"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {horas.map((hora, index) => (
-            <button
-              ref={(el) => (buttonRefs.current[index] = el)}
-              type="button"
-              disabled={horasReservadas.includes(hora)}
-              key={hora}
-              onClick={() => handleHoraClick(hora, index)}
-              className={`px-4 py-2 rounded border flex-shrink-0 ${horasReservadas.includes(hora) ? "bg-gray-200 text-gray-300" : ""} ${
-                formData.hora === hora
-                  ? "bg-chryslerblue text-white"
-                  : "bg-white text-black"
-              }`}
-            >
-              {hora}
-            </button>
-          ))}
-          <p className="mt-2 text-sm text-redpantone">{errors.hora}</p>
+          {horas.map((hora, index) => {
+
+            // Determinar si la hora está deshabilitada
+            const isReserved = horasReservadas.includes(hora);
+            const isPastTime = esHoy && hora < horaActual;
+            const isDisabled = isReserved || isPastTime;
+
+            return (
+              <button
+                ref={(el) => (buttonRefs.current[index] = el)}
+                type="button"
+                disabled={isDisabled}
+                key={hora}
+                onClick={() => handleHoraClick(hora, index)}
+                className={`px-4 py-2 rounded border flex-shrink-0 ${
+                  isDisabled ? "bg-gray-200 text-gray-300 cursor-not-allowed" : ""
+                } ${
+                  formData.hora === hora
+                    ? "bg-chryslerblue text-white"
+                    : "bg-white text-black"
+                }`}
+              >
+                {hora}
+              </button>
+            );
+          })}
         </div>
+        <p className="mt-2 text-sm text-redpantone">{errors.hora}</p>
       </Step>
     </Stepper>
   );

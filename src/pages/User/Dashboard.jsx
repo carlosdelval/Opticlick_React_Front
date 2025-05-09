@@ -4,7 +4,7 @@ import Lottie from "lottie-react";
 import calendarAnimation from "../../assets/calendar.json";
 import callMissedAnimation from "../../assets/call-missed-red.json";
 import DangerButton from "../../components/DangerButton";
-import {Modal} from "flowbite-react";
+import { Modal } from "flowbite-react";
 import AuthContext from "../../context/AuthContext";
 import SecondaryDanger from "../../components/SecondaryDanger";
 import { useLocation } from "react-router-dom";
@@ -97,9 +97,37 @@ const AdminDashboard = () => {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
 
+      // Convert date to d/m/yyyy format for simple searching
+      const dateParts = normalizedFecha.split("-");
+      const day = dateParts[0].replace(/^0+/, ""); // Elimina ceros a la izquierda
+      const month = dateParts[1].replace(/^0+/, ""); // Elimina ceros a la izquierda
+      const year = dateParts[2]; // Mantiene el año completo
+      const normalizedFormattedDate = `${day}/${month}/${year}`.toLowerCase();
+
+      // Get day and month names in Spanish
+      const dayName = new Date(cita.fecha)
+        .toLocaleDateString("es-ES", { weekday: "long" })
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      const monthName = new Date(cita.fecha)
+        .toLocaleDateString("es-ES", { month: "long" })
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      const normalizedOptica = cita.optica_nombre
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
       return (
+        normalizedHora.includes(normalizedSearchTerm) ||
+        normalizedFormattedDate.includes(normalizedSearchTerm) ||
+        normalizedOptica.includes(normalizedSearchTerm) ||
         normalizedFecha.includes(normalizedSearchTerm) ||
-        normalizedHora.includes(normalizedSearchTerm)
+        normalizedSearchTerm.startsWith(dayName) ||
+        normalizedSearchTerm.startsWith(monthName)
       );
     });
   }, [citas, searchTerm]);
@@ -162,7 +190,7 @@ const AdminDashboard = () => {
             type="search"
             id="search"
             className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="Buscar cita por fecha u hora..."
+            placeholder="Buscar cita por fecha, hora u óptica..."
             autoComplete="off"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

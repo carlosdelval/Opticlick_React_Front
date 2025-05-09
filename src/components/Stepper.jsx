@@ -1,11 +1,13 @@
 import React, { useState, Children, useRef, useLayoutEffect } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Stepper({
   children,
   initialStep = 1,
   onStepChange = () => {},
-  onFinalStepCompleted = () => {},
+  validatePaso4,
+  finalStepContent = null, // NUEVA prop para contenido final
   stepCircleContainerClassName = "",
   stepContainerClassName = "",
   contentClassName = "",
@@ -27,7 +29,7 @@ export default function Stepper({
 
   const updateStep = (newStep) => {
     setCurrentStep(newStep);
-    if (newStep > totalSteps) onFinalStepCompleted();
+    if (newStep > totalSteps) onStepChange(newStep);
     else onStepChange(newStep);
   };
 
@@ -39,9 +41,10 @@ export default function Stepper({
   };
 
   const handleNext = () => {
-    if (React.Children.toArray(children)[currentStep].props.canProceed) {
+    // Si el paso actual define una función canProceed, la ejecutamos
+    if (Children.toArray(children)[currentStep].props.canProceed) {
       const allowed =
-        React.Children.toArray(children)[currentStep].props.canProceed();
+        Children.toArray(children)[currentStep].props.canProceed();
       if (!allowed) return;
     }
     if (!isLastStep) {
@@ -50,10 +53,25 @@ export default function Stepper({
     }
   };
 
+  // En el último paso, llamamos a onFinalStepCompleted y avanzamos a la vista final
   const handleComplete = () => {
+    // No intentes leer props si no hay más pasos
+    if (currentStep <= totalSteps - 1) {
+      const currentChild = Children.toArray(children)[currentStep];
+      if (currentChild?.props?.canProceed) {
+        const allowed = currentChild.props.canProceed();
+        if (!allowed) return;
+      }
+    }
+
+    // Validar el paso final antes de avanzar
+    if (validatePaso4 && typeof validatePaso4 === "function") {
+      const isValid = validatePaso4();
+      if (!isValid) return;
+    }
+
     setDirection(1);
     updateStep(totalSteps + 1);
-    onFinalStepCompleted();
   };
 
   return (
@@ -112,7 +130,8 @@ export default function Stepper({
         >
           {stepsArray[currentStep - 1]}
         </StepContentWrapper>
-        {!isCompleted && (
+        {/* Si no se completó, mostramos los botones de navegación */}
+        {!isCompleted ? (
           <div className={`px-8 pb-8 ${footerClassName}`}>
             <div
               className={`mt-10 flex ${
@@ -141,6 +160,9 @@ export default function Stepper({
               </button>
             </div>
           </div>
+        ) : (
+          // Si se completaron todos los pasos, mostramos el contenido final personalizado.
+          <div className="p-8">{finalStepContent}</div>
         )}
       </div>
     </div>
@@ -220,12 +242,7 @@ export function Step({ children }) {
   return <div className="px-8">{children}</div>;
 }
 
-function StepIndicator({
-  step,
-  currentStep,
-  /* onClickStep,
-  disableStepIndicators, */
-}) {
+function StepIndicator({ step, currentStep }) {
   const status =
     currentStep === step
       ? "active"
@@ -233,13 +250,9 @@ function StepIndicator({
       ? "inactive"
       : "complete";
 
-  /*   const handleClick = () => {
-  if (step !== currentStep && !disableStepIndicators) onClickStep(step);
-  }; */
-
   return (
     <motion.div
-      className="relative outline-none cursor-default select-none focus:outline-none"
+      className="relative outline-none cursor-default select-none"
       animate={status}
       initial={false}
     >

@@ -20,7 +20,6 @@ import DangerButton from "../../components/DangerButton";
 import MenuButton from "../../components/MenuButton";
 import { Modal, Popover } from "flowbite-react";
 import Alert from "../../components/Alert";
-import { HiInformationCircle } from "react-icons/hi";
 import InputField from "../../components/InputField";
 import Documentacion from "../../pdf/GeneradorPdf";
 import ReactPDF from "@react-pdf/renderer";
