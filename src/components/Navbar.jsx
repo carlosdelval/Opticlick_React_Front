@@ -430,7 +430,11 @@ const Navbar = () => {
       </div>
       {openModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-gray-200 bg-opacity-50">
-          <div ref={modalRef} className="w-screen max-w-lg">
+          <div
+            ref={modalRef}
+            className="w-screen"
+            style={{ maxWidth: "480px" }}
+          >
             <ModalReserva />
           </div>
         </div>
