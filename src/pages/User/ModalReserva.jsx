@@ -8,7 +8,7 @@ import AuthContext from "../../context/AuthContext";
 import Lottie from "lottie-react";
 import Glasses from "../../assets/Glasses.json";
 
-const ModalReserva = () => {
+const ModalReserva = ({ onReservaExitosa }) => {
   // Array de las fechas de los próximos 2 meses, días y meses
   const dias = Array.from({ length: 60 }, (_, i) =>
     startOfDay(addDays(new Date(), i))
@@ -131,6 +131,7 @@ const ModalReserva = () => {
         fecha: new Date(formData.fecha.getTime() + 86400000),
       };
       await addCita(cita);
+      onReservaExitosa?.();
     } catch (error) {
       console.error("Error al agregar la cita:", error);
       // Manejo de errores
@@ -361,9 +362,7 @@ const ModalReserva = () => {
             disabled={esHoy && horaActual >= "14:00"}
             className={`px-4 py-1 rounded-l bg-blue-100 ${
               formData.turno === "mañana" ? "bg-chryslerblue text-white" : ""
-            } ${
-              esHoy && horaActual >= "14:00" ? "opacity-50" : ""
-            }`}
+            } ${esHoy && horaActual >= "14:00" ? "opacity-50" : ""}`}
             onClick={() => {
               handleTurno("mañana");
               setErrors({});
@@ -395,7 +394,6 @@ const ModalReserva = () => {
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {horas.map((hora, index) => {
-
             // Determinar si la hora está deshabilitada
             const isReserved = horasReservadas.includes(hora);
             const isPastTime = esHoy && hora < horaActual;
@@ -409,7 +407,9 @@ const ModalReserva = () => {
                 key={hora}
                 onClick={() => handleHoraClick(hora, index)}
                 className={`px-4 py-2 rounded border flex-shrink-0 ${
-                  isDisabled ? "bg-gray-200 text-gray-300 cursor-not-allowed" : ""
+                  isDisabled
+                    ? "bg-gray-200 text-gray-300 cursor-not-allowed"
+                    : ""
                 } ${
                   formData.hora === hora
                     ? "bg-chryslerblue text-white"

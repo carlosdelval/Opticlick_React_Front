@@ -1,32 +1,10 @@
 import React, { useState, useEffect } from "react";
 import AuthContext from "../context/AuthContext";
-import ModalReserva from "../pages/User/ModalReserva";
 
 const Navbar = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, logout } = React.useContext(AuthContext);
-  const [openModal, setOpenModal] = React.useState(false);
-  const modalRef = React.useRef(null);
-
-  // Cerrar modal cuando se hace clic fuera
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setOpenModal(false);
-      }
-    };
-
-    if (openModal) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [openModal]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -244,62 +222,33 @@ const Navbar = () => {
               </li>
             )}
             {user?.role === "user" && (
-              <>
-                <li>
-                  <a
-                    href="/historial"
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <svg
-                        className="w-5 h-5"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
-                        />
-                      </svg>
-                      <span>Mis revisiones</span>
-                    </div>
-                  </a>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenModal(true)}
-                    className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <svg
-                        className="w-5 h-5"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="m11.5 11.5 2.071 1.994M4 10h5m11 0h-1.5M12 7V4M7 7V4m10 3V4m-7 13H8v-2l5.227-5.292a1.46 1.46 0 0 1 2.065 2.065L10 17Zm-5 3h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
-                        />
-                      </svg>
-                      <span>Reservar cita</span>
-                    </div>
-                  </button>
-                </li>
-              </>
+              <li>
+                <a
+                  href="/historial"
+                  className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
+                >
+                  <div className="flex items-center space-x-2">
+                    <svg
+                      className="w-5 h-5"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                      />
+                    </svg>
+                    <span>Mis revisiones</span>
+                  </div>
+                </a>
+              </li>
             )}
             {user?.role != "user" && (
               <li>
@@ -428,17 +377,6 @@ const Navbar = () => {
           </ul>
         </div>
       </div>
-      {openModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-gray-200 bg-opacity-50">
-          <div
-            ref={modalRef}
-            className="w-screen"
-            style={{ maxWidth: "480px" }}
-          >
-            <ModalReserva />
-          </div>
-        </div>
-      )}
     </nav>
   );
 };

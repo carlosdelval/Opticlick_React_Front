@@ -9,6 +9,8 @@ import AuthContext from "../../context/AuthContext";
 import SecondaryDanger from "../../components/SecondaryDanger";
 import { useLocation } from "react-router-dom";
 import Alert from "../../components/Alert";
+import ModalReserva from "./ModalReserva";
+import MenuButton from "../../components/MenuButton";
 
 const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -18,26 +20,28 @@ const AdminDashboard = () => {
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [openModalAnular, setOpenModalAnular] = React.useState(false);
+  const [openModalReserva, setOpenModalReserva] = React.useState(false);
+  const modalRef = React.useRef(null);
   const [id, setId] = React.useState(null);
   const [openAccordions, setOpenAccordions] = React.useState({});
+  const fetchCitas = async () => {
+    if (!user) return;
+    try {
+      const data = await getCitasUser(user.id);
+      setCitas(data);
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    } catch (err) {
+      console.error("Error fetching citas:", err);
+      setError("No se pudieron cargar las citas.");
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    }
+  };
 
   React.useEffect(() => {
-    const fetchCitas = async () => {
-      if (!user) return;
-      try {
-        const data = await getCitasUser(user.id);
-        setCitas(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      } catch (err) {
-        console.error("Error fetching citas:", err);
-        setError("No se pudieron cargar las citas.");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
     if (location.state?.reload) {
       // Forzar recarga de datos
       fetchCitas();
@@ -147,6 +151,25 @@ const AdminDashboard = () => {
     }));
   };
 
+  // Gestionar cierre de modal al clickar fuera
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setOpenModalReserva(false);
+      }
+    };
+
+    if (openModalReserva) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openModalReserva]);
+
   return (
     <div className="px-4 py-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div className="flex mb-4 space-x-3 text-start">
@@ -167,8 +190,8 @@ const AdminDashboard = () => {
       )}
 
       {/* Barrita de búsqueda */}
-      <div className="mb-4">
-        <div className="relative">
+      <div className="mb-4 space-y-4 md:flex md:space-x-3 md:space-y-0">
+        <div className="relative w-full">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg
               className="w-4 h-4 dark:text-white"
@@ -194,6 +217,31 @@ const AdminDashboard = () => {
             autoComplete="off"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="relative flex items-center justify-end w-full">
+          <MenuButton
+            text="Reservar cita"
+            icon={
+              <svg
+                className="w-5 h-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m11.5 11.5 2.071 1.994M4 10h5m11 0h-1.5M12 7V4M7 7V4m10 3V4m-7 13H8v-2l5.227-5.292a1.46 1.46 0 0 1 2.065 2.065L10 17Zm-5 3h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
+                />
+              </svg>
+            }
+            action={() => setOpenModalReserva(true)}
           />
         </div>
       </div>
@@ -601,6 +649,21 @@ const AdminDashboard = () => {
           </Modal>
         </div>
       </div>
+      {openModalReserva && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-gray-200 bg-opacity-50">
+          <div
+            ref={modalRef}
+            className="w-screen"
+            style={{ maxWidth: "480px" }}
+          >
+            <ModalReserva
+              onReservaExitosa={() => {
+                fetchCitas(); // Vuelve a cargar las citas del usuario para que se actualice la lista
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
