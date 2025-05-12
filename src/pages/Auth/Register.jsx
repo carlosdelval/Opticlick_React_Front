@@ -6,6 +6,7 @@ import registerAnimation from "../../assets/register.json";
 import PrimaryButton from "../../components/PrimaryButton";
 import InputField from "../../components/InputField";
 import { registerUser } from "../../api";
+import RotatingText from "../../components/RotatingText";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -111,8 +112,9 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="p-8 bg-white border-2 border-black rounded-lg shadow-lg w-96 dark:border-gray-700">
+    <div className="flex items-center justify-center min-h-screen gap-16 px-8">
+      {/* Formulario - IZQUIERDA */}
+      <div className="w-full max-w-md p-8 bg-white border-2 border-black shadow-lg rounded-2xl dark:border-gray-700 animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
             <img
@@ -122,9 +124,9 @@ const Register = () => {
             />
           </a>
         </div>
-        <div className="flex">
+        <div className="flex items-center gap-2 mb-4">
           <Lottie animationData={registerAnimation} style={{ height: 60 }} />
-          <h2 className="my-4 text-2xl font-bold text-center">Registro</h2>
+          <h2 className="text-2xl font-bold">Registro</h2>
         </div>
         <form onSubmit={handleSubmit}>
           <InputField
@@ -141,20 +143,22 @@ const Register = () => {
             onChange={(value) => setFormData({ ...formData, surname: value })}
             error={errors.surname}
           />
-          <InputField
-            label="DNI"
-            name="dni"
-            value={formData.dni}
-            onChange={(value) => setFormData({ ...formData, dni: value })}
-            error={errors.dni}
-          />
-          <InputField
-            label="Teléfono"
-            name="tlf"
-            value={formData.tlf}
-            onChange={(value) => setFormData({ ...formData, tlf: value })}
-            error={errors.tlf}
-          />
+          <div className="gap-2 md:flex">
+            <InputField
+              label="DNI"
+              name="dni"
+              value={formData.dni}
+              onChange={(value) => setFormData({ ...formData, dni: value })}
+              error={errors.dni}
+            />
+            <InputField
+              label="Teléfono"
+              name="tlf"
+              value={formData.tlf}
+              onChange={(value) => setFormData({ ...formData, tlf: value })}
+              error={errors.tlf}
+            />
+          </div>
           <InputField
             label="Correo electrónico"
             type="email"
@@ -192,6 +196,25 @@ const Register = () => {
             Inicia sesión
           </a>
         </p>
+      </div>
+
+      {/* TEXTO - DERECHA */}
+      <div className="flex-col items-start hidden max-w-xl md:flex">
+        <h3 className="mb-4 font-bold text-center md:text-2xl lg:text-6xl">
+          Consulta{" "}
+          <RotatingText
+            texts={["Todas tus citas", "Tus Graduaciones", "Tu historial"]}
+            mainClassName="px-2 sm:px-2 md:px-3 text-chryslerblue justify-center"
+            staggerFrom={"last"}
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "-120%" }}
+            staggerDuration={0.025}
+            splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+            transition={{ type: "spring", damping: 30, stiffness: 400 }}
+            rotationInterval={4000}
+          />
+        </h3>
       </div>
     </div>
   );

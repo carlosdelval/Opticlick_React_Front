@@ -2,19 +2,37 @@ import { Flowbite } from "flowbite-react";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./src/**/*.{js,jsx,ts,tsx}", Flowbite, "./node_modules/tailwind-datepicker-react/dist/**/*.js",],
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    Flowbite,
+    "./node_modules/tailwind-datepicker-react/dist/**/*.js",
+  ],
   theme: {
     extend: {
       colors: {
-        'vistablue': '#8AAADC',
-        'chryslerblue': '#531CB3',
-        'babypowder': '#FDFFF7',
-        'redpantone': '#E71D36',
-        'lightcoral': '#F07C79',
-        'aquamarine': '#23F0C7',
-      }
-    }
+        vistablue: "#8AAADC",
+        chryslerblue: "#531CB3",
+        babypowder: "#FDFFF7",
+        redpantone: "#E71D36",
+        lightcoral: "#F07C79",
+        aquamarine: "#23F0C7",
+      },
+      keyframes: {
+        gradient: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        fadeIn: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
+      },
+      animation: {
+        gradient: "gradient 3s linear infinite",
+        "fade-in": "fadeIn 1s ease-out",
+      },
+    },
   },
   plugins: [Flowbite],
 };
-

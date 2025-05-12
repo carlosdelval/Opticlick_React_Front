@@ -1,7 +1,6 @@
 import React from "react";
 import AuthContext from "../../context/AuthContext";
 import {
-  getCitas,
   deleteCita,
   addGraduacion,
   setGraduada,
@@ -37,7 +36,7 @@ const AdminDashboard = () => {
   const [generatePdf, setGeneratePdf] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
   const [openModalAnular, setOpenModalAnular] = React.useState(false);
-  const [vistaSemanal, setVistaSemanal] = React.useState(true);
+  const [vistaSemanal, setVistaSemanal] = React.useState(false);
   const [turnos, setTurnos] = React.useState(true);
   const [weekOffSet, setWeekOffSet] = React.useState(0);
   const [id, setId] = React.useState(null);
@@ -648,31 +647,14 @@ const AdminDashboard = () => {
   };
 
   React.useEffect(() => {
-    const fetchCitas = async () => {
-      try {
-        const data = await getCitas();
-        console.log("Citas:", data);
-        setCitas(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      } catch (err) {
-        console.error("Error fetching citas:", err);
-        setError("No se pudieron cargar las citas.");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
-
     const fetchOpticaAdmin = async () => {
       try {
-        console.log("User ID:", user.id);
         const data = await getOpticaAdmin(user.id);
         setOpticaAdmin(data.optica_id);
       } catch (err) {
-        console.error("Error fetching optica:", err);
+        console.error("Error fetching optica admin:", err);
         setError("No se pudo cargar la óptica.");
+        setSuccess(null);
       }
     };
 
@@ -683,39 +665,33 @@ const AdminDashboard = () => {
       } catch (err) {
         console.error("Error fetching opticas:", err);
         setError("No se pudieron cargar las ópticas");
-      }
-    };
-
-    const fetchCitasOptica = async () => {
-      try {
-        setLoading(true);
-        const data = await getCitasOptica(opticaSearch);
-        setCitas(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 250);
-      } catch (err) {
-        console.error("Error fetching clients by optica:", err);
-        setError("No se pudieron cargar las citas de esta óptica");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
+        setSuccess(null);
       }
     };
 
     fetchOpticaAdmin();
     fetchOpticas();
+  }, [user.id]);
 
-    //IMPORTANTE Para evitar que al recargar la página no se resetee en la vista semanal y se ponga la lista de citas de todas las ópticas!!!
-    if (vistaSemanal && opticaSearch === "") {
-      setOpticaSearch(opticaAdmin);
-    }
+  // Nuevo useEffect para obtener citas SOLO cuando opticaAdmin esté definido
+  React.useEffect(() => {
+    const fetchCitasOptica = async () => {
+      if (!opticaAdmin) return;
+      try {
+        setLoading(true);
+        const idToSearch = opticaSearch || opticaAdmin;
+        const data = await getCitasOptica(idToSearch);
+        setCitas(data);
+      } catch (err) {
+        console.error("Error fetching appointments:", err);
+        setError("No se pudieron cargar las citas de esta óptica");
+        setSuccess(null);
+      } finally {
+        setTimeout(() => setLoading(false), 250);
+      }
+    };
 
-    if (opticaSearch) {
-      fetchCitasOptica();
-    } else {
-      fetchCitas();
-    }
+    fetchCitasOptica();
   }, [opticaSearch, opticaAdmin]);
 
   const handleOpenModalAnular = (id) => {
@@ -946,7 +922,6 @@ const AdminDashboard = () => {
               <option value="" disabled>
                 Filtrar por óptica
               </option>
-              {!vistaSemanal && <option value="">Todas las ópticas</option>}
               {opticas.map((optica) => (
                 <option key={optica.id} value={optica.id}>
                   {optica.nombre}
@@ -1413,9 +1388,11 @@ const AdminDashboard = () => {
             </output>
           )}
           {filteredCitas.length === 0 && !vistaSemanal && !loading && (
-            <p className="p-4 my-4 text-center">
-              No hay citas que coincidan con la búsqueda
-            </p>
+            <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
+              <p className="p-4 my-4 text-center">
+                No hay citas que coincidan con la búsqueda
+              </p>
+            </div>
           )}
           {/* Paginación */}
           {!loading && !vistaSemanal && filteredCitas.length > 0 && (

@@ -65,7 +65,7 @@ const VerifyEmail = () => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+      <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
             <img
