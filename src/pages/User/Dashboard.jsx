@@ -171,7 +171,7 @@ const AdminDashboard = () => {
   }, [openModalReserva]);
 
   return (
-    <div className="px-4 py-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div className="px-4 py-2 w-screen max-w-screen-xl sm:px-6 lg:px-8">
       <div className="flex mb-4 space-x-3 text-start">
         <Lottie animationData={calendarAnimation} style={{ height: 60 }} />
         <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
@@ -614,7 +614,7 @@ const AdminDashboard = () => {
           )}
           {/* Modal anular cita*/}
           <Modal
-            className="justify-center py-20 bg-gray-200 bg-opacity-50"
+            className="justify-center py-96 bg-gray-200 bg-opacity-50"
             size="md"
             show={openModalAnular}
             onClose={() => setOpenModalAnular(false)}

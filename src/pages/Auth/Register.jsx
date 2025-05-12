@@ -82,8 +82,6 @@ const Register = () => {
         navigate("/login");
       }
     } catch (error) {
-      console.log(error); // Inspecciona la estructura del error
-
       if (
         error.response &&
         error.response.data &&
@@ -112,8 +110,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen gap-16 px-8">
-      {/* Formulario - IZQUIERDA */}
+    <div className="flex items-center justify-center gap-16 px-8">
       <div className="w-full max-w-md p-8 bg-white border-2 border-black shadow-lg rounded-2xl dark:border-gray-700 animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
@@ -197,8 +194,6 @@ const Register = () => {
           </a>
         </p>
       </div>
-
-      {/* TEXTO - DERECHA */}
       <div className="flex-col items-start hidden max-w-xl md:flex">
         <h3 className="mb-4 font-bold text-center md:text-2xl lg:text-6xl">
           Consulta{" "}

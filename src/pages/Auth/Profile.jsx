@@ -7,8 +7,8 @@ import Lottie from "lottie-react";
 import userProfileAnimation from "../../assets/profile.json";
 import deleteAnimation from "../../assets/delete.json";
 import { deleteUser } from "../../api";
-import { Modal, Alert } from "flowbite-react";
-import { HiInformationCircle } from "react-icons/hi";
+import { Modal } from "flowbite-react";
+import Alert from "../../components/Alert";
 
 const Profile = () => {
   const { user, setUser } = React.useContext(AuthContext);
@@ -141,8 +141,15 @@ const Profile = () => {
           return newErrors;
         });
       } else {
-        setError(data.error || "Error al actualizar la contraseña");
-        setSuccess(null);
+        if (data.error === "Contraseña incorrecta") {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            password: data.error,
+          }));
+        } else {
+          setError(data.error || "Error al actualizar la contraseña");
+          setSuccess(null);
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -200,7 +207,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div className="px-4 py-4 w-screen max-w-screen-xl sm:px-6 lg:px-8">
       <div className="flex mb-4 space-x-2 text-start">
         <Lottie animationData={userProfileAnimation} style={{ height: 70 }} />
         <h2 className="my-5 text-4xl font-semibold dark:text-babypowder">
@@ -208,122 +215,128 @@ const Profile = () => {
         </h2>
       </div>
       {error && (
-        <Alert
-          icon={HiInformationCircle}
-          className="mb-4 rounded-lg shadow-md bg-lightcoral"
-          onDismiss={() => setError(null)}
-        >
-          <span className="font-medium">{error}</span>
-        </Alert>
+        <Alert onDismiss={() => setError(null)} text={error} type="error" />
       )}
       {success && (
         <Alert
-          className="mb-4 space-x-4 rounded-lg shadow-md bg-aquamarine"
-          icon={HiInformationCircle}
           onDismiss={() => setSuccess(null)}
-        >
-          <span className="font-medium">{success}</span>
-        </Alert>
+          text={success}
+          type="success"
+        />
       )}
-      <div className="p-6 mx-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl sm:px-6 lg:px-8 dark:border-gray-700">
-        <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
-          Información
-        </h2>
-        <form onSubmit={handleSubmitInfo} className="space-y-4">
-          <InputField
-            text="Nombre:"
-            label="Nombre"
-            name="name"
-            value={formData.name}
-            onChange={(value) => setFormData({ ...formData, name: value })}
-            error={errors.name}
-          />
-          <InputField
-            text="Apellidos:"
-            label="Apellido"
-            name="surname"
-            value={formData.surname}
-            onChange={(value) => setFormData({ ...formData, surname: value })}
-            error={errors.surname}
-          />
-          <InputField
-            text="DNI:"
-            label="DNI"
-            name="dni"
-            value={formData.dni}
-            onChange={(value) => setFormData({ ...formData, dni: value })}
-            error={errors.dni}
-          />
-          <InputField
-            text="Teléfono:"
-            label="Teléfono"
-            name="tlf"
-            value={formData.tlf}
-            onChange={(value) => setFormData({ ...formData, tlf: value })}
-            error={errors.tlf}
-          />
-          <InputField
-            text="Correo electrónico:"
-            label="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={(value) => setFormData({ ...formData, email: value })}
-            error={errors.email}
-          />
-          <PrimaryButton text="Guardar cambios" classes="py-2"></PrimaryButton>
-        </form>
-      </div>
-      <div className="p-6 mx-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl my-7 sm:px-6 lg:px-8 dark:border-gray-700">
-        <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
-          Contraseña
-        </h2>
-        <form onSubmit={handleSubmitPass} className="space-y-4">
-          <InputField
-            label="Contraseña actual"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, password: value }))
-            }
-            error={errors.password}
-          />
-          <InputField
-            label="Nueva contraseña"
-            name="new_password"
-            type="password"
-            value={formData.new_password}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, new_password: value }))
-            }
-            error={errors.new_password}
-          />
-          <InputField
-            label="Confirmar contraseña"
-            name="confirm_password"
-            type="password"
-            value={formData.confirm_password}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, confirm_password: value }))
-            }
-            error={errors.confirm_password}
-          />
-          <PrimaryButton
-            text="Confirmar contraseña"
-            classes="py-2"
-          ></PrimaryButton>
-        </form>
-      </div>
-      <div className="p-6 mx-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl my-7 sm:px-6 lg:px-8 dark:border-gray-700">
-        <h2 className="text-2xl font-semibold dark:text-babypowder">
-          Eliminar mi cuenta
-        </h2>
-        <DangerButton
-          text="Eliminar cuenta"
-          classes="p-2 mt-4"
-          action={handleModalDelete}
-        ></DangerButton>
+      <div className="md:flex md:space-x-4 space-y-7 md:space-y-0">
+        <div className="p-6 md:w-1/2 bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl sm:px-6 lg:px-8 dark:border-gray-700">
+          <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
+            Información
+          </h2>
+          <form onSubmit={handleSubmitInfo} className="space-y-4">
+            <InputField
+              text="Nombre:"
+              label="Nombre"
+              name="name"
+              value={formData.name}
+              onChange={(value) => setFormData({ ...formData, name: value })}
+              error={errors.name}
+            />
+            <InputField
+              text="Apellidos:"
+              label="Apellido"
+              name="surname"
+              value={formData.surname}
+              onChange={(value) => setFormData({ ...formData, surname: value })}
+              error={errors.surname}
+            />
+            <InputField
+              text="DNI:"
+              label="DNI"
+              name="dni"
+              value={formData.dni}
+              onChange={(value) => setFormData({ ...formData, dni: value })}
+              error={errors.dni}
+            />
+            <InputField
+              text="Teléfono:"
+              label="Teléfono"
+              name="tlf"
+              value={formData.tlf}
+              onChange={(value) => setFormData({ ...formData, tlf: value })}
+              error={errors.tlf}
+            />
+            <InputField
+              text="Correo electrónico:"
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={(value) => setFormData({ ...formData, email: value })}
+              error={errors.email}
+            />
+            <PrimaryButton
+              text="Guardar cambios"
+              classes="py-2"
+            ></PrimaryButton>
+          </form>
+        </div>
+        <div className="md:flex md:flex-col md:justify-between md:w-1/2 md:space-y-0 space-y-7">
+          <div className="p-6 bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl sm:px-6 lg:px-8 dark:border-gray-700">
+            <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
+              Contraseña
+            </h2>
+            <form onSubmit={handleSubmitPass} className="space-y-4">
+              <InputField
+                label="Contraseña actual"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, password: value }))
+                }
+                error={errors.password}
+              />
+              <InputField
+                label="Nueva contraseña"
+                name="new_password"
+                type="password"
+                value={formData.new_password}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, new_password: value }))
+                }
+                error={errors.new_password}
+              />
+              <InputField
+                label="Confirmar contraseña"
+                name="confirm_password"
+                type="password"
+                value={formData.confirm_password}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, confirm_password: value }))
+                }
+                error={errors.confirm_password}
+              />
+              <PrimaryButton
+                text="Confirmar contraseña"
+                classes="py-2"
+              ></PrimaryButton>
+            </form>
+          </div>
+          <div className="p-6 bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl sm:px-6 lg:px-8 dark:border-gray-700">
+            <h2 className="text-2xl font-semibold dark:text-babypowder">
+              Eliminar mi cuenta
+            </h2>
+            <p className="my-4">
+              Si desea eliminar su cuenta, haga clic en el botón de abajo.
+              <br />
+              <span className="text-redpantone font-semibold">
+                Esta acción no se puede deshacer.
+              </span>
+            </p>
+            <DangerButton
+              text="Eliminar cuenta"
+              classes="p-2 mt-4"
+              action={handleModalDelete}
+            ></DangerButton>
+          </div>
+        </div>
       </div>
       {/* Modal borrar cliente*/}
       <Modal

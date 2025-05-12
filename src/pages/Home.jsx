@@ -4,7 +4,6 @@ import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import CountUp from "../components/CountUp";
 import GradientText from "../components/GradientText";
-import Footer from "../components/Footer";
 
 const Home = () => {
   const { user } = useContext(AuthContext);
@@ -20,8 +19,8 @@ const Home = () => {
     }
   }, [user, navigate]);
   return (
-    <div>
-      <div className="py-0 md:py-14">
+    <div className="flex flex-grow items-center justify-center py-14">
+      <div className="flex flex-col">
         <div className="p-10 text-center">
           <h3 className="text-2xl font-semibold dark:text-gray-600">
             {"¡Más de "}
@@ -39,7 +38,7 @@ const Home = () => {
           </h3>
         </div>
 
-        <div className="flex items-center justify-center ">
+        <div className="flex items-center justify-center">
           <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl animate-fade-in">
             <div className="flex justify-center mb-4">
               <a href="/" className="inline-block">
@@ -95,7 +94,6 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

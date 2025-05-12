@@ -94,7 +94,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center">
       <div className="p-8 bg-white border-2 border-black shadow-lg rounded-2xl w-96 dark:border-gray-700 animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
@@ -106,7 +106,11 @@ const Login = () => {
           </a>
         </div>
         <div className="flex">
-          <Lottie speed={2} animationData={loginAnimation} style={{ height: 60 }} />
+          <Lottie
+            speed={2}
+            animationData={loginAnimation}
+            style={{ height: 60 }}
+          />
           <h2 className="my-4 text-2xl font-bold text-center">
             Iniciar sesión
           </h2>

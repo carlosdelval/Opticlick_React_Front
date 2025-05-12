@@ -123,7 +123,7 @@ const AdminDashboard = () => {
     };
 
     return (
-      <div className="overflow-x-auto">
+      <div className="max-w-screen-xl">
         <div className="flex items-center justify-between my-2">
           <MenuButton
             action={() => {
@@ -442,7 +442,7 @@ const AdminDashboard = () => {
 
     return (
       <div
-        className="bg-white border-2 border-black md:hidden"
+        className="bg-white md:hidden"
         id="accordion-color"
         data-accordion="collapse"
         data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
@@ -466,29 +466,119 @@ const AdminDashboard = () => {
           const formattedDate = `${capitalizedDayOfWeek}, ${day} de ${capitalizedMonth} de ${year}`;
 
           return (
-            <div
-              key={cita.id}
-              className="border-b border-gray-200 dark:border-gray-700"
-            >
-              <h2 id={`accordion-color-heading-${index}`}>
-                <button
-                  type="button"
-                  className={`${
-                    openAccordions[cita.id] ? "bg-blue-50 dark:bg-gray-800" : ""
-                  } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
-                  data-accordion-target={`#accordion-color-body-${index}`}
-                  onClick={() => toggleAccordion(cita.id)}
-                  aria-expanded={openAccordions[cita.id] || false}
-                >
-                  <div className="space-y-4 text-left">
-                    <div className="font-medium text-gray-900 dark:text-babypowder">
-                      {formattedDate}
+            !loading && (
+              <div
+                key={cita.id}
+                className="border-b border-gray-200 dark:border-gray-700"
+              >
+                <h2 id={`accordion-color-heading-${index}`}>
+                  <button
+                    type="button"
+                    className={`${
+                      openAccordions[cita.id]
+                        ? "bg-blue-50 dark:bg-gray-800"
+                        : ""
+                    } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
+                    data-accordion-target={`#accordion-color-body-${index}`}
+                    onClick={() => toggleAccordion(cita.id)}
+                    aria-expanded={openAccordions[cita.id] || false}
+                  >
+                    <div className="space-y-4 text-left">
+                      <div className="font-medium text-gray-900 dark:text-babypowder">
+                        {formattedDate}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="space-x-2">
+                          <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-4 h-4 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                              />
+                            </svg>
+                            {cita.user_name} {cita.user_surname}
+                          </span>
+                          <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-4 h-4 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                              />
+                            </svg>
+                            {cita.telefono}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-2.5 h-2.5 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                            </svg>
+                            {cita.hora ? cita.hora.substring(0, 5) : ""}
+                            {"h"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <div className="space-x-2">
-                        <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                    <svg
+                      data-accordion-icon
+                      className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
+                        openAccordions[cita.id] ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 10 6"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 5 5 1 1 5"
+                      />
+                    </svg>
+                  </button>
+                </h2>
+                <div
+                  className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
+                    openAccordions[cita.id] ? "max-h-96" : "max-h-0"
+                  }`}
+                  aria-hidden={!openAccordions[cita.id]}
+                >
+                  <div className="flex p-4 border-t dark:border-gray-700">
+                    <div className="flex justify-end w-full space-x-2">
+                      <SecondaryButton
+                        action={() => handleOpenModal(cita.id)}
+                        text="Graduar cita"
+                        icon={
                           <svg
-                            className="w-4 h-4 me-1.5"
+                            className="w-6 h-6"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -499,14 +589,23 @@ const AdminDashboard = () => {
                             <path
                               stroke="currentColor"
                               strokeWidth="2"
-                              d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                              d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
+                            />
+                            <path
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                             />
                           </svg>
-                          {cita.user_name} {cita.user_surname}
-                        </span>
-                        <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                        }
+                        classes="px-4"
+                      />
+                      <SecondaryDanger
+                        action={() => handleOpenModalAnular(cita.id)}
+                        text="Anular cita"
+                        icon={
                           <svg
-                            className="w-4 h-4 me-1.5"
+                            className="w-6 h-6"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -519,112 +618,17 @@ const AdminDashboard = () => {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth="2"
-                              d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                              d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191 .4936c .4468 0 .8752-.1775 1 .4936c .8624-.8261 1 .6952-1 .6004Z"
                             />
                           </svg>
-                          {cita.telefono}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                          <svg
-                            className="w-2.5 h-2.5 me-1.5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                          </svg>
-                          {cita.hora ? cita.hora.substring(0, 5) : ""}
-                          {"h"}
-                        </span>
-                      </div>
+                        }
+                        classes="px-4"
+                      />
                     </div>
-                  </div>
-                  <svg
-                    data-accordion-icon
-                    className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
-                      openAccordions[cita.id] ? "rotate-180" : ""
-                    }`}
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5 5 1 1 5"
-                    />
-                  </svg>
-                </button>
-              </h2>
-              <div
-                className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
-                  openAccordions[cita.id] ? "max-h-96" : "max-h-0"
-                }`}
-                aria-hidden={!openAccordions[cita.id]}
-              >
-                <div className="flex p-4 border-t dark:border-gray-700">
-                  <div className="flex justify-end w-full space-x-2">
-                    <SecondaryButton
-                      action={() => handleOpenModal(cita.id)}
-                      text="Graduar cita"
-                      icon={
-                        <svg
-                          className="w-6 h-6"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
-                          />
-                          <path
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                          />
-                        </svg>
-                      }
-                      classes="px-4"
-                    />
-                    <SecondaryDanger
-                      action={() => handleOpenModalAnular(cita.id)}
-                      text="Anular cita"
-                      icon={
-                        <svg
-                          className="w-6 h-6"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191 .4936c .4468 0 .8752-.1775 1 .4936c .8624-.8261 1 .6952-1 .6004Z"
-                          />
-                        </svg>
-                      }
-                      classes="px-4"
-                    />
                   </div>
                 </div>
               </div>
-            </div>
+            )
           );
         })}
         {citasSemana.length === 0 && !loading && (
@@ -862,7 +866,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="px-4 py-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div className="px-4 py-2 w-screen max-w-screen-xl sm:px-6 lg:px-8">
       <div className="flex mb-4 space-x-3 text-start">
         <Lottie animationData={calendarAnimation} style={{ height: 60 }} />
         <h2 className="text-4xl font-semibold md:mt-4 dark:text-babypowder">
@@ -941,6 +945,9 @@ const AdminDashboard = () => {
               setLoading(true);
               setTimeout(() => {
                 setWeekOffSet(0);
+                if (opticaSearch === "") {
+                  setOpticaSearch(opticaAdmin);
+                }
                 setVistaSemanal(!vistaSemanal);
                 setLoading(false);
               }, 300);
@@ -1196,31 +1203,122 @@ const AdminDashboard = () => {
                     const formattedDate = `${capitalizedDayOfWeek}, ${day} de ${capitalizedMonth} de ${year}`;
 
                     return (
-                      <div
-                        key={cita.id}
-                        className="border-b border-gray-200 dark:border-gray-700"
-                      >
-                        <h2 id={`accordion-color-heading-${index}`}>
-                          <button
-                            type="button"
-                            className={`${
-                              openAccordions[cita.id]
-                                ? "bg-blue-50 dark:bg-gray-800"
-                                : ""
-                            } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
-                            data-accordion-target={`#accordion-color-body-${index}`}
-                            onClick={() => toggleAccordion(cita.id)}
-                            aria-expanded={openAccordions[cita.id] || false}
-                          >
-                            <div className="space-y-4 text-left">
-                              <div className="font-medium text-gray-900 dark:text-babypowder">
-                                {formattedDate}
+                      !loading && (
+                        <div
+                          key={cita.id}
+                          className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                        >
+                          <h2 id={`accordion-color-heading-${index}`}>
+                            <button
+                              type="button"
+                              className={`${
+                                openAccordions[cita.id]
+                                  ? "bg-blue-50 dark:bg-gray-800"
+                                  : ""
+                              } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
+                              data-accordion-target={`#accordion-color-body-${index}`}
+                              onClick={() => toggleAccordion(cita.id)}
+                              aria-expanded={openAccordions[cita.id] || false}
+                            >
+                              <div className="space-y-4 text-left">
+                                <div className="font-medium text-gray-900 dark:text-babypowder">
+                                  {formattedDate}
+                                </div>
+                                <div className="space-y-2">
+                                  <div className="space-x-2">
+                                    <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                      <svg
+                                        className="w-4 h-4 me-1.5"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                        />
+                                      </svg>
+                                      {cita.user_name} {cita.user_surname}
+                                    </span>
+                                    <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                      <svg
+                                        className="w-4 h-4 me-1.5"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          stroke="currentColor"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                                        />
+                                      </svg>
+                                      {cita.telefono}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                      <svg
+                                        className="w-2.5 h-2.5 me-1.5"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                      >
+                                        <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                                      </svg>
+                                      {cita.hora
+                                        ? cita.hora.substring(0, 5)
+                                        : ""}
+                                      {"h"}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="space-y-2">
-                                <div className="space-x-2">
-                                  <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                              <svg
+                                data-accordion-icon
+                                className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
+                                  openAccordions[cita.id] ? "rotate-180" : ""
+                                }`}
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 10 6"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M9 5 5 1 1 5"
+                                />
+                              </svg>
+                            </button>
+                          </h2>
+                          <div
+                            className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
+                              openAccordions[cita.id] ? "max-h-96" : "max-h-0"
+                            }`}
+                            aria-hidden={!openAccordions[cita.id]}
+                          >
+                            <div className="flex p-4 border-t dark:border-gray-700">
+                              <div className="flex justify-end space-x-2">
+                                <SecondaryButton
+                                  action={() => handleOpenModal(cita.id)}
+                                  text="Graduar cita"
+                                  classes={"px-4"}
+                                  icon={
                                     <svg
-                                      className="w-4 h-4 me-1.5"
+                                      className="w-6 h-6"
                                       aria-hidden="true"
                                       xmlns="http://www.w3.org/2000/svg"
                                       width="24"
@@ -1231,14 +1329,23 @@ const AdminDashboard = () => {
                                       <path
                                         stroke="currentColor"
                                         strokeWidth="2"
-                                        d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                        d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
+                                      />
+                                      <path
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                                       />
                                     </svg>
-                                    {cita.user_name} {cita.user_surname}
-                                  </span>
-                                  <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                  }
+                                />
+                                <SecondaryDanger
+                                  action={() => handleOpenModalAnular(cita.id)}
+                                  text="Anular cita"
+                                  classes={"px-4"}
+                                  icon={
                                     <svg
-                                      className="w-4 h-4 me-1.5"
+                                      className="w-6 h-6"
                                       aria-hidden="true"
                                       xmlns="http://www.w3.org/2000/svg"
                                       width="24"
@@ -1251,112 +1358,16 @@ const AdminDashboard = () => {
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
-                                        d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                                        d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
                                       />
                                     </svg>
-                                    {cita.telefono}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                                    <svg
-                                      className="w-2.5 h-2.5 me-1.5"
-                                      aria-hidden="true"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                                    </svg>
-                                    {cita.hora ? cita.hora.substring(0, 5) : ""}
-                                    {"h"}
-                                  </span>
-                                </div>
+                                  }
+                                />
                               </div>
-                            </div>
-                            <svg
-                              data-accordion-icon
-                              className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
-                                openAccordions[cita.id] ? "rotate-180" : ""
-                              }`}
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 10 6"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M9 5 5 1 1 5"
-                              />
-                            </svg>
-                          </button>
-                        </h2>
-                        <div
-                          className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
-                            openAccordions[cita.id] ? "max-h-96" : "max-h-0"
-                          }`}
-                          aria-hidden={!openAccordions[cita.id]}
-                        >
-                          <div className="flex p-4 border-t dark:border-gray-700">
-                            <div className="flex justify-end space-x-2">
-                              <SecondaryButton
-                                action={() => handleOpenModal(cita.id)}
-                                text="Graduar cita"
-                                classes={"px-4"}
-                                icon={
-                                  <svg
-                                    className="w-6 h-6"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
-                                    />
-                                    <path
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                                    />
-                                  </svg>
-                                }
-                              />
-                              <SecondaryDanger
-                                action={() => handleOpenModalAnular(cita.id)}
-                                text="Anular cita"
-                                classes={"px-4"}
-                                icon={
-                                  <svg
-                                    className="w-6 h-6"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
-                                    />
-                                  </svg>
-                                }
-                              />
                             </div>
                           </div>
                         </div>
-                      </div>
+                      )
                     );
                   })}
               </div>
@@ -1466,7 +1477,7 @@ const AdminDashboard = () => {
 
           {/* Modal graduaciones*/}
           <Modal
-            className="justify-center py-20 bg-gray-200 bg-opacity-50"
+            className="justify-center py-96 bg-gray-200 bg-opacity-50"
             size="md"
             show={openModal}
             onClose={() => setOpenModal(false)}
@@ -1536,7 +1547,7 @@ const AdminDashboard = () => {
           </Modal>
           {/* Modal anular cita*/}
           <Modal
-            className="justify-center py-20 bg-gray-200 bg-opacity-50"
+            className="bg-gray-200 bg-opacity-50 mx-auto py-96"
             size="md"
             show={openModalAnular}
             onClose={() => setOpenModalAnular(false)}

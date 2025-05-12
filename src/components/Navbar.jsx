@@ -41,8 +41,8 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-inherit">
-      <div className="flex flex-wrap items-center justify-between p-4 mx-auto max-w-7xl lg:px-8">
+    <nav className="w-full px-4 md:px-10 py-4 border-t-2 bg-inherit">
+      <div className="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between gap-4">
         <a
           href={
             user?.role === "user"
@@ -250,7 +250,7 @@ const Navbar = () => {
                 </a>
               </li>
             )}
-            {user?.role != "user" && (
+            {user?.role && user?.role != "user" && (
               <li>
                 <a
                   href="/lista-clientes"

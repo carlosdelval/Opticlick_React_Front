@@ -1,8 +1,6 @@
-import React from "react";
-
 const Footer = () => {
   return (
-    <footer className="px-10 py-10 bg-inherit md:py-0">
+    <footer className="px-10 py-10 bg-inherit md:py-0 mt-auto mx-auto">
       <div className="grid items-center grid-cols-1 gap-6 mx-auto font-semibold md:grid-cols-3">
         {/* Columna izquierda: info y créditos */}
         <div className="space-y-2 text-sm text-center md:text-left">
@@ -54,12 +52,12 @@ const Footer = () => {
 
         {/* Columna derecha: botones de app y redes */}
         <div className="flex flex-col items-center space-y-4 md:items-end">
-          <div className="flex gap-3">
+          <div className="flex flex-col xl:flex-row gap-3">
             <button
               type="button"
-              class="flex items-center justify-center w-48 mt-3 text-white bg-black h-14 rounded-xl"
+              className="flex items-center justify-center w-48 mt-3 text-white bg-black h-14 rounded-xl"
             >
-              <div class="mr-3">
+              <div className="mr-3">
                 <svg viewBox="0 0 384 512" width="30">
                   <path
                     fill="currentColor"
@@ -68,17 +66,17 @@ const Footer = () => {
                 </svg>
               </div>
               <div>
-                <div class="text-xs">Download on the</div>
-                <div class="-mt-1 font-sans text-xl font-semibold">
+                <div className="text-xs">Download on the</div>
+                <div className="-mt-1 font-sans text-xl font-semibold">
                   App Store
                 </div>
               </div>
             </button>
             <button
               type="button"
-              class="flex items-center justify-center w-48 mt-3 text-white bg-black rounded-lg h-14"
+              className="flex items-center justify-center w-48 mt-3 text-white bg-black rounded-lg h-14"
             >
-              <div class="mr-3">
+              <div className="mr-3">
                 <svg viewBox="30 336.7 120.9 129.2" width="30">
                   <path
                     fill="#FFD400"
@@ -106,7 +104,7 @@ const Footer = () => {
               </div>
             </button>
           </div>
-          <div className="flex gap-4 text-lg">
+          <div className="flex gap-4 text-lg xl:h-10">
             <a
               href="#"
               aria-label="Instagram"
