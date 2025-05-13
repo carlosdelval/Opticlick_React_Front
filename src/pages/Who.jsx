@@ -35,7 +35,7 @@ const Who = () => {
     setTitleLoaded(true);
     setTimeout(() => {
       setLeftLoaded(true);
-    }, 800);
+    }, 600);
   };
   return (
     <div className="my-auto md:max-w-7xl md:mx-auto">
@@ -43,7 +43,7 @@ const Who = () => {
         <BlurText
           text="¿Qué es OptiClick?"
           className="text-3xl font-extrabold text-center md:text-8xl text-chryslerblue dark:text-vistablue"
-          delay={400}
+          delay={300}
           animateBy="words"
           direction="top"
           onAnimationComplete={handleAnimationComplete}
@@ -51,7 +51,7 @@ const Who = () => {
       </div>
       <div className="flex flex-col gap-16 pt-10 md:flex-row md:pt-20">
         {titleLoaded && (
-          <div className="flex flex-col md:w-1/2 text-start">
+          <div className="flex flex-col md:w-1/2 text-center">
             <FadeContent
               blur={true}
               duration={1000}
@@ -59,7 +59,7 @@ const Who = () => {
               initialOpacity={0}
             >
               <p className="text-2xl font-semibold md:text-6xl text-chryslerblue dark:text-vistablue">
-                La mejor app de gestión y reservas para tu negocio
+                La mejor app de gestión y reservas para tu negocio.
               </p>
               <p className="mt-8 text-xl text-black dark:text-white">
                 <span className="font-semibold">
@@ -77,7 +77,7 @@ const Who = () => {
           </div>
         )}
         {leftLoaded && (
-          <div className="flex flex-col justify-end text-left">
+          <div className="flex flex-col md:w-1/2">
             <FadeContent
               blur={true}
               duration={1000}
@@ -87,7 +87,7 @@ const Who = () => {
               <img
                 src="vista_movil.png"
                 alt="Vista móvil de OptiClick"
-                className="rounded"
+                className="rounded justify-end md:ml-auto"
               />
             </FadeContent>
           </div>
@@ -102,7 +102,7 @@ const Who = () => {
             initialOpacity={0}
           >
             <p className="text-3xl font-extrabold text-center md:text-8xl text-chryslerblue dark:text-vistablue">
-              ¿Te unes a OptiClick?
+              ¿Quieres unirte?
             </p>
             <p className="pt-20 pb-10 text-2xl font-semibold text-center md:text-6xl text-chryslerblue dark:text-vistablue">
               ¡Contacta con nosotros!

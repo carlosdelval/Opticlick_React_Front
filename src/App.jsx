@@ -14,6 +14,9 @@ import Profile from "./pages/Auth/Profile";
 import Historial from "./pages/User/Historial";
 import Who from "./pages/Who";
 import Footer from "./components/Footer";
+import errorAnimation from "./assets/404";
+import Lottie from "lottie-react";
+import PrimaryButton from "./components/PrimaryButton";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
@@ -24,12 +27,34 @@ function App() {
   if (typeof window !== "undefined") {
     window.Buffer = Buffer;
   }
+
+  // Componente para la página 404
+  const NotFound = () => {
+    return (
+      <div className="flex items-center justify-center h-[60vh] animate-fade-in">
+        <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+          <Lottie
+            animationData={errorAnimation}
+            loop={true}
+            className="w-40 h-40 mx-auto"
+            style={{ height: "200px", width: "200px" }}
+          />
+          <p className="py-4 text-gray-600">¡Oops! Página no encontrada.</p>
+          <PrimaryButton
+            text="Volver a inicio"
+            action={() => (window.location.href = "/")}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <AuthProvider>
       <div className="flex flex-col min-h-screen">
         <Background />
         <Navbar />
-        <main className="px-10 pt-10 pb-20">
+        <main className="px-10 pt-10 pb-10 my-auto">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -93,6 +118,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Ruta para 404 */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />

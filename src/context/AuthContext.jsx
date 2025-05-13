@@ -5,17 +5,26 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false); // Cambiamos a un estado más descriptivo
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+    const checkAuth = async () => {
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          // Simulamos un pequeño delay para pruebas
+          // await new Promise(resolve => setTimeout(resolve, 500));
+          setUser(JSON.parse(storedUser));
+        }
+      } catch (error) {
+        console.error("Error al parsear user de localStorage:", error);
+        localStorage.removeItem("user");
+      } finally {
+        setAuthChecked(true);
       }
-    } catch (error) {
-      console.error("Error al parsear user de localStorage:", error);
-      localStorage.removeItem("user");
-    }
+    };
+
+    checkAuth();
   }, []);
 
   const login = (userData) => {
@@ -26,12 +35,15 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
-    window.location.href = '/';
   };
 
-  const value = useMemo(() => {
-    return { user, login, logout, setUser };
-  }, [user]);
+  const value = useMemo(() => ({
+    user,
+    authChecked,
+    login,
+    logout,
+    setUser
+  }), [user, authChecked]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -39,7 +51,9 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired
 };
+
 export default AuthContext;

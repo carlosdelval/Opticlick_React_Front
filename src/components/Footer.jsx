@@ -5,7 +5,7 @@ const Footer = () => {
   const { user } = React.useContext(AuthContext);
 
   return (
-    <footer className="px-10 py-10 mx-auto mt-auto bg-inherit md:py-0">
+    <footer className="px-10 py-10 mt-auto bg-inherit md:py-0">
       <div className="grid items-center grid-cols-1 gap-6 mx-auto font-semibold md:grid-cols-3">
         {/* Columna izquierda: info y créditos */}
         <div className="space-y-2 text-sm text-center md:text-left">
@@ -17,9 +17,9 @@ const Footer = () => {
             Desarrollado por{" "}
             <a
               href="https://github.com/carlosdelval"
-              className="font-bold duration-300 text-chryslerblue hover:underline"
+                className="font-bold duration-300 text-chryslerblue dark:text-vistablue hover:underline hover:animate-pulse"
             >
-              Carlos Del Val
+              Carlos López Del Val
             </a>
           </p>
         </div>
@@ -43,8 +43,8 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="business" className="duration-300 hover:text-chryslerblue">
-                Empleos
+              <a href="#" className="duration-300 hover:text-chryslerblue">
+                Información legal
               </a>
             </li>
             <li>

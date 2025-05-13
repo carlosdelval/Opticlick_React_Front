@@ -7,17 +7,19 @@ import { resendEmail } from "../api";
 import Lottie from "lottie-react";
 import mailAnimation from "../assets/mail.json";
 import successAnimation from "../assets/success.json";
+import PrimaryButton from "../components/PrimaryButton";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { user } = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+  const { user, authChecked } = useContext(AuthContext);
+  const [emailloading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  if (user === null) {
+
+  // Si todavía está cargando, muestra un spinner o nada
+  if (!authChecked) {
     return (
-      <>
-        <Background />
-        <div className="absolute flex items-center justify-center flex-grow text-2xl font-semibold transform text-chryslerblue top-1/2">
-          <output className="flex items-center justify-center w-full mt-4">
+      <div className="flex items-center justify-center my-auto">
+        <div className="z-10 w-96 max-w-md text-center">
+          <output className="flex items-center justify-center w-full h-32">
             <svg
               aria-hidden="true"
               className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-chryslerblue"
@@ -34,12 +36,46 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
                 fill="currentFill"
               />
             </svg>
-            <span className="sr-only">Cargando...</span>
+            <span className="sr-only">Loading...</span>
           </output>
+        </div>
+      </div>
+    );
+  }
+
+  if (user === null) {
+    return (
+      <>
+        <Background />
+        <div className="flex items-center justify-center">
+          <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+            <div className="flex justify-center mb-4">
+              <a href="/" className="inline-block">
+                <img
+                  src="./logo.png"
+                  alt="OptiClick"
+                  className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
+                />
+              </a>
+            </div>
+            <div className="mb-4 text-center">
+              <p className="m-4 text-gray-700">
+                ¡No tienes acceso a esta página! Por favor, inicia sesión para
+                continuar.
+              </p>
+              <PrimaryButton
+                text="Volver a inicio"
+                action={() => (window.location.href = "/")}
+              />
+            </div>
+          </div>
         </div>
       </>
     );
   }
+
+  // Comprobamos si el usuario tiene el rol permitido
+  // Si no tiene el rol permitido, redirigimos a la página de inicio
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
@@ -67,7 +103,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
               Tu sistema de gestión de citas ópticas
             </p>
           </div>
-          {!loading && !loaded && (
+          {!emailloading && !loaded && (
             <div className="mb-4 text-center">
               <h2 className="my-4 text-2xl font-bold text-center">
                 Verifica tu correo electrónico para continuar
@@ -97,7 +133,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
               </p>
             </div>
           )}
-          {loading && (
+          {emailloading && (
             <output className="flex items-center justify-center w-full mt-4">
               <svg
                 aria-hidden="true"
@@ -124,7 +160,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
                 speed={2}
                 animationData={successAnimation}
                 style={{ height: 80 }}
-                loop = {false}
+                loop={false}
               />
               <h2 className="my-4 text-2xl font-bold text-center">
                 ¡Correo de verificación enviado!
