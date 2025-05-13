@@ -10,12 +10,12 @@ import successAnimation from "../assets/success.json";
 import PrimaryButton from "../components/PrimaryButton";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { user, authChecked } = useContext(AuthContext);
+  const { user, authChecked, loading } = useContext(AuthContext);
   const [emailloading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  // Si todavía está cargando, muestra un spinner o nada
-  if (!authChecked) {
+  // Si no hay authchecked O si loading está activo, muestra un spinner o nada
+  if (!authChecked || loading) {
     return (
       <div className="flex items-center justify-center my-auto">
         <div className="z-10 w-96 max-w-md text-center">
@@ -43,7 +43,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     );
   }
 
-  if (user === null) {
+  if (user === null && !loading) {
     return (
       <>
         <Background />

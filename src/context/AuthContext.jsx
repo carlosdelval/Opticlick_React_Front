@@ -1,11 +1,13 @@
 import { createContext, useState, useEffect, useMemo } from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+import { set } from "date-fns";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false); // Cambiamos a un estado más descriptivo
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -33,27 +35,32 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    setLoading(true);
     localStorage.removeItem("user");
     setUser(null);
+    window.location.href = "/";
+    setTimeout(() => {
+      setLoading(false);
+    }, 300);
   };
 
-  const value = useMemo(() => ({
-    user,
-    authChecked,
-    login,
-    logout,
-    setUser
-  }), [user, authChecked]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      authChecked,
+      loading,
+      login,
+      logout,
+      setUser,
+    }),
+    [user, authChecked]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 export default AuthContext;
