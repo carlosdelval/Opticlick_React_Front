@@ -110,7 +110,24 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center gap-16 px-8">
+    <div className="flex items-center justify-center gap-16 md:px-8">
+      <div className="flex-col items-start hidden max-w-xl md:flex">
+        <h3 className="mb-4 font-bold text-center md:text-2xl lg:text-6xl">
+          Consulta{" "}
+          <RotatingText
+            texts={["Todas tus citas", "Tus Graduaciones", "Tu historial"]}
+            mainClassName="px-2 sm:px-2 md:px-3 text-chryslerblue justify-center"
+            staggerFrom={"last"}
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "-120%" }}
+            staggerDuration={0.025}
+            splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+            transition={{ type: "spring", damping: 30, stiffness: 400 }}
+            rotationInterval={4000}
+          />
+        </h3>
+      </div>
       <div className="w-full max-w-md p-8 bg-white border-2 border-black shadow-lg rounded-2xl dark:border-gray-700 animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
@@ -164,24 +181,28 @@ const Register = () => {
             onChange={(value) => setFormData({ ...formData, email: value })}
             error={errors.email}
           />
-          <InputField
-            label="Contraseña"
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={(value) => setFormData({ ...formData, password: value })}
-            error={errors.password}
-          />
-          <InputField
-            label="Confirmar contraseña"
-            type="password"
-            name="confirm_password"
-            value={formData.confirm_password}
-            onChange={(value) =>
-              setFormData({ ...formData, confirm_password: value })
-            }
-            error={errors.confirm_password}
-          />
+          <div className="gap-2 md:flex">
+            <InputField
+              label="Contraseña"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={(value) =>
+                setFormData({ ...formData, password: value })
+              }
+              error={errors.password}
+            />
+            <InputField
+              label="Confirmar contraseña"
+              type="password"
+              name="confirm_password"
+              value={formData.confirm_password}
+              onChange={(value) =>
+                setFormData({ ...formData, confirm_password: value })
+              }
+              error={errors.confirm_password}
+            />
+          </div>
           <PrimaryButton text="Registrar" classes="w-full p-2 mt-4" />
         </form>
         <p className="mt-2 text-sm text-gray-500">
@@ -193,23 +214,6 @@ const Register = () => {
             Inicia sesión
           </a>
         </p>
-      </div>
-      <div className="flex-col items-start hidden max-w-xl md:flex">
-        <h3 className="mb-4 font-bold text-center md:text-2xl lg:text-6xl">
-          Consulta{" "}
-          <RotatingText
-            texts={["Todas tus citas", "Tus Graduaciones", "Tu historial"]}
-            mainClassName="px-2 sm:px-2 md:px-3 text-chryslerblue justify-center"
-            staggerFrom={"last"}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "-120%" }}
-            staggerDuration={0.025}
-            splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
-            transition={{ type: "spring", damping: 30, stiffness: 400 }}
-            rotationInterval={4000}
-          />
-        </h3>
       </div>
     </div>
   );

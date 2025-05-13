@@ -207,7 +207,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="px-4 py-4 w-screen max-w-screen-xl sm:px-6 lg:px-8">
+    <div className="my-auto md:max-w-7xl md:mx-auto">
       <div className="flex mb-4 space-x-2 text-start">
         <Lottie animationData={userProfileAnimation} style={{ height: 70 }} />
         <h2 className="my-5 text-4xl font-semibold dark:text-babypowder">
@@ -225,7 +225,7 @@ const Profile = () => {
         />
       )}
       <div className="md:flex md:space-x-4 space-y-7 md:space-y-0">
-        <div className="p-6 md:w-1/2 bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800 max-w-7xl sm:px-6 lg:px-8 dark:border-gray-700">
+        <div className="p-6 bg-white border-2 border-black rounded-lg shadow-lg md:w-1/2 dark:bg-gray-800 max-w-7xl sm:px-6 lg:px-8 dark:border-gray-700">
           <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
             Información
           </h2>
@@ -326,7 +326,7 @@ const Profile = () => {
             <p className="my-4">
               Si desea eliminar su cuenta, haga clic en el botón de abajo.
               <br />
-              <span className="text-redpantone font-semibold">
+              <span className="font-semibold text-redpantone">
                 Esta acción no se puede deshacer.
               </span>
             </p>

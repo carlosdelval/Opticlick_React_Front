@@ -637,7 +637,7 @@ const AdminDashboard = () => {
               animationData={glassesAnimation}
               style={{ height: 100, width: 100 }}
             />
-            <p className="text-lg font-semibold text-gray-500 dark:text-gray-400">
+            <p className="text-lg font-semibold text-center text-gray-500 dark:text-gray-400">
               No hay citas programadas para esta semana en esta óptica.
             </p>
           </div>
@@ -866,7 +866,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="px-4 py-2 w-screen max-w-screen-xl sm:px-6 lg:px-8">
+    <div className="my-auto md:max-w-7xl md:mx-auto">
       <div className="flex mb-4 space-x-3 text-start">
         <Lottie animationData={calendarAnimation} style={{ height: 60 }} />
         <h2 className="text-4xl font-semibold md:mt-4 dark:text-babypowder">
@@ -984,7 +984,7 @@ const AdminDashboard = () => {
           {vistaSemanal ? (
             <>
               {/* Vista móvil */}
-              <div className="block md:hidden">
+              <div className={`block md:hidden ${!loading ? "border-2 border-black" : ""}`}>
                 <WeeklyViewMobile citas={citas} />
               </div>
 
@@ -1179,7 +1179,6 @@ const AdminDashboard = () => {
                 className="md:hidden"
                 id="accordion-color"
                 data-accordion="collapse"
-                data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
               >
                 {!loading &&
                   currentFilteredCitas.map((cita, index) => {
@@ -1206,7 +1205,7 @@ const AdminDashboard = () => {
                       !loading && (
                         <div
                           key={cita.id}
-                          className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                          className="bg-white border-b border-gray-200 dark:border-gray-700 dark:bg-gray-800"
                         >
                           <h2 id={`accordion-color-heading-${index}`}>
                             <button
@@ -1477,7 +1476,7 @@ const AdminDashboard = () => {
 
           {/* Modal graduaciones*/}
           <Modal
-            className="justify-center py-96 bg-gray-200 bg-opacity-50"
+            className="justify-center bg-gray-200 bg-opacity-50 py-96"
             size="md"
             show={openModal}
             onClose={() => setOpenModal(false)}
@@ -1547,7 +1546,7 @@ const AdminDashboard = () => {
           </Modal>
           {/* Modal anular cita*/}
           <Modal
-            className="bg-gray-200 bg-opacity-50 mx-auto py-96"
+            className="mx-auto bg-gray-200 bg-opacity-50 py-96"
             size="md"
             show={openModalAnular}
             onClose={() => setOpenModalAnular(false)}

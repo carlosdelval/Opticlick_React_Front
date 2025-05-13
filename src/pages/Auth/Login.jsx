@@ -94,7 +94,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center flex-grow">
       <div className="p-8 bg-white border-2 border-black shadow-lg rounded-2xl w-96 dark:border-gray-700 animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">

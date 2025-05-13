@@ -174,7 +174,7 @@ const Historial = () => {
   );
 
   return (
-    <div className="px-4 py-2 w-screen max-w-screen-xl sm:px-6 lg:px-8">
+    <div className="my-auto md:max-w-7xl md:mx-auto">
       <div className="flex mb-4 space-x-3 text-start">
         <Lottie animationData={activityAnimation} style={{ height: 80 }} />
         <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
@@ -602,7 +602,7 @@ const Historial = () => {
             </div>
           )}
           <Modal
-            className="justify-center py-96 bg-gray-200 bg-opacity-50"
+            className="justify-center bg-gray-200 bg-opacity-50 py-96"
             size="md"
             show={openModal}
             onClose={() => setOpenModal(false)}

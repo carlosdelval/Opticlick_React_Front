@@ -18,6 +18,9 @@ export default {
         aquamarine: "#23F0C7",
       },
       keyframes: {
+        translate: {
+          101: "101%",
+        },
         gradient: {
           "0%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
@@ -27,10 +30,15 @@ export default {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
         },
+        marquee: {
+          from: { transform: "translateX(0%)" },
+          to: { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         gradient: "gradient 3s linear infinite",
         "fade-in": "fadeIn 1s ease-out",
+        marquee: "marquee 15s linear infinite",
       },
     },
   },

@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return (
       <>
         <Background />
-        <div className="absolute flex flex-col items-center justify-center w-full text-2xl font-semibold transform text-chryslerblue top-1/2">
+        <div className="absolute flex items-center justify-center flex-grow text-2xl font-semibold transform text-chryslerblue top-1/2">
           <output className="flex items-center justify-center w-full mt-4">
             <svg
               aria-hidden="true"

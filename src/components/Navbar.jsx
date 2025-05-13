@@ -41,8 +41,8 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="w-full px-4 md:px-10 py-4 border-t-2 bg-inherit">
-      <div className="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between gap-4">
+    <nav className="w-full px-4 pt-4 border-t-2 md:px-10 bg-inherit">
+      <div className="flex flex-wrap items-center justify-between max-w-screen-xl gap-4 mx-auto">
         <a
           href={
             user?.role === "user"

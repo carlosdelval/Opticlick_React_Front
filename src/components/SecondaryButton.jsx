@@ -1,5 +1,4 @@
 //SecondaryButton.jsx
-import React from "react";
 
 const SecondaryButton = ({ text, classes, action, icon }) => {
   return (

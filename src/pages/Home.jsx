@@ -19,9 +19,9 @@ const Home = () => {
     }
   }, [user, navigate]);
   return (
-    <div className="flex flex-grow items-center justify-center py-14">
-      <div className="flex flex-col">
-        <div className="p-10 text-center">
+    <div className="flex items-center justify-center flex-grow">
+      <div className="flex flex-col space-y-4">
+        <div className="text-center">
           <h3 className="text-2xl font-semibold dark:text-gray-600">
             {"¡Más de "}
             <GradientText colors={["#531CB3", "#23F0C7"]}>

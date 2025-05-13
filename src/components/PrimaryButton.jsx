@@ -1,5 +1,4 @@
 // PrimaryButton.jsx
-import React from "react";
 
 const PrimaryButton = ({ text, classes, action }) => {
   return (

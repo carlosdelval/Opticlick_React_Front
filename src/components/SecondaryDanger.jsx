@@ -1,5 +1,4 @@
 //SecondaryDanger.jsx
-import React from "react";
 
 const SecondaryDanger = ({ text, classes, action, icon }) => {
   return (

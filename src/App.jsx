@@ -12,6 +12,7 @@ import Administracion from "./pages/Admin/Administracion";
 import VerifyEmail from "./pages/Auth/Verify_email";
 import Profile from "./pages/Auth/Profile";
 import Historial from "./pages/User/Historial";
+import Who from "./pages/Who";
 import Footer from "./components/Footer";
 import "./index.css";
 import Navbar from "./components/Navbar";
@@ -28,13 +29,13 @@ function App() {
       <div className="flex flex-col min-h-screen">
         <Background />
         <Navbar />
-
-        <main className="flex-grow flex items-center justify-center">
+        <main className="px-10 pt-10 pb-20">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/business" element={<Who />} />
 
             <Route
               path="/dashboard"
@@ -94,7 +95,6 @@ function App() {
             />
           </Routes>
         </main>
-
         <Footer />
       </div>
     </AuthProvider>

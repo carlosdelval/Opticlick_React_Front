@@ -379,7 +379,7 @@ function Administracion() {
   );
 
   return (
-    <div className="px-4 py-4 w-screen max-w-screen-xl sm:px-6 lg:px-8">
+    <div className="my-auto md:max-w-7xl md:mx-auto">
       <div className="flex mb-2 space-x-3 text-start">
         <Lottie animationData={dynamicRoleAnimation} style={{ height: 80 }} />
         <h2 className="my-5 text-4xl font-semibold">
@@ -925,7 +925,7 @@ function Administracion() {
         )}
         {/* Modal borrar cliente*/}
         <Modal
-          className="justify-center py-96 bg-gray-200 bg-opacity-50"
+          className="justify-center bg-gray-200 bg-opacity-50 py-96"
           size="md"
           show={modalDelete}
           onClose={() => setModalDelete(false)}
@@ -968,7 +968,7 @@ function Administracion() {
         </Modal>
         {/* Modal de información del cliente */}
         <Modal
-          className="justify-center py-96 bg-gray-200 bg-opacity-50"
+          className="justify-center bg-gray-200 bg-opacity-50 py-96"
           size="md"
           show={modalInfoAdmin}
           onClose={() => {

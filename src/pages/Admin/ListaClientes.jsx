@@ -349,7 +349,7 @@ function Dashboard() {
   );
 
   return (
-    <div className="px-4 py-4 w-screen max-w-screen-xl sm:px-6 lg:px-8">
+    <div className="my-auto md:max-w-7xl md:mx-auto">
       <div className="flex mb-4 space-x-3 text-start">
         <Lottie animationData={teamAnimation} style={{ height: 60 }} />
         <h2 className="my-2 text-4xl font-semibold">Todos tus clientes</h2>
@@ -945,7 +945,7 @@ function Dashboard() {
         )}
         {/* Modal borrar cliente*/}
         <Modal
-          className="justify-center py-96 bg-gray-200 bg-opacity-50"
+          className="justify-center bg-gray-200 bg-opacity-50 py-96"
           size="md"
           show={modalDelete}
           onClose={() => setModalDelete(false)}
@@ -988,7 +988,7 @@ function Dashboard() {
         </Modal>
         {/* Modal de información del cliente */}
         <Modal
-          className="justify-center py-96 bg-gray-200 bg-opacity-50"
+          className="justify-center bg-gray-200 bg-opacity-50 py-96"
           size="md"
           show={modalInfoCliente}
           onClose={() => {
