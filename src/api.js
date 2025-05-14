@@ -172,3 +172,21 @@ export const setGraduada = async (id) => {
   const res = await axios.put(`${API_URL}/citas/${id}`);
   return res.data;
 };
+
+// Obtener notificaciones de un usuario
+export const getNotificaciones = async (id, tipo) => {
+  const res = await axios.get(`${API_URL}/notificaciones/${id}/${tipo}`);
+  return res.data;
+};
+
+// Marcar notificacion como leida
+export const setNotificacionLeida = async (id) => {
+  const res = await axios.put(`${API_URL}/notificaciones/${id}`);
+  return res.data;
+};
+
+// Crear notificacion
+export const createNotificacion = async (notificacion) => {
+  const res = await axios.post(`${API_URL}/notificaciones`, notificacion);
+  return res.data;
+};

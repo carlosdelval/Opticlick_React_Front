@@ -5,7 +5,7 @@ const Footer = () => {
   const { user } = React.useContext(AuthContext);
 
   return (
-    <footer className="px-10 py-10 mt-auto bg-inherit md:py-0">
+    <footer className="px-10 py-10 mt-auto bg-inherit md:py-5">
       <div className="grid items-center grid-cols-1 gap-6 mx-auto font-semibold md:grid-cols-3">
         {/* Columna izquierda: info y créditos */}
         <div className="space-y-2 text-sm text-center md:text-left">
