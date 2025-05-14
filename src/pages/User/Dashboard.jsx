@@ -11,8 +11,8 @@ import callMissedAnimation from "../../assets/call-missed-red.json";
 import notificacionAnimation from "../../assets/notification.json";
 import mensajeAnimation from "../../assets/chat.json";
 import DangerButton from "../../components/DangerButton";
-import { Modal } from "flowbite-react";
 import AuthContext from "../../context/AuthContext";
+import Modal from "../../components/Modal";
 import SecondaryDanger from "../../components/SecondaryDanger";
 import SecondaryButton from "../../components/SecondaryButton";
 import Spinner from "../../components/Spinner";
@@ -29,16 +29,11 @@ const AdminDashboard = () => {
   const [mensajes, setMensajes] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
-  const [errorMessage, setErrorMessage] = React.useState(null);
-  // eslint-disable-next-line no-unused-vars
-  const [successMessage] = React.useState(null);
-  const [errorNotification, setErrorNotification] = React.useState(null);
-  const [successNotification] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [openModalAnular, setOpenModalAnular] = React.useState(false);
+  const [idToDelete, setIdToDelete] = React.useState(null);
   const [openModalReserva, setOpenModalReserva] = React.useState(false);
   const modalRef = React.useRef(null);
-  const [id, setId] = React.useState(null);
   const [openAccordions, setOpenAccordions] = React.useState({});
 
   const fetchCitas = async () => {
@@ -110,21 +105,26 @@ const AdminDashboard = () => {
   }, [user?.id, location.state]);
 
   const handleOpenModalAnular = (id) => {
+    setIdToDelete(id);
     setOpenModalAnular(true);
-    setId(id);
   };
+
+  const handleCloseModal = () => {
+    setOpenModalAnular(false);
+  };
+
   const handleDeleteCita = async (id) => {
     try {
       await deleteCita(id);
       setCitas(citas.filter((cita) => cita.id !== id));
-      setOpenModalAnular(false);
+      handleCloseModal();
       setSuccess("Cita anulada correctamente.");
       setError(null);
     } catch (err) {
       console.error("Error deleting appointment:", err);
       setError("No se pudo anular la cita.");
       setSuccess(null);
-      setOpenModalAnular(false);
+      handleCloseModal();
     }
   };
 
@@ -464,39 +464,36 @@ const AdminDashboard = () => {
             )}
             {/* Modal anular cita*/}
             <Modal
-              className="justify-center bg-gray-200 bg-opacity-50 py-96"
-              size="md"
-              show={openModalAnular}
-              onClose={() => setOpenModalAnular(false)}
-            >
-              <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-                <Modal.Header className="p-4">
-                  <div className="flex">
-                    <Lottie
-                      animationData={callMissedAnimation}
-                      style={{ height: 60 }}
-                      loop={false}
-                    />
-                    <h2 className="my-4 text-2xl font-bold text-center">
-                      Anular esta cita
-                    </h2>
-                  </div>
-                </Modal.Header>
-                <Modal.Body className="justify-center p-4">
-                  <div className="my-2">
-                    <p>¿Está seguro de que desea anular esta cita?</p>
-                    <p>La óptica será notificada.</p>
-                  </div>
-                  <div className="flex justify-end">
-                    <DangerButton
-                      action={() => handleDeleteCita(id)}
-                      classes={"mt-4 "}
-                      text="Anular"
-                    />
-                  </div>
-                </Modal.Body>
-              </div>
-            </Modal>
+              open={openModalAnular}
+              onClose={handleCloseModal}
+              title={
+                <div className="flex space-x-2">
+                  <Lottie
+                    animationData={callMissedAnimation}
+                    style={{ height: 60 }}
+                    loop={false}
+                  />
+                  <h2 className="my-4 text-2xl font-bold text-center">
+                    Anular esta cita
+                  </h2>
+                </div>
+              }
+              text={
+                <div className="my-2">
+                  <p>¿Está seguro de que desea anular esta cita?</p>
+                  <p>El cliente será notificado.</p>
+                </div>
+              }
+              bottom={
+                <div className="flex w-full justify-end">
+                  <DangerButton
+                    action={() => handleDeleteCita(idToDelete)}
+                    classes="mt-4"
+                    text="Anular"
+                  />
+                </div>
+              }
+            />
           </div>
         </div>
         {/* Contenedor derecho */}
@@ -513,20 +510,6 @@ const AdminDashboard = () => {
                 Tus novedades
               </h2>
             </div>
-            {error && (
-              <Alert
-                onDismiss={() => setError(null)}
-                text={errorNotification}
-                type="error"
-              />
-            )}
-            {success && (
-              <Alert
-                onDismiss={() => setSuccess(null)}
-                text={successNotification}
-                type="success"
-              />
-            )}
             <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
               <div className="flex flex-col items-center justify-center w-full bg-white dark:bg-gray-800">
                 {loading && <Spinner />}
@@ -586,8 +569,7 @@ const AdminDashboard = () => {
                                   year: "numeric",
                                   hour: "2-digit",
                                   minute: "2-digit",
-                                  hour12: true,
-                                })
+                                }) + "h"
                               : ""}
                           </span>
                           <SecondaryButton
@@ -711,20 +693,6 @@ const AdminDashboard = () => {
                 Tus mensajes
               </h2>
             </div>
-            {error && (
-              <Alert
-                onDismiss={() => setError(null)}
-                text={errorMessage}
-                type="error"
-              />
-            )}
-            {success && (
-              <Alert
-                onDismiss={() => setSuccess(null)}
-                text={successMessage}
-                type="success"
-              />
-            )}
             <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
               <div className="flex flex-col items-center justify-center w-full bg-white dark:bg-gray-800">
                 {loading && <Spinner />}
@@ -784,9 +752,8 @@ const AdminDashboard = () => {
                                     year: "numeric",
                                     hour: "2-digit",
                                     minute: "2-digit",
-                                    hour12: true,
                                   }
-                                )
+                                ) + "h"
                               : ""}
                           </span>
                           <SecondaryButton

@@ -3,7 +3,7 @@ import { getCitasGraduadasUser, getGraduacion } from "../../api";
 import Lottie from "lottie-react";
 import activityAnimation from "../../assets/activity.json";
 import fileAnimation from "../../assets/file.json";
-import { Modal } from "flowbite-react";
+import Modal from "../../components/Modal";
 import Alert from "../../components/Alert";
 import AuthContext from "../../context/AuthContext";
 import { saveAs } from "file-saver";
@@ -66,6 +66,10 @@ const Historial = () => {
     setSelectedFecha(fecha);
     setSelectedHora(hora);
     setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
 
   //Gestionar apertura de acordeón
@@ -353,9 +357,7 @@ const Historial = () => {
             </table>
           </div>
           {/* Loader */}
-          {loading && (
-            <Spinner/>
-          )}
+          {loading && <Spinner />}
           {filteredCitas.length === 0 && !loading && (
             <p className="p-4 my-4 text-center">
               No hay citas que coincidan con la búsqueda
@@ -585,25 +587,22 @@ const Historial = () => {
             </div>
           )}
           <Modal
-            className="justify-center bg-gray-200 bg-opacity-50 py-96"
-            size="md"
-            show={openModal}
-            onClose={() => setOpenModal(false)}
-          >
-            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-              <Modal.Header className="p-4">
-                <div className="flex">
-                  <Lottie
-                    animationData={fileAnimation}
-                    style={{ height: 60 }}
-                    loop={false}
-                  />
-                  <h2 className="my-4 text-2xl font-bold text-center">
-                    Graduación de cita:
-                  </h2>
-                </div>
-              </Modal.Header>
-              <Modal.Body className="justify-center p-4">
+            onClose={handleCloseModal}
+            open={openModal}
+            title={
+              <div className="flex space-x-2">
+                <Lottie
+                  animationData={fileAnimation}
+                  style={{ height: 60 }}
+                  loop={false}
+                />
+                <h2 className="my-4 text-2xl font-bold text-center">
+                  Graduación de la cita:
+                </h2>
+              </div>
+            }
+            text={
+              <div>
                 <div className="flex items-center justify-center mb-4">
                   <span className="text-2xl font-semibold text-center">
                     Día{" "}
@@ -636,35 +635,37 @@ const Historial = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className="flex justify-end">
-                  <SecondaryButton
-                    action={handleDownloadPDF}
-                    classes={"mt-4 px-6"}
-                    text="Descargar PDF"
-                    icon={
-                      <svg
-                        className="w-6 h-6"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
-                        />
-                      </svg>
-                    }
-                  />
-                </div>
-              </Modal.Body>
-            </div>
-          </Modal>
+              </div>
+            }
+            bottom={
+              <div className="flex w-full justify-end">
+                <SecondaryButton
+                  action={handleDownloadPDF}
+                  classes={"mt-4 px-6"}
+                  text="Descargar PDF"
+                  icon={
+                    <svg
+                      className="w-6 h-6"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
+                      />
+                    </svg>
+                  }
+                />
+              </div>
+            }
+          />
         </div>
       </div>
     </div>

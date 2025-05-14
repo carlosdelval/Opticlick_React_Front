@@ -7,7 +7,7 @@ import Lottie from "lottie-react";
 import userProfileAnimation from "../../assets/profile.json";
 import deleteAnimation from "../../assets/delete.json";
 import { deleteUser } from "../../api";
-import { Modal } from "flowbite-react";
+import Modal from "../../components/Modal";
 import Alert from "../../components/Alert";
 
 const Profile = () => {
@@ -340,38 +340,35 @@ const Profile = () => {
       </div>
       {/* Modal borrar cliente*/}
       <Modal
-        className="justify-center bg-gray-200 bg-opacity-50"
-        size="md"
-        show={modalDelete}
-        onClose={() => setModalDelete(false)}
-      >
-        <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-          <Modal.Header>
-            <div className="flex">
-              <Lottie animationData={deleteAnimation} style={{ height: 60 }} />
-              <h2 className="my-4 text-2xl font-bold text-center">
-                Eliminar mi cuenta
-              </h2>
-            </div>
-          </Modal.Header>
-          <Modal.Body className="justify-center p-4">
-            <div className="my-2">
-              <p>¿Está seguro de que desea borrar su cuenta?</p>
-              <p>
-                La información se eliminará de la base de datos y no podrá ser
-                recuperada.
-              </p>
-            </div>
-            <div className="flex justify-end">
-              <DangerButton
-                action={handleDelete()}
-                classes={"mt-6 "}
-                text="Eliminar"
-              />
-            </div>
-          </Modal.Body>
-        </div>
-      </Modal>
+        open={modalDelete}
+        onClose={handleModalDelete}
+        text={
+          <div className="my-2">
+            <p>¿Está seguro de que desea borrar su cuenta?</p>
+            <p>
+              La información se eliminará de la base de datos y no podrá ser
+              recuperada.
+            </p>
+          </div>
+        }
+        title={
+          <div className="flex space-x-2">
+            <Lottie animationData={deleteAnimation} style={{ height: 60 }} />
+            <h2 className="my-4 text-2xl font-bold text-center">
+              Eliminar mi cuenta
+            </h2>
+          </div>
+        }
+        bottom={
+          <div className="flex w-full justify-end">
+            <DangerButton
+              action={handleDelete()}
+              classes={"mt-6 "}
+              text="Eliminar"
+            />
+          </div>
+        }
+      />
     </div>
   );
 };

@@ -18,8 +18,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   // Si no hay authchecked O si loading está activo, muestra un spinner o nada
   if (!authChecked || loading) {
     return (
-      <div className="flex items-center justify-center my-auto">
-        <div className="z-10 max-w-md text-center w-96">
+      <div className="flex items-center justify-center my-auto mx-auto max-w-md bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+        <div className="z-10 text-center w-96">
           <Spinner/>
         </div>
       </div>
