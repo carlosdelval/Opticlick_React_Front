@@ -5,6 +5,7 @@ import { addCita, getCitasReservadasFecha, getOpticas } from "../../api";
 import InputField from "../../components/InputField";
 import Stepper, { Step } from "../../components/Stepper";
 import AuthContext from "../../context/AuthContext";
+import { NotificationsContext } from "../../context/NotificationsContext";
 import Lottie from "lottie-react";
 import Glasses from "../../assets/Glasses.json";
 import Spinner from "../../components/Spinner";
@@ -15,6 +16,7 @@ const ModalReserva = ({ onReservaExitosa }) => {
     startOfDay(addDays(new Date(), i))
   );
   const { user } = React.useContext(AuthContext);
+  const { addNotificacion } = React.useContext(NotificationsContext);
   const [opticas, setOpticas] = React.useState([]);
   const [errors, setErrors] = React.useState({});
   const [horas, setHoras] = React.useState([]);
@@ -123,7 +125,6 @@ const ModalReserva = ({ onReservaExitosa }) => {
     }
   }, [formData.turno]);
 
-  // Maneja el envío del formulario
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -131,7 +132,29 @@ const ModalReserva = ({ onReservaExitosa }) => {
         ...formData,
         fecha: new Date(formData.fecha.getTime() + 86400000),
       };
+
+      // Primero creamos la notificación con los datos actualizados
+      const nuevaNotificacion = {
+        user_id: user.id,
+        optica_id: formData.optica_id,
+        tipo: 2,
+        destinatario: 1,
+        titulo: `${user?.name} ${user?.surname}`,
+        descripcion: `Cita reservada el día ${formData.fecha.toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })} a las ${
+          formData.hora
+        } en la óptica ${
+          opticas.find((o) => o.id === formData.optica_id)?.nombre ||
+          "desconocida"
+        }`,
+      };
+
       await addCita(cita);
+      await addNotificacion(nuevaNotificacion); // Usamos el objeto directamente
+
       onReservaExitosa?.();
     } catch (error) {
       console.error("Error al agregar la cita:", error);
@@ -228,7 +251,7 @@ const ModalReserva = ({ onReservaExitosa }) => {
       validatePaso4={validatePaso4}
       finalStepContent={
         loading ? (
-          <Spinner/>
+          <Spinner />
         ) : (
           <div className="flex flex-col items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
             <Lottie

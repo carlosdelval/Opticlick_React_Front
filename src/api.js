@@ -105,7 +105,7 @@ export const getCitasOptica = async (id) => {
 export const getCitasReservadasFecha = async (id, fecha) => {
   const res = await axios.get(`${API_URL}/citas-reservadas/${id}/${fecha}`);
   return res.data;
-}
+};
 
 // Obtener citas de un usuario
 export const getCitasUser = async (id) => {
@@ -174,8 +174,10 @@ export const setGraduada = async (id) => {
 };
 
 // Obtener notificaciones de un usuario
-export const getNotificaciones = async (id, tipo) => {
-  const res = await axios.get(`${API_URL}/notificaciones/${id}/${tipo}`);
+export const getNotificaciones = async (id, tipo, destinatario) => {
+  const res = await axios.get(
+    `${API_URL}/notificaciones/${id}/${tipo}/${destinatario}`
+  );
   return res.data;
 };
 

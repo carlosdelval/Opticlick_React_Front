@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AuthContext from "../context/AuthContext";
 import PrimaryButton from "./PrimaryButton";
+import NotificationDropdown from "./NotificacionDropdown";
 
 const Navbar = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -65,7 +66,7 @@ const Navbar = () => {
         </a>
         <div className="flex items-center space-x-3 md:order-2 md:space-x-0 rtl:space-x-reverse">
           {!user && authChecked && (
-            <ul className="md:flex hidden flex-col font-medium rounded-lg md:p-0 md:space-x-8 md:flex-row md:mt-0 md:items-center">
+            <ul className="flex-col hidden font-medium rounded-lg md:flex md:p-0 md:space-x-8 md:flex-row md:mt-0 md:items-center">
               <li className="md:py-2">
                 <PrimaryButton
                   action={() => (window.location.href = "/business")}
@@ -200,6 +201,7 @@ const Navbar = () => {
               )}
             </div>
           )}
+          <NotificationDropdown />
           <button
             type="button"
             className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder md:hidden"
@@ -449,7 +451,7 @@ const Navbar = () => {
                   >
                     <div className="flex items-center space-x-2">
                       <svg
-                        class="w-5 h-5"
+                        className="w-5 h-5"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"

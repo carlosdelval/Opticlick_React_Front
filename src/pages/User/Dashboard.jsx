@@ -1,10 +1,5 @@
 import React, { useContext } from "react";
-import {
-  getCitasUser,
-  deleteCita,
-  getNotificaciones,
-  setNotificacionLeida,
-} from "../../api";
+import { getCitasUser, deleteCita } from "../../api";
 import Lottie from "lottie-react";
 import calendarAnimation from "../../assets/calendar.json";
 import callMissedAnimation from "../../assets/call-missed-red.json";
@@ -12,6 +7,7 @@ import notificacionAnimation from "../../assets/notification.json";
 import mensajeAnimation from "../../assets/chat.json";
 import DangerButton from "../../components/DangerButton";
 import AuthContext from "../../context/AuthContext";
+import { NotificationsContext } from "../../context/NotificationsContext";
 import Modal from "../../components/Modal";
 import SecondaryDanger from "../../components/SecondaryDanger";
 import SecondaryButton from "../../components/SecondaryButton";
@@ -25,8 +21,8 @@ const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
   const location = useLocation();
   const [citas, setCitas] = React.useState([]);
-  const [notificaciones, setNotificaciones] = React.useState([]);
-  const [mensajes, setMensajes] = React.useState([]);
+  const { notificaciones, mensajes, marcarLeida } =
+    useContext(NotificationsContext);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
@@ -53,41 +49,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchNotificaciones = async () => {
-    if (!user) return;
-    try {
-      const data = await getNotificaciones(user.id, 2);
-      setNotificaciones(data);
-    } catch (err) {
-      console.error("Error fetching notificaciones:", err);
-      setErrorNotification("No se pudieron cargar las notificaciones.");
-    }
-  };
-
-  const fetchMensajes = async () => {
-    if (!user) return;
-    try {
-      const data = await getNotificaciones(user.id, 1);
-      setMensajes(data);
-    } catch (err) {
-      console.error("Error fetching mensajes:", err);
-      setErrorMessage("No se pudieron cargar los mensajes.");
-    }
-  };
-
-  const leerNotificacion = async (id) => {
-    if (!user) return;
-    try {
-      await setNotificacionLeida(id);
-      setNotificaciones((prevNotificaciones) =>
-        prevNotificaciones.filter((notificacion) => notificacion.id !== id)
-      );
-    } catch (err) {
-      console.error("Error setting notificacion leida:", err);
-      setErrorNotification("No se pudo marcar la notificación como leída.");
-    }
-  };
-
   React.useEffect(() => {
     if (location.state?.reload) {
       // Forzar recarga de datos
@@ -100,8 +61,6 @@ const AdminDashboard = () => {
       window.history.replaceState({}, document.title);
     }
     fetchCitas();
-    fetchNotificaciones();
-    fetchMensajes();
   }, [user?.id, location.state]);
 
   const handleOpenModalAnular = (id) => {
@@ -130,29 +89,32 @@ const AdminDashboard = () => {
 
   // Paginación de las citas filtradas
   const [currentPageCita, setCurrentPageCita] = React.useState(1);
-  const itemsPerPage = 6;
-  const totalFilteredPages = Math.ceil(citas.length / itemsPerPage);
+  const itemsPerPageCita = 6;
+  const itemsPerPageNotis = 2;
+  const totalFilteredPages = Math.ceil(citas.length / itemsPerPageCita);
   const currentFilteredCitas = citas.slice(
-    (currentPageCita - 1) * itemsPerPage,
-    currentPageCita * itemsPerPage
+    (currentPageCita - 1) * itemsPerPageCita,
+    currentPageCita * itemsPerPageCita
   );
 
   // Paginación de las notificaciones filtradas
   const [currentPageNotis, setCurrentPageNotis] = React.useState(1);
   const totalFilteredPagesNotis = Math.ceil(
-    notificaciones.length / itemsPerPage
+    notificaciones.length / itemsPerPageNotis
   );
   const currentFilteredNotis = notificaciones.slice(
-    (currentPageNotis - 1) * itemsPerPage,
-    currentPageNotis * itemsPerPage
+    (currentPageNotis - 1) * itemsPerPageNotis,
+    currentPageNotis * itemsPerPageNotis
   );
 
   // Paginación de los mensajes filtrados
   const [currentPageMessage, setCurrentPageMessage] = React.useState(1);
-  const totalFilteredPagesMessage = Math.ceil(mensajes.length / itemsPerPage);
+  const totalFilteredPagesMessage = Math.ceil(
+    mensajes.length / itemsPerPageNotis
+  );
   const currentFilteredMessage = mensajes.slice(
-    (currentPageMessage - 1) * itemsPerPage,
-    currentPageMessage * itemsPerPage
+    (currentPageMessage - 1) * itemsPerPageNotis,
+    currentPageMessage * itemsPerPageNotis
   );
 
   //Gestionar apertura de acordeón
@@ -236,12 +198,6 @@ const AdminDashboard = () => {
             {loading && <Spinner />}
             {citas.length === 0 && !loading && (
               <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
-                <Lottie
-                  animationData={calendarAnimation}
-                  style={{ height: 60 }}
-                  loop={false}
-                  className="mx-auto my-4"
-                />
                 <p className="p-4 my-4 text-center">
                   ¡No tienes citas programadas!
                 </p>
@@ -485,7 +441,7 @@ const AdminDashboard = () => {
                 </div>
               }
               bottom={
-                <div className="flex w-full justify-end">
+                <div className="flex justify-end w-full">
                   <DangerButton
                     action={() => handleDeleteCita(idToDelete)}
                     classes="mt-4"
@@ -574,7 +530,7 @@ const AdminDashboard = () => {
                           </span>
                           <SecondaryButton
                             action={() => {
-                              leerNotificacion(notificacion.id);
+                              marcarLeida(notificacion.id, 2);
                             }}
                             classes={"px-5"}
                             text="Marcar leído"
@@ -758,7 +714,7 @@ const AdminDashboard = () => {
                           </span>
                           <SecondaryButton
                             action={() => {
-                              leerNotificacion(mensaje.id);
+                              marcarLeida(mensaje.id, 1);
                             }}
                             classes={"px-5"}
                             text="Marcar leído"

@@ -20,6 +20,7 @@ import PrimaryButton from "./components/PrimaryButton";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
+import { NotificationsProvider } from "./context/NotificationsContext";
 import { Buffer } from "buffer";
 
 function App() {
@@ -51,80 +52,82 @@ function App() {
 
   return (
     <AuthProvider>
-      <div className="flex flex-col min-h-screen">
-        <Background />
-        <Navbar />
-        <main className="px-10 pt-10 pb-10 my-auto">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/business" element={<Who />} />
+      <NotificationsProvider>
+        <div className="flex flex-col min-h-screen">
+          <Background />
+          <Navbar />
+          <main className="px-10 pt-10 pb-10 my-auto">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/business" element={<Who />} />
 
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["user"]}>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/historial"
-              element={
-                <ProtectedRoute allowedRoles={["user"]}>
-                  <Historial />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "master"]}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/lista-clientes"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "master"]}>
-                  <ListaClientes />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute allowedRoles={["user", "admin", "master"]}>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/historial/:id"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "master"]}>
-                  <HistorialCliente />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/administracion"
-              element={
-                <ProtectedRoute allowedRoles={["master"]}>
-                  <Administracion />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/historial"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Historial />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "master"]}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/lista-clientes"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "master"]}>
+                    <ListaClientes />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute allowedRoles={["user", "admin", "master"]}>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/historial/:id"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "master"]}>
+                    <HistorialCliente />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/administracion"
+                element={
+                  <ProtectedRoute allowedRoles={["master"]}>
+                    <Administracion />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Ruta para 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+              {/* Ruta para 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </NotificationsProvider>
     </AuthProvider>
   );
 }
