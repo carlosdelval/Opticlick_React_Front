@@ -659,7 +659,7 @@ function Administracion() {
           )}
           {filteredAdmins.length === 0 && !loading && (
             <p className="p-4 my-4 text-center">
-              No hay clientes que coincidan con la búsqueda
+              No hay administradores que coincidan con la búsqueda
             </p>
           )}
         </div>

@@ -74,6 +74,7 @@ const Login = () => {
           surname: res.data.surname,
           id: res.data.id,
           email_verified: res.data.email_verified,
+          optica_id: res.data.optica_id,
         });
 
         navigate(res.data.role === "user" ? "/dashboard" : "/admin-dashboard");
