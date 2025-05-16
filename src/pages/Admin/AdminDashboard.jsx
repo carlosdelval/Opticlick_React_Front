@@ -4,7 +4,6 @@ import {
   deleteCita,
   addGraduacion,
   setGraduada,
-  getOpticas,
   getCitasOptica,
 } from "../../api";
 import Lottie from "lottie-react";
@@ -29,22 +28,28 @@ import { saveAs } from "file-saver";
 const AdminDashboard = () => {
   const { user } = React.useContext(AuthContext);
   const [citas, setCitas] = React.useState([]);
-  const { notificaciones, mensajes, marcarLeida } =
+  const { novedades, marcarLeida, addNotificacion } =
     React.useContext(NotificationsContext);
-  const [opticas, setOpticas] = React.useState([]);
-  const [opticaSearch, setOpticaSearch] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [generatePdf, setGeneratePdf] = React.useState(false);
-  const [openModal, setOpenModal] = React.useState(false);
+  const [openModalGraduar, setOpenModalGraduar] = React.useState(false);
+  const [openModalMensaje, setOpenModalMensaje] = React.useState(false);
   const [openModalAnular, setOpenModalAnular] = React.useState(false);
   const [id, setId] = React.useState(null);
   const [openAccordions, setOpenAccordions] = React.useState({});
+  const [formError, setFormError] = React.useState({
+    eje: "",
+    cilindro: "",
+    esfera: "",
+    mensaje: "",
+  });
   const [formData, setFormData] = React.useState({
     eje: "",
     cilindro: "",
     esfera: "",
+    mensaje: "",
   });
 
   const handleGeneratePdfChange = (e) => {
@@ -52,27 +57,10 @@ const AdminDashboard = () => {
   };
 
   React.useEffect(() => {
-    const fetchOpticas = async () => {
-      try {
-        const data = await getOpticas();
-        setOpticas(data);
-        console.log("Ópticas:", data);
-      } catch (err) {
-        console.error("Error fetching opticas:", err);
-        setError("No se pudieron cargar las ópticas");
-        setSuccess(null);
-      }
-    };
-    fetchOpticas();
-  }, [user.id]);
-
-  React.useEffect(() => {
     const fetchCitasOptica = async () => {
       try {
         setLoading(true);
         const data = await getCitasOptica(user.optica_id);
-        console.log("Citas de óptica:", data);
-        console.log("ID de óptica:", user.optica_id);
         setCitas(data);
       } catch (err) {
         console.error("Error fetching appointments:", err);
@@ -84,21 +72,80 @@ const AdminDashboard = () => {
     };
 
     fetchCitasOptica();
-  }, [opticaSearch, user.optica_id]);
+  }, [user.optica_id]);
+
+  const handleEnviarMensaje = async (id) => {
+    // Validar datos antes de continuar
+    if (formData.mensaje.length < 5) {
+      setFormError({
+        ...formError,
+        mensaje: "El mensaje debe tener al menos 5 caracteres",
+      });
+      return;
+    }
+    const nuevaNotificacion = {
+      user_id: id,
+      optica_id: user.optica_id,
+      tipo: 1,
+      destinatario: 1,
+      titulo: `${user.name} ${user.surname}`,
+      descripcion: formData.mensaje,
+    };
+    try {
+      await addNotificacion(nuevaNotificacion);
+      setOpenModalMensaje(false);
+      setError(null);
+      setSuccess("Mensaje enviado correctamente");
+      setFormData({
+        eje: "",
+        cilindro: "",
+        esfera: "",
+        mensaje: "",
+      });
+      // Scroll to top of page
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } catch (err) {
+      console.error("Error al enviar mensaje:", err);
+      setError("No se pudo enviar el mensaje");
+      setSuccess(null);
+    }
+  };
 
   const handleOpenModalAnular = (id) => {
     setOpenModalAnular(true);
     setId(id);
   };
-  const handleOpenModal = (id) => {
-    setOpenModal(true);
+  const handleOpenModalGraduar = (id) => {
+    setOpenModalGraduar(true);
+    setId(id);
+  };
+
+  const handleOpenModalMensaje = (id) => {
+    setOpenModalMensaje(true);
     setId(id);
   };
 
   const handleCloseModal = () => {
     setOpenModalAnular(false);
-    setOpenModal(false);
+    setOpenModalGraduar(false);
+    setOpenModalMensaje(false);
+    setFormData({
+      eje: "",
+      cilindro: "",
+      esfera: "",
+      mensaje: "",
+    });
+    setFormError({
+      eje: "",
+      cilindro: "",
+      esfera: "",
+      mensaje: "",
+    });
   };
+
   const handleDeleteCita = async (id) => {
     try {
       await deleteCita(id);
@@ -119,7 +166,11 @@ const AdminDashboard = () => {
     try {
       // Validar datos antes de continuar
       if (!formData.eje || !formData.cilindro || !formData.esfera) {
-        setError("Todos los campos de graduación son requeridos");
+        setFormError({
+          eje: !formData.eje ? "Campo requerido" : "",
+          cilindro: !formData.cilindro ? "Campo requerido" : "",
+          esfera: !formData.esfera ? "Campo requerido" : "",
+        });
         return;
       }
 
@@ -172,7 +223,7 @@ const AdminDashboard = () => {
 
       // 4. Actualizar estado
       setCitas(citas.filter((c) => c.id !== id));
-      setOpenModal(false);
+      setOpenModalGraduar(false);
       setSuccess(
         `Graduación registrada correctamente${
           generatePdf ? " y PDF generado" : ""
@@ -195,31 +246,21 @@ const AdminDashboard = () => {
   // Paginación de las citas filtradas
   const [currentPageCita, setCurrentPageCita] = React.useState(1);
   const itemsPerPageCita = 6;
-  const itemsPerPageNotis = 2;
+  const itemsPerPageNotis = 4;
   const totalFilteredPages = Math.ceil(citas.length / itemsPerPageCita);
   const currentFilteredCitas = citas.slice(
     (currentPageCita - 1) * itemsPerPageCita,
     currentPageCita * itemsPerPageCita
   );
 
-  // Paginación de las notificaciones filtradas
+  // Paginación de las novedades filtradas
   const [currentPageNotis, setCurrentPageNotis] = React.useState(1);
   const totalFilteredPagesNotis = Math.ceil(
-    notificaciones.length / itemsPerPageNotis
+    novedades.length / itemsPerPageNotis
   );
-  const currentFilteredNotis = notificaciones.slice(
+  const currentFilteredNotis = novedades.slice(
     (currentPageNotis - 1) * itemsPerPageNotis,
     currentPageNotis * itemsPerPageNotis
-  );
-
-  // Paginación de los mensajes filtrados
-  const [currentPageMessage, setCurrentPageMessage] = React.useState(1);
-  const totalFilteredPagesMessage = Math.ceil(
-    mensajes.length / itemsPerPageNotis
-  );
-  const currentFilteredMessage = mensajes.slice(
-    (currentPageMessage - 1) * itemsPerPageNotis,
-    currentPageMessage * itemsPerPageNotis
   );
 
   //Gestionar apertura de acordeón
@@ -399,7 +440,7 @@ const AdminDashboard = () => {
                           <div className="flex p-4 border-t dark:border-gray-700">
                             <div className="flex justify-end w-full space-x-2">
                               <SecondaryButton
-                                action={() => handleOpenModal(cita.id)}
+                                action={() => handleOpenModalGraduar(cita.id)}
                                 text="Graduar cita"
                                 classes={"px-4"}
                                 icon={
@@ -421,6 +462,32 @@ const AdminDashboard = () => {
                                       stroke="currentColor"
                                       strokeWidth="2"
                                       d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                    />
+                                  </svg>
+                                }
+                              />
+                              <SecondaryButton
+                                text="Enviar mensaje"
+                                classes={"px-4"}
+                                action={() => {
+                                  handleOpenModalMensaje(cita.user_id);
+                                }}
+                                icon={
+                                  <svg
+                                    className="w-6 h-6"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M16 10.5h.01m-4.01 0h.01M8 10.5h.01M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-6.6a1 1 0 0 0-.69.275l-2.866 2.723A.5.5 0 0 1 8 18.635V17a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"
                                     />
                                   </svg>
                                 }
@@ -545,9 +612,9 @@ const AdminDashboard = () => {
             <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
               <div className="flex flex-col items-center justify-center w-full bg-white dark:bg-gray-800">
                 {loading && <Spinner />}
-                {notificaciones &&
+                {novedades &&
                   !loading &&
-                  notificaciones.length > 0 &&
+                  novedades.length > 0 &&
                   currentFilteredNotis.map((notificacion) => (
                     <div
                       key={notificacion.id}
@@ -555,23 +622,43 @@ const AdminDashboard = () => {
                     >
                       <div className="flex-col items-center w-full space-y-2">
                         <div className="flex items-center space-x-2">
-                          <svg
-                            className="w-8 h-8"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="m10.827 5.465-.435-2.324m.435 2.324a5.338 5.338 0 0 1 6.033 4.333l.331 1.769c.44 2.345 2.383 2.588 2.6 3.761.11.586.22 1.171-.31 1.271l-12.7 2.377c-.529.099-.639-.488-.749-1.074C5.813 16.73 7.538 15.8 7.1 13.455c-.219-1.169.218 1.162-.33-1.769a5.338 5.338 0 0 1 4.058-6.221Zm-7.046 4.41c.143-1.877.822-3.461 2.086-4.856m2.646 13.633a3.472 3.472 0 0 0 6.728-.777l.09-.5-6.818 1.277Z"
-                            />
-                          </svg>
+                          {notificacion.tipo === 2 ? (
+                            <svg
+                              className="w-8 h-8"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="m10.827 5.465-.435-2.324m.435 2.324a5.338 5.338 0 0 1 6.033 4.333l.331 1.769c.44 2.345 2.383 2.588 2.6 3.761.11.586.22 1.171-.31 1.271l-12.7 2.377c-.529.099-.639-.488-.749-1.074C5.813 16.73 7.538 15.8 7.1 13.455c-.219-1.169.218 1.162-.33-1.769a5.338 5.338 0 0 1 4.058-6.221Zm-7.046 4.41c.143-1.877.822-3.461 2.086-4.856m2.646 13.633a3.472 3.472 0 0 0 6.728-.777l.09-.5-6.818 1.277Z"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="w-8 h-8"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 17h6l3 3v-3h2V9h-2M4 4h11v8H9l-3 3v-3H4V4Z"
+                              />
+                            </svg>
+                          )}
                           <p className="text-lg font-semibold text-gray-900 dark:text-babypowder">
                             {notificacion.titulo}
                           </p>
@@ -592,9 +679,9 @@ const AdminDashboard = () => {
                             >
                               <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
                             </svg>
-                            {notificacion.updated_at
+                            {notificacion.created_at
                               ? new Date(
-                                  notificacion.updated_at
+                                  notificacion.created_at
                                 ).toLocaleString("es-ES", {
                                   day: "2-digit",
                                   month: "2-digit",
@@ -606,7 +693,7 @@ const AdminDashboard = () => {
                           </span>
                           <SecondaryButton
                             action={() => {
-                              marcarLeida(notificacion.id, 2);
+                              marcarLeida(notificacion.id, notificacion.tipo);
                             }}
                             classes={"px-5"}
                             text="Marcar leído"
@@ -634,7 +721,7 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                   ))}
-                {notificaciones.length === 0 && !loading && (
+                {novedades.length === 0 && !loading && (
                   <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
                     <p className="p-4 my-4 font-semibold text-center">
                       ¡No tienes notificaciones!
@@ -643,7 +730,7 @@ const AdminDashboard = () => {
                 )}
               </div>
               {/* Paginación */}
-              {!loading && notificaciones.length > 0 && (
+              {!loading && novedades.length > 0 && (
                 <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
                   <nav className="flex items-center space-x-2">
                     <button
@@ -713,198 +800,11 @@ const AdminDashboard = () => {
               )}
             </div>
           </div>
-          {/* Contenedor de mensajes */}
-          <div>
-            <div className="flex justify-end mb-4 space-x-3">
-              <Lottie
-                animationData={mensajeAnimation}
-                className="h-16"
-                loop={false}
-              />
-              <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
-                Tus mensajes
-              </h2>
-            </div>
-            <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
-              <div className="flex flex-col items-center justify-center w-full bg-white dark:bg-gray-800">
-                {loading && <Spinner />}
-                {mensajes &&
-                  !loading &&
-                  mensajes.length > 0 &&
-                  currentFilteredMessage.map((mensaje) => (
-                    <div
-                      key={mensaje.id}
-                      className="flex items-center w-full p-4 space-x-2 duration-300 ease-out border-b dark:border-gray-700 hover:bg-blue-50"
-                    >
-                      <div className="flex-col items-center w-full space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <svg
-                            className="w-8 h-8"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M9 17h6l3 3v-3h2V9h-2M4 4h11v8H9l-3 3v-3H4V4Z"
-                            />
-                          </svg>
-                          <p className="text-lg font-semibold text-gray-900 dark:text-babypowder">
-                            {mensaje.titulo}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500 dark:text-gray-200">
-                            {mensaje.descripcion}
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between w-full">
-                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                            <svg
-                              className="w-2.5 h-2.5 me-1.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                            </svg>
-                            {mensaje.updated_at
-                              ? new Date(mensaje.updated_at).toLocaleString(
-                                  "es-ES",
-                                  {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }
-                                ) + "h"
-                              : ""}
-                          </span>
-                          <SecondaryButton
-                            action={() => {
-                              marcarLeida(mensaje.id, 1);
-                            }}
-                            classes={"px-5"}
-                            text="Marcar leído"
-                            icon={
-                              <svg
-                                className="w-6 h-6"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"
-                                />
-                              </svg>
-                            }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                {mensajes.length === 0 && !loading && (
-                  <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
-                    <p className="p-4 my-4 font-semibold text-center">
-                      ¡No tienes nuevos mensajes!
-                    </p>
-                  </div>
-                )}
-              </div>
-              {/* Paginación */}
-              {!loading && mensajes.length > 0 && (
-                <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
-                  <nav className="flex items-center space-x-2">
-                    <button
-                      onClick={() =>
-                        setCurrentPageMessage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPageMessage === 1}
-                      className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
-                        currentPageMessage === 1
-                          ? "text-gray-400"
-                          : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                      }`}
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    {[...Array(totalFilteredPagesMessage)].map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentPageMessage(index + 1)}
-                        className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
-                          currentPageMessage === index + 1
-                            ? "bg-chryslerblue text-white"
-                            : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                        }`}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
-
-                    <button
-                      onClick={() =>
-                        setCurrentPageMessage((prev) =>
-                          Math.min(prev + 1, totalFilteredPagesMessage)
-                        )
-                      }
-                      disabled={
-                        currentPageMessage === totalFilteredPagesMessage
-                      }
-                      className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
-                        currentPageMessage === totalFilteredPagesMessage
-                          ? "text-gray-400"
-                          : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                      }`}
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </nav>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
-
       {/* Modal graduaciones*/}
       <Modal
-        open={openModal}
+        open={openModalGraduar}
         onClose={handleCloseModal}
         title={
           <div className="flex space-x-2">
@@ -919,13 +819,14 @@ const AdminDashboard = () => {
           </div>
         }
         text={
-          <form onSubmit={(e) => handleGraduarCita(e, id)}>
+          <div>
             <div className="my-2">
               <InputField
                 type="number"
                 label="Eje"
                 value={formData.eje}
                 onChange={(value) => setFormData({ ...formData, eje: value })}
+                error={formError.eje}
               />
               <InputField
                 type="number"
@@ -934,6 +835,7 @@ const AdminDashboard = () => {
                 onChange={(value) =>
                   setFormData({ ...formData, cilindro: value })
                 }
+                error={formError.cilindro}
               />
               <InputField
                 type="number"
@@ -942,6 +844,7 @@ const AdminDashboard = () => {
                 onChange={(value) =>
                   setFormData({ ...formData, esfera: value })
                 }
+                error={formError.esfera}
               />
             </div>
             <div className="flex items-center me-4">
@@ -960,9 +863,58 @@ const AdminDashboard = () => {
               </label>
             </div>
             <div className="flex justify-end">
-              <PrimaryButton classes={"mt-4"} text="Graduar" />
+              <PrimaryButton
+                classes={"mt-4"}
+                text="Graduar"
+                action={(e) => handleGraduarCita(e, id)}
+              />
             </div>
-          </form>
+          </div>
+        }
+      />
+      {/* Modal enviar mensaje*/}
+      <Modal
+        open={openModalMensaje}
+        onClose={handleCloseModal}
+        title={
+          <div className="flex space-x-2">
+            <Lottie
+              animationData={mensajeAnimation}
+              style={{ height: 60 }}
+              loop={false}
+            />
+            <h2 className="my-4 text-2xl font-bold text-center">
+              Enviar mensaje
+            </h2>
+          </div>
+        }
+        text={
+          <div>
+            <div className="my-2">
+              <textarea
+                rows="4"
+                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:border-chryslerblue"
+                placeholder="Escribe tu mensaje aquí..."
+                value={formData.mensaje}
+                onChange={(e) => {
+                  setFormData({ ...formData, mensaje: e.target.value });
+                  setFormError({ ...formError, mensaje: "" });
+                }}
+              ></textarea>
+              {formError.mensaje && (
+                <p className="py-1 text-sm text-redpantone">
+                  {formError.mensaje}
+                </p>
+              )}
+            </div>
+            <div className="flex justify-end">
+              <PrimaryButton
+                classes={"mt-4"}
+                text="Enviar"
+                action={() => handleEnviarMensaje(id)}
+              />
+            </div>
+          </div>
         }
       />
       {/* Modal anular cita*/}
@@ -990,7 +942,7 @@ const AdminDashboard = () => {
         bottom={
           <div className="flex justify-end w-full">
             <DangerButton
-              action={() => handleDeleteCita(idToDelete)}
+              action={() => handleDeleteCita(id)}
               classes="mt-4"
               text="Anular"
             />

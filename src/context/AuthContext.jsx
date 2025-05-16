@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
+import { getOpticaUsuario } from "../api";
 
 const AuthContext = createContext();
 
@@ -24,11 +25,21 @@ export const AuthProvider = ({ children }) => {
         setAuthChecked(true);
       }
     };
-
     checkAuth();
   }, []);
 
-  const login = (userData) => {
+  const login = async (userData) => {
+    if (userData.role === "admin") {
+      try {
+        const optica = await getOpticaUsuario(userData.id);
+        userData = {
+          ...userData,
+          optica_id: optica.optica_id,
+        };
+      } catch (error) {
+        console.error("Óptica no encontrada:", error);
+      }
+    }
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
     console.log("User logged in:", userData);

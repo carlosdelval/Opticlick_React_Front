@@ -6,6 +6,7 @@ import callMissedAnimation from "../../assets/call-missed-red.json";
 import notificacionAnimation from "../../assets/notification.json";
 import mensajeAnimation from "../../assets/chat.json";
 import DangerButton from "../../components/DangerButton";
+import PrimaryButton from "../../components/PrimaryButton";
 import AuthContext from "../../context/AuthContext";
 import { NotificationsContext } from "../../context/NotificationsContext";
 import Modal from "../../components/Modal";
@@ -21,16 +22,23 @@ const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
   const location = useLocation();
   const [citas, setCitas] = React.useState([]);
-  const { notificaciones, mensajes, marcarLeida } =
+  const { novedades, marcarLeida, addNotificacion } =
     useContext(NotificationsContext);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [openModalAnular, setOpenModalAnular] = React.useState(false);
-  const [idToDelete, setIdToDelete] = React.useState(null);
+  const [id, setId] = React.useState(null);
   const [openModalReserva, setOpenModalReserva] = React.useState(false);
+  const [openModalMensaje, setOpenModalMensaje] = React.useState(false);
   const modalRef = React.useRef(null);
   const [openAccordions, setOpenAccordions] = React.useState({});
+  const [formData, setFormData] = React.useState({
+    mensaje: "",
+  });
+  const [formError, setFormError] = React.useState({
+    mensaje: "",
+  });
 
   const fetchCitas = async () => {
     if (!user) return;
@@ -64,16 +72,78 @@ const AdminDashboard = () => {
   }, [user?.id, location.state]);
 
   const handleOpenModalAnular = (id) => {
-    setIdToDelete(id);
+    setId(id);
     setOpenModalAnular(true);
+  };
+
+  const handleOpenModalMensaje = (id) => {
+    setId(id);
+    setFormData({ mensaje: "" });
+    setFormError({ mensaje: "" });
+    setOpenModalMensaje(true);
+  };
+  const handleEnviarMensaje = async (id) => {
+    if (formData.mensaje.length < 5) {
+      setFormError({
+        mensaje: "El mensaje no puede contener menos de 5 caracteres.",
+      });
+      return;
+    }
+    try {
+      const nuevaNotificacion = {
+        user_id: user.id,
+        optica_id: id,
+        tipo: 1,
+        destinatario: 0,
+        titulo: `${user?.name} ${user?.surname}`,
+        descripcion: formData.mensaje,
+      };
+      await addNotificacion(nuevaNotificacion);
+      setSuccess("Mensaje enviado correctamente.");
+      setError(null);
+      setFormData({ mensaje: "" });
+      setFormError({ mensaje: "" });
+      setOpenModalMensaje(false);
+      // Scroll to top of page
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } catch (err) {
+      console.error("Error sending message:", err);
+      setError("No se pudo enviar el mensaje.");
+      setSuccess(null);
+      setFormData({ mensaje: "" });
+      setFormError({ mensaje: "" });
+      setOpenModalMensaje(false);
+    }
   };
 
   const handleCloseModal = () => {
     setOpenModalAnular(false);
+    setOpenModalMensaje(false);
   };
 
   const handleDeleteCita = async (id) => {
+    let citaABorrar = citas.find((cita) => cita.id === id);
     try {
+      const nuevaNotificacion = {
+        user_id: user.id,
+        optica_id: citaABorrar.optica_id,
+        tipo: 2,
+        destinatario: 0,
+        titulo: `${user?.name} ${user?.surname}`,
+        descripcion: `He anulado la cita del día ${new Date(
+          citaABorrar.fecha
+        ).toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })} a las ${citaABorrar.hora.substring(0, 5)} en ${
+          citaABorrar.optica_nombre || "óptica desconocida"
+        }`,
+      };
+      await addNotificacion(nuevaNotificacion);
       await deleteCita(id);
       setCitas(citas.filter((cita) => cita.id !== id));
       handleCloseModal();
@@ -90,31 +160,21 @@ const AdminDashboard = () => {
   // Paginación de las citas filtradas
   const [currentPageCita, setCurrentPageCita] = React.useState(1);
   const itemsPerPageCita = 6;
-  const itemsPerPageNotis = 2;
+  const itemsPerPageNotis = 3;
   const totalFilteredPages = Math.ceil(citas.length / itemsPerPageCita);
   const currentFilteredCitas = citas.slice(
     (currentPageCita - 1) * itemsPerPageCita,
     currentPageCita * itemsPerPageCita
   );
 
-  // Paginación de las notificaciones filtradas
+  // Paginación de las novedades filtradas
   const [currentPageNotis, setCurrentPageNotis] = React.useState(1);
   const totalFilteredPagesNotis = Math.ceil(
-    notificaciones.length / itemsPerPageNotis
+    novedades.length / itemsPerPageNotis
   );
-  const currentFilteredNotis = notificaciones.slice(
+  const currentFilteredNotis = novedades.slice(
     (currentPageNotis - 1) * itemsPerPageNotis,
     currentPageNotis * itemsPerPageNotis
-  );
-
-  // Paginación de los mensajes filtrados
-  const [currentPageMessage, setCurrentPageMessage] = React.useState(1);
-  const totalFilteredPagesMessage = Math.ceil(
-    mensajes.length / itemsPerPageNotis
-  );
-  const currentFilteredMessage = mensajes.slice(
-    (currentPageMessage - 1) * itemsPerPageNotis,
-    currentPageMessage * itemsPerPageNotis
   );
 
   //Gestionar apertura de acordeón
@@ -318,31 +378,59 @@ const AdminDashboard = () => {
                         }`}
                         aria-hidden={!openAccordions[cita.id]}
                       >
-                        <div className="flex justify-end p-4 border-t dark:border-gray-700">
-                          <SecondaryDanger
-                            action={() => handleOpenModalAnular(cita.id)}
-                            classes={"px-5"}
-                            text="Anular cita"
-                            icon={
-                              <svg
-                                className="w-6 h-6"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
-                                />
-                              </svg>
-                            }
-                          />
+                        <div className="flex p-4 border-t dark:border-gray-700">
+                          <div className="flex justify-end w-full space-x-2">
+                            <SecondaryButton
+                              text="Enviar mensaje"
+                              classes={"px-4"}
+                              action={() => {
+                                handleOpenModalMensaje(cita.optica_id);
+                              }}
+                              icon={
+                                <svg
+                                  className="w-6 h-6"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M16 10.5h.01m-4.01 0h.01M8 10.5h.01M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-6.6a1 1 0 0 0-.69.275l-2.866 2.723A.5.5 0 0 1 8 18.635V17a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"
+                                  />
+                                </svg>
+                              }
+                            />
+                            <SecondaryDanger
+                              action={() => handleOpenModalAnular(cita.id)}
+                              classes={"px-5"}
+                              text="Anular cita"
+                              icon={
+                                <svg
+                                  className="w-6 h-6"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="m17.0896 13.371 1.1431 1.1439c.1745.1461.3148.3287.4111.5349.0962.2063.1461.4312.1461.6588 0 .2276-.0499.4525-.1461.6587-.0963.2063-.4729.6251-.6473.7712-3.1173 3.1211-6.7739 1.706-9.90477-1.4254-3.13087-3.1313-4.54323-6.7896-1.41066-9.90139.62706-.61925 1.71351-1.14182 2.61843-.23626l1.1911 1.19193c1.1911 1.19194.3562 1.93533-.4926 2.80371-.92477.92481-.65643 1.72741 0 2.38391l1.8713 1.8725c.3159.3161.7443.4936 1.191.4936.4468 0 .8752-.1775 1.1911-.4936.8624-.8261 1.6952-1.6004 2.8382-.4565Zm-2.2152-4.39103 2.1348-2.13485m0 0 2.1597-1.90738m-2.1597 1.90738 2.1597 2.15076m-2.1597-2.15076-2.1348-1.90738"
+                                  />
+                                </svg>
+                              }
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -418,6 +506,51 @@ const AdminDashboard = () => {
                 </nav>
               </div>
             )}
+            {/* Modal enviar mensaje*/}
+            <Modal
+              open={openModalMensaje}
+              onClose={handleCloseModal}
+              title={
+                <div className="flex space-x-2">
+                  <Lottie
+                    animationData={mensajeAnimation}
+                    style={{ height: 60 }}
+                    loop={false}
+                  />
+                  <h2 className="my-4 text-2xl font-bold text-center">
+                    Enviar mensaje
+                  </h2>
+                </div>
+              }
+              text={
+                <div>
+                  <div className="my-2">
+                    <textarea
+                      rows="4"
+                      className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:border-chryslerblue"
+                      placeholder="Escribe tu mensaje aquí..."
+                      value={formData.mensaje}
+                      onChange={(e) => {
+                        setFormData({ ...formData, mensaje: e.target.value });
+                        setFormError({ ...formError, mensaje: "" });
+                      }}
+                    ></textarea>
+                    {formError.mensaje && (
+                      <p className="py-1 text-sm text-redpantone">
+                        {formError.mensaje}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex justify-end">
+                    <PrimaryButton
+                      classes={"mt-4"}
+                      text="Enviar"
+                      action={() => handleEnviarMensaje(id)}
+                    />
+                  </div>
+                </div>
+              }
+            />
             {/* Modal anular cita*/}
             <Modal
               open={openModalAnular}
@@ -443,7 +576,7 @@ const AdminDashboard = () => {
               bottom={
                 <div className="flex justify-end w-full">
                   <DangerButton
-                    action={() => handleDeleteCita(idToDelete)}
+                    action={() => handleDeleteCita(id)}
                     classes="mt-4"
                     text="Anular"
                   />
@@ -469,9 +602,9 @@ const AdminDashboard = () => {
             <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
               <div className="flex flex-col items-center justify-center w-full bg-white dark:bg-gray-800">
                 {loading && <Spinner />}
-                {notificaciones &&
+                {novedades &&
                   !loading &&
-                  notificaciones.length > 0 &&
+                  novedades.length > 0 &&
                   currentFilteredNotis.map((notificacion) => (
                     <div
                       key={notificacion.id}
@@ -479,23 +612,43 @@ const AdminDashboard = () => {
                     >
                       <div className="flex-col items-center w-full space-y-2">
                         <div className="flex items-center space-x-2">
-                          <svg
-                            className="w-8 h-8"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="m10.827 5.465-.435-2.324m.435 2.324a5.338 5.338 0 0 1 6.033 4.333l.331 1.769c.44 2.345 2.383 2.588 2.6 3.761.11.586.22 1.171-.31 1.271l-12.7 2.377c-.529.099-.639-.488-.749-1.074C5.813 16.73 7.538 15.8 7.1 13.455c-.219-1.169.218 1.162-.33-1.769a5.338 5.338 0 0 1 4.058-6.221Zm-7.046 4.41c.143-1.877.822-3.461 2.086-4.856m2.646 13.633a3.472 3.472 0 0 0 6.728-.777l.09-.5-6.818 1.277Z"
-                            />
-                          </svg>
+                          {notificacion.tipo === 2 ? (
+                            <svg
+                              className="w-8 h-8"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="m10.827 5.465-.435-2.324m.435 2.324a5.338 5.338 0 0 1 6.033 4.333l.331 1.769c.44 2.345 2.383 2.588 2.6 3.761.11.586.22 1.171-.31 1.271l-12.7 2.377c-.529.099-.639-.488-.749-1.074C5.813 16.73 7.538 15.8 7.1 13.455c-.219-1.169.218 1.162-.33-1.769a5.338 5.338 0 0 1 4.058-6.221Zm-7.046 4.41c.143-1.877.822-3.461 2.086-4.856m2.646 13.633a3.472 3.472 0 0 0 6.728-.777l.09-.5-6.818 1.277Z"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="w-8 h-8"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 17h6l3 3v-3h2V9h-2M4 4h11v8H9l-3 3v-3H4V4Z"
+                              />
+                            </svg>
+                          )}
                           <p className="text-lg font-semibold text-gray-900 dark:text-babypowder">
                             {notificacion.titulo}
                           </p>
@@ -516,9 +669,9 @@ const AdminDashboard = () => {
                             >
                               <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
                             </svg>
-                            {notificacion.updated_at
+                            {notificacion.created_at
                               ? new Date(
-                                  notificacion.updated_at
+                                  notificacion.created_at
                                 ).toLocaleString("es-ES", {
                                   day: "2-digit",
                                   month: "2-digit",
@@ -530,7 +683,7 @@ const AdminDashboard = () => {
                           </span>
                           <SecondaryButton
                             action={() => {
-                              marcarLeida(notificacion.id, 2);
+                              marcarLeida(notificacion.id, notificacion.tipo);                       
                             }}
                             classes={"px-5"}
                             text="Marcar leído"
@@ -558,7 +711,7 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                   ))}
-                {notificaciones.length === 0 && !loading && (
+                {novedades.length === 0 && !loading && (
                   <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
                     <p className="p-4 my-4 font-semibold text-center">
                       ¡No tienes notificaciones!
@@ -567,7 +720,7 @@ const AdminDashboard = () => {
                 )}
               </div>
               {/* Paginación */}
-              {!loading && notificaciones.length > 0 && (
+              {!loading && novedades.length > 0 && (
                 <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
                   <nav className="flex items-center space-x-2">
                     <button
@@ -616,192 +769,6 @@ const AdminDashboard = () => {
                       disabled={currentPageNotis === totalFilteredPagesNotis}
                       className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                         currentPageNotis === totalFilteredPagesNotis
-                          ? "text-gray-400"
-                          : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                      }`}
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </nav>
-                </div>
-              )}
-            </div>
-          </div>
-          {/* Contenedor de mensajes */}
-          <div>
-            <div className="flex justify-end mb-4 space-x-3">
-              <Lottie
-                animationData={mensajeAnimation}
-                className="h-16"
-                loop={false}
-              />
-              <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
-                Tus mensajes
-              </h2>
-            </div>
-            <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
-              <div className="flex flex-col items-center justify-center w-full bg-white dark:bg-gray-800">
-                {loading && <Spinner />}
-                {mensajes &&
-                  !loading &&
-                  mensajes.length > 0 &&
-                  currentFilteredMessage.map((mensaje) => (
-                    <div
-                      key={mensaje.id}
-                      className="flex items-center w-full p-4 space-x-2 duration-300 ease-out border-b dark:border-gray-700 hover:bg-blue-50"
-                    >
-                      <div className="flex-col items-center w-full space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <svg
-                            className="w-8 h-8"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M9 17h6l3 3v-3h2V9h-2M4 4h11v8H9l-3 3v-3H4V4Z"
-                            />
-                          </svg>
-                          <p className="text-lg font-semibold text-gray-900 dark:text-babypowder">
-                            {mensaje.titulo}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500 dark:text-gray-200">
-                            {mensaje.descripcion}
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between w-full">
-                          <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                            <svg
-                              className="w-2.5 h-2.5 me-1.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                            </svg>
-                            {mensaje.updated_at
-                              ? new Date(mensaje.updated_at).toLocaleString(
-                                  "es-ES",
-                                  {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }
-                                ) + "h"
-                              : ""}
-                          </span>
-                          <SecondaryButton
-                            action={() => {
-                              marcarLeida(mensaje.id, 1);
-                            }}
-                            classes={"px-5"}
-                            text="Marcar leído"
-                            icon={
-                              <svg
-                                className="w-6 h-6"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"
-                                />
-                              </svg>
-                            }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                {mensajes.length === 0 && !loading && (
-                  <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
-                    <p className="p-4 my-4 font-semibold text-center">
-                      ¡No tienes nuevos mensajes!
-                    </p>
-                  </div>
-                )}
-              </div>
-              {/* Paginación */}
-              {!loading && mensajes.length > 0 && (
-                <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
-                  <nav className="flex items-center space-x-2">
-                    <button
-                      onClick={() =>
-                        setCurrentPageMessage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPageMessage === 1}
-                      className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
-                        currentPageMessage === 1
-                          ? "text-gray-400"
-                          : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                      }`}
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    {[...Array(totalFilteredPagesMessage)].map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentPageMessage(index + 1)}
-                        className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
-                          currentPageMessage === index + 1
-                            ? "bg-chryslerblue text-white"
-                            : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
-                        }`}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
-
-                    <button
-                      onClick={() =>
-                        setCurrentPageMessage((prev) =>
-                          Math.min(prev + 1, totalFilteredPagesMessage)
-                        )
-                      }
-                      disabled={
-                        currentPageMessage === totalFilteredPagesMessage
-                      }
-                      className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
-                        currentPageMessage === totalFilteredPagesMessage
                           ? "text-gray-400"
                           : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
                       }`}

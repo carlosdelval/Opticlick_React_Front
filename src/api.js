@@ -33,8 +33,8 @@ export const getAdmins = async () => {
 };
 
 // Obtener óptica de un admin
-export const getOpticaAdmin = async (id) => {
-  const res = await axios.get(`${API_URL}/optica-admin/${id}`);
+export const getOpticaUsuario = async (id) => {
+  const res = await axios.get(`${API_URL}/optica-usuario/${id}`);
   return res.data;
 };
 
@@ -174,9 +174,9 @@ export const setGraduada = async (id) => {
 };
 
 // Obtener notificaciones de un usuario
-export const getNotificaciones = async (id, tipo, destinatario) => {
+export const getNotificaciones = async (destinatario, id, tipo) => {
   const res = await axios.get(
-    `${API_URL}/notificaciones/${id}/${tipo}/${destinatario}`
+    `${API_URL}/notificaciones/${destinatario}/${id}/${tipo}`
   );
   return res.data;
 };

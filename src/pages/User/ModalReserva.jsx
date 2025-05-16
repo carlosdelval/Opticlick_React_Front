@@ -138,7 +138,7 @@ const ModalReserva = ({ onReservaExitosa }) => {
         user_id: user.id,
         optica_id: formData.optica_id,
         tipo: 2,
-        destinatario: 1,
+        destinatario: 0,
         titulo: `${user?.name} ${user?.surname}`,
         descripcion: `Cita reservada el día ${formData.fecha.toLocaleDateString('es-ES', {
           day: '2-digit',
@@ -146,8 +146,8 @@ const ModalReserva = ({ onReservaExitosa }) => {
           year: 'numeric'
         })} a las ${
           formData.hora
-        } en la óptica ${
-          opticas.find((o) => o.id === formData.optica_id)?.nombre ||
+        } en ${
+          opticas.find((o) => o.id === parseInt(formData.optica_id))?.nombre ||
           "desconocida"
         }`,
       };

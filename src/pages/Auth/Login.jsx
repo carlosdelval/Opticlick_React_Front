@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import axios from "axios";
+import { login as loginAPI } from "../../api";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -51,33 +51,30 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/login", formData);
+      const res = await loginAPI(formData);
 
-      if (res.data.token && res.data.role) {
-        // Guardar credenciales si "Recordar" está marcado
+      if (res.token && res.role) {
         if (remember) {
           localStorage.setItem("rememberedEmail", formData.email);
           localStorage.setItem("rememberedPassword", formData.password);
         } else {
-          // Si no está marcado, asegurarse de eliminar cualquier credencial previa
           localStorage.removeItem("rememberedEmail");
           localStorage.removeItem("rememberedPassword");
         }
 
         login({
-          token: res.data.token,
-          role: res.data.role,
-          email: res.data.email,
-          name: res.data.name,
-          tlf: res.data.tlf,
-          dni: res.data.dni,
-          surname: res.data.surname,
-          id: res.data.id,
-          email_verified: res.data.email_verified,
-          optica_id: res.data.optica_id,
+          token: res.token,
+          role: res.role,
+          email: res.email,
+          name: res.name,
+          tlf: res.tlf,
+          dni: res.dni,
+          surname: res.surname,
+          id: res.id,
+          email_verified: res.email_verified,
         });
 
-        navigate(res.data.role === "user" ? "/dashboard" : "/admin-dashboard");
+        navigate(res.role === "user" ? "/dashboard" : "/admin-dashboard");
       } else {
         setError_user("Respuesta inesperada del servidor.");
       }
