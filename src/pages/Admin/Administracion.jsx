@@ -6,7 +6,7 @@ import {
   getOpticas,
   getAdminsOptica,
   registerUser,
-  setOpticaAdmin,
+  setOptica,
 } from "../../api";
 import Lottie from "lottie-react";
 import dynamicRoleAnimation from "../../assets/admins.json";
@@ -22,6 +22,7 @@ import { Modal, Popover } from "flowbite-react";
 import Alert from "../../components/Alert";
 import InputField from "../../components/InputField";
 import MenuButton from "../../components/MenuButton";
+import SearchBar from "../../components/SearchBar";
 
 function Administracion() {
   const [admins, setAdmins] = React.useState([]);
@@ -85,7 +86,7 @@ function Administracion() {
       };
 
       const data = await registerUser(userData);
-      await setOpticaAdmin(data.id, formData.optica);
+      await setOptica(data.id, formData.optica);
 
       setAdmins((prev) => [
         ...prev,
@@ -265,7 +266,7 @@ function Administracion() {
         optica: "",
       });
       await updateUser(formData);
-      await setOpticaAdmin(formData.id, parseInt(formData.optica));
+      await setOptica(formData.id, parseInt(formData.optica));
       // Update admin in the UI
       setAdmins((prevAdmins) =>
         prevAdmins.map((admin) =>
@@ -401,34 +402,12 @@ function Administracion() {
 
       {/* Barrita de búsqueda */}
       <div className="mb-4 space-y-2 md:flex md:space-x-3 md:space-y-0">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg
-              className="w-4 h-4 dark:text-white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-          </div>
-          <input
-            type="search"
-            id="search"
-            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="Buscar clientes por nombre, e-mail o dni..."
-            autoComplete="off"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        <SearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          className="w-full md:w-1/2"
+          placeholder="Buscar por nombre, email o DNI"
+        />
         <div className="relative">
           <select
             className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
@@ -654,9 +633,7 @@ function Administracion() {
               </tbody>
             </table>
           </div>
-          {loading && (
-            <Spinner/>
-          )}
+          {loading && <Spinner />}
           {filteredAdmins.length === 0 && !loading && (
             <p className="p-4 my-4 text-center">
               No hay administradores que coincidan con la búsqueda

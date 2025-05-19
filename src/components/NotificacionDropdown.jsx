@@ -41,7 +41,7 @@ const NotificationDropdown = () => {
       {/* Botón campana */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-700 dark:text-babypowder"
+        className="relative p-2 text-gray-700 dark:text-babypowder hover:scale-110"
       >
         {/* Campana SVG */}
         <svg
@@ -59,7 +59,7 @@ const NotificationDropdown = () => {
         </svg>
 
         {totalNoLeidos > 0 && (
-          <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-xs text-white rounded-full bg-redpantone">
+          <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-xs text-white transition-transform ease-in-out rounded-full bg-redpantone animate-pulse">
             {totalNoLeidos}
           </span>
         )}
@@ -173,8 +173,8 @@ const NotificationDropdown = () => {
                 key={msg.id}
                 className="flex items-start justify-between p-2 duration-300 ease-out rounded hover:bg-blue-50 dark:hover:bg-gray-700"
               >
-                <div className="flex items-center space-x-6">
-                  <div className="flex flex-col space-y-1 text-left">
+                <div className="flex items-center w-full">
+                  <div className="flex flex-col w-3/4 space-y-1 text-left">
                     <span className="text-sm font-semibold dark:text-white">
                       {msg.titulo}
                     </span>
@@ -182,28 +182,30 @@ const NotificationDropdown = () => {
                       {msg.descripcion}
                     </span>
                   </div>
-                  <button
-                    onClick={() => marcarLeida(msg.id, 1)}
-                    className="text-chryslerblue"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="none"
-                      viewBox="0 0 24 24"
+                  <div className="flex justify-end w-1/4">
+                    <button
+                      onClick={() => marcarLeida(msg.id, 1)}
+                      className=" text-chryslerblue"
                     >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"
-                      />
-                    </svg>
-                  </button>
+                      <svg
+                        className="w-6 h-6"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </li>
             ))}

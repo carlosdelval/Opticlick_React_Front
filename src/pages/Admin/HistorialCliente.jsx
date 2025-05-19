@@ -11,7 +11,7 @@ import deleteAnimation from "../../assets/delete.json";
 import Lottie from "lottie-react";
 import activityAnimation from "../../assets/activity.json";
 import fileAnimation from "../../assets/file.json";
-import { Modal } from "flowbite-react";
+import Modal from "../../components/Modal";
 import Alert from "../../components/Alert";
 import AuthContext from "../../context/AuthContext";
 import { saveAs } from "file-saver";
@@ -23,6 +23,7 @@ import Spinner from "../../components/Spinner";
 import InputField from "../../components/InputField";
 import SecondaryButton from "../../components/SecondaryButton";
 import SecondaryDanger from "../../components/SecondaryDanger";
+import SearchBar from "../../components/SearchBar";
 
 const HistorialCliente = () => {
   const { user } = useContext(AuthContext);
@@ -231,34 +232,11 @@ const HistorialCliente = () => {
 
       {/* Barrita de búsqueda */}
       <div className="mb-4">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg
-              className="w-4 h-4 dark:text-white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-          </div>
-          <input
-            type="search"
-            id="search"
-            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="Buscar cita por fecha, hora u óptica..."
-            autoComplete="off"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        <SearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          placeholder="Buscar por fecha, hora u óptica"
+        />
       </div>
 
       <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg">
@@ -676,191 +654,175 @@ const HistorialCliente = () => {
           )}
           {/* Modal borrar graduacion*/}
           <Modal
-            className="justify-center py-20 bg-gray-200 bg-opacity-50"
-            size="md"
-            show={modalDelete}
+            open={modalDelete}
             onClose={() => setModalDelete(false)}
-          >
-            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-              <Modal.Header>
-                <div className="flex">
-                  <Lottie
-                    animationData={deleteAnimation}
-                    style={{ height: 60 }}
-                    loop={false}
-                  />
-                  <h2 className="my-4 text-2xl font-bold text-center">
-                    Eliminar graduación:
-                  </h2>
-                </div>
-              </Modal.Header>
-              <Modal.Body className="justify-center p-4">
-                <div className="flex items-center justify-center mb-4">
-                  <span className="text-2xl font-semibold text-center text-redpantone">
-                    {selectedFecha}
-                    <span className="font-normal text-black">{" a las "}</span>
-                    {selectedHora}
-                    {"h"}
-                  </span>
-                </div>
-                <div className="my-2">
-                  <p>¿Está seguro de que desea borrar esta graduación?</p>
-                  <p>
-                    La información de este registro se eliminará de la base de
-                    datos y no podrá ser recuperada.
-                  </p>
-                </div>
-                <div className="flex justify-end">
-                  <DangerButton
-                    action={() => handleDeleteGraduacion(selectedId)}
-                    classes={"mt-6 "}
-                    text="Eliminar"
-                  />
-                </div>
-              </Modal.Body>
-            </div>
-          </Modal>
+            text={
+              <div className="flex flex-col items-center justify-center p-4">
+                <h2 className="mb-4 text-lg text-center text-gray-500 dark:text-gray-400">
+                  ¿Estás seguro de que deseas eliminar la graduación?
+                </h2>
+                <p className="text-sm font-semibold">
+                  Esta acción no se puede deshacer.
+                </p>
+              </div>
+            }
+            title={
+              <div className="flex space-x-2">
+                <Lottie
+                  animationData={deleteAnimation}
+                  style={{ height: 60 }}
+                  loop={false}
+                />
+                <h2 className="my-4 text-2xl font-bold text-center">
+                  Eliminar graduación:
+                </h2>
+              </div>
+            }
+            bottom={
+              <div className="flex flex-row justify-end w-full space-x-2">
+                <DangerButton
+                  action={() => handleDeleteGraduacion(selectedId)}
+                  text="Eliminar"
+                  classes={"px-4"}
+                  icon={
+                    <svg
+                      className="w-6 h-6"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                      />
+                    </svg>
+                  }
+                />
+              </div>
+            }
+          />
           {/* Modal graduacion */}
           <Modal
-            className="justify-center bg-gray-200 bg-opacity-50 py-96"
-            size="md"
-            show={openModal}
+            open={openModal}
             onClose={() => setOpenModal(false)}
-          >
-            <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-              <Modal.Header className="p-4">
-                <div className="flex">
-                  <Lottie
-                    animationData={fileAnimation}
-                    style={{ height: 60 }}
-                    loop={false}
-                    hover={true}
-                  />
-                  <h2 className="my-4 text-2xl font-bold text-center">
-                    Graduación de cita:
-                  </h2>
-                </div>
-              </Modal.Header>
-              <Modal.Body className="justify-center p-4">
-                <div className="flex items-center justify-center mb-4">
-                  <span className="text-2xl font-semibold text-center">
-                    Día{" "}
-                    <span className="text-chryslerblue">{selectedFecha}</span> a
-                    las{" "}
-                    <span className="text-chryslerblue">{selectedHora}</span>
-                  </span>
-                </div>
-                <div className="my-6 overflow-x-autoshadow-md">
-                  <form onSubmit={(e) => e.preventDefault()}>
-                    <InputField
-                      type="number"
-                      text="Eje"
-                      name="eje"
-                      value={graduacion.eje}
-                      onChange={(e) =>
-                        setGraduacion({
-                          ...graduacion,
-                          eje: e,
-                        })
-                      }
-                    />
+            title={
+              <div className="flex">
+                <Lottie
+                  animationData={fileAnimation}
+                  style={{ height: 60 }}
+                  loop={false}
+                  hover={true}
+                />
+                <h2 className="my-4 text-2xl font-bold text-center">
+                  Graduación de cita:
+                </h2>
+              </div>
+            }
+            text={
+              <form onSubmit={(e) => e.preventDefault()}>
+                <InputField
+                  type="number"
+                  text="Eje"
+                  name="eje"
+                  value={graduacion.eje}
+                  onChange={(e) =>
+                    setGraduacion({
+                      ...graduacion,
+                      eje: e,
+                    })
+                  }
+                />
 
-                    <InputField
-                      type="number"
-                      name="cilindro"
-                      text="Cilindro"
-                      value={graduacion.cilindro}
-                      onChange={(e) =>
-                        setGraduacion({
-                          ...graduacion,
-                          cilindro: e,
-                        })
-                      }
-                    />
-                    <InputField
-                      type="number"
-                      text="Esfera"
-                      name="esfera"
-                      value={graduacion.esfera}
-                      onChange={(e) =>
-                        setGraduacion({
-                          ...graduacion,
-                          esfera: e,
-                        })
-                      }
-                    />
-                    <div className="flex justify-end">
-                      <SecondaryButton
-                        classes={"px-2"}
-                        action={() =>
-                          handleUpdateGraduacion(selectedId, graduacion)
-                        }
-                        text="Actualizar"
-                        icon={
-                          <svg
-                            className="w-6 h-6"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeWidth="2"
-                              d="M11 16h2m6.707-9.293-2.414-2.414A1 1 0 0 0 16.586 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7.414a1 1 0 0 0-.293-.707ZM16 20v-6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6h8ZM9 4h6v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Z"
-                            />
-                          </svg>
-                        }
+                <InputField
+                  type="number"
+                  name="cilindro"
+                  text="Cilindro"
+                  value={graduacion.cilindro}
+                  onChange={(e) =>
+                    setGraduacion({
+                      ...graduacion,
+                      cilindro: e,
+                    })
+                  }
+                />
+                <InputField
+                  type="number"
+                  text="Esfera"
+                  name="esfera"
+                  value={graduacion.esfera}
+                  onChange={(e) =>
+                    setGraduacion({
+                      ...graduacion,
+                      esfera: e,
+                    })
+                  }
+                />
+              </form>
+            }
+            bottom={
+              <div className="flex flex-row justify-end w-full space-x-2">
+                <SecondaryButton
+                  action={() => handleUpdateGraduacion(selectedId, graduacion)}
+                  text="Actualizar"
+                  classes={"px-4"}
+                  icon={
+                    <svg
+                      className="w-6 h-6"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeWidth="2"
+                        d="M11 16h2m6.707-9.293-2.414-2.414A1 1 0 0 0 16.586 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7.414a1 1 0 0 0-.293-.707ZM16 20v-6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6h8ZM9 4h6v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Z"
                       />
-                      <SecondaryButton
-                        action={() =>
-                          handleDownloadPDF(
-                            graduacion,
-                            selectedFecha,
-                            selectedHora
-                          )
-                        }
-                        classes={"px-5"}
-                        text={
-                          loading ? (
-                            <Spinner/>
-                          ) : (
-                            "Descargar PDF"
-                          )
-                        }
-                        icon={
-                          loading ? (
-                            <Spinner/>
-                          ) : (
-                            <svg
-                              className="w-6 h-6"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
-                              />
-                            </svg>
-                          )
-                        }
-                      />
-                    </div>
-                  </form>
-                </div>
-              </Modal.Body>
-            </div>
-          </Modal>
+                    </svg>
+                  }
+                />
+                <SecondaryButton
+                  action={() =>
+                    handleDownloadPDF(graduacion, selectedFecha, selectedHora)
+                  }
+                  classes={"px-4"}
+                  text={loading ? <Spinner /> : "Descargar"}
+                  icon={
+                    loading ? (
+                      <Spinner />
+                    ) : (
+                      <svg
+                        className="w-6 h-6"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
+                        />
+                      </svg>
+                    )
+                  }
+                />
+              </div>
+            }
+          />
         </div>
       </div>
     </div>

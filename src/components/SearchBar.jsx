@@ -1,4 +1,4 @@
-const SearchBar = ({searchTerm, setSearchTerm, className}) => {
+const SearchBar = ({searchTerm, setSearchTerm, className, placeholder}) => {
   return (
     <div className="relative">
       <div className={`${className} absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none`}>
@@ -22,7 +22,7 @@ const SearchBar = ({searchTerm, setSearchTerm, className}) => {
         type="search"
         id="search"
         className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-        placeholder="Buscar citas por cliente, fecha u hora..."
+        placeholder={placeholder}
         autoComplete="off"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}

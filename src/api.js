@@ -44,12 +44,18 @@ export const getAdminsOptica = async (id) => {
   return res.data;
 };
 
-// Asignar óptica a un admin
-export const setOpticaAdmin = async (id, optica_id) => {
-  const res = await axios.put(`${API_URL}/admins-optica`, {
+// Asignar óptica a un usuario
+export const setOptica = async (id, optica_id) => {
+  const res = await axios.put(`${API_URL}/asignar-optica`, {
     user_id: id,
     optica_id: optica_id,
   });
+  return res.data;
+};
+
+// Eliminar usuario de una óptica
+export const deleteUserOptica = async (id, optica_id) => {
+  const res = await axios.delete(`${API_URL}/users-optica/${id}/${optica_id}`);
   return res.data;
 };
 

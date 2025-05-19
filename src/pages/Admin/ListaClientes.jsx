@@ -1,4 +1,5 @@
 import React from "react";
+import AuthContext from "../../context/AuthContext";
 import {
   getClientes,
   deleteUser,
@@ -6,23 +7,27 @@ import {
   getOpticas,
   getClientesOptica,
   registerUser,
+  setOptica,
+  deleteUserOptica,
 } from "../../api";
 import Lottie from "lottie-react";
 import teamAnimation from "../../assets/clients.json";
 import profileAnimation from "../../assets/profile.json";
-import bcrypt from "bcryptjs-react";
 import SecondaryDanger from "../../components/SecondaryDanger";
 import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import Spinner from "../../components/Spinner";
 import DangerButton from "../../components/DangerButton";
 import deleteAnimation from "../../assets/delete.json";
-import { Modal, Popover } from "flowbite-react";
+import { Popover } from "flowbite-react";
+import Modal from "../../components/Modal";
 import Alert from "../../components/Alert";
 import InputField from "../../components/InputField";
 import MenuButton from "../../components/MenuButton";
+import SearchBar from "../../components/SearchBar";
 
-function Dashboard() {
+function ListaClientes() {
+  const { user } = React.useContext(AuthContext);
   const [clientes, setClientes] = React.useState([]);
   const [opticas, setOpticas] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -45,7 +50,7 @@ function Dashboard() {
     tlf: "",
     email: "",
   });
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = React.useState(() => ({
     id: "",
     name: "",
     surname: "",
@@ -54,9 +59,11 @@ function Dashboard() {
     email: "",
     password: "",
     role: "user",
-  });
+    optica: user?.role === "admin" ? user?.optica_id : "",
+  }));
 
-  const handleAddCliente = async () => {
+  const handleAddCliente = async (data) => {
+    setLoading(true);
     try {
       if (!validateForm()) {
         return;
@@ -68,20 +75,24 @@ function Dashboard() {
         tlf: "",
         email: "",
       });
-      const passwordToHash =
-        formData.name.toLowerCase() + formData.name.toLowerCase();
-      const hashedPassword = bcrypt.hashSync(passwordToHash, 10);
-      setFormData((prev) => ({ ...prev, password: hashedPassword }));
-      const data = await registerUser(formData);
+      const result = await registerUser(data);
+      if (result.id && data.optica) {
+        console.log(result.id, data.optica);
+        await setOptica(result.id, data.optica);
+      }
       const newCliente = {
-        id: data.id,
-        ...formData,
+        ...data,
       };
       setClientes((prev) => [...prev, newCliente]);
+      setSearchTerm("");
       setModalInfoCliente(false);
       setSuccess("Cliente registrado correctamente");
       setError(null);
+      setLoading(false);
     } catch (err) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
       console.error("Error registering client:", err);
       if (err.response && err.response.status === 400) {
         const errorMessage = err.response.data.error || "";
@@ -150,6 +161,10 @@ function Dashboard() {
         }, 500);
       }
     };
+
+    if (user.role === "admin") {
+      setOpticaSearch(user.optica_id);
+    }
     if (opticaSearch) {
       fetchClientesOptica();
     } else {
@@ -158,18 +173,35 @@ function Dashboard() {
     }
   }, [opticaSearch]);
 
+  // Eliminar cliente, si es master, eliminamos el cliente por completo, si somos admin, simplemente eliminamos
+  // este cliente de nuestra óptica actual
   const handleDeleteCliente = async (id) => {
-    try {
-      await deleteUser(id);
-      setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
-      setModalDelete(false);
-      setSuccess("Cliente eliminado correctamente");
-      setError(null);
-    } catch (err) {
-      console.error("Error deleting client:", err);
-      setModalDelete(false);
-      setError("No se pudo eliminar el cliente");
-      setSuccess(null);
+    if (user.role === "master") {
+      try {
+        await deleteUser(id);
+        setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+        setModalDelete(false);
+        setSuccess("Cliente eliminado correctamente");
+        setError(null);
+      } catch (err) {
+        console.error("Error deleting client:", err);
+        setModalDelete(false);
+        setError("No se pudo eliminar el cliente");
+        setSuccess(null);
+      }
+    } else {
+      try {
+        await deleteUserOptica(id, user.optica_id);
+        setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+        setModalDelete(false);
+        setSuccess("Cliente eliminado correctamente");
+        setError(null);
+      } catch (err) {
+        console.error("Error deleting client:", err);
+        setModalDelete(false);
+        setError("No se pudo eliminar el cliente");
+        setSuccess(null);
+      }
     }
   };
 
@@ -297,6 +329,8 @@ function Dashboard() {
       dni: cliente.dni,
       tlf: cliente.tlf,
       email: cliente.email,
+      role: "user",
+      optica: opticaSearch,
     });
     setModalInfoCliente(true);
   };
@@ -369,52 +403,34 @@ function Dashboard() {
 
       {/* Barrita de búsqueda */}
       <div className="mb-4 space-y-2 md:flex md:space-x-3 md:space-y-0">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg
-              className="w-4 h-4 dark:text-white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
+        <SearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          className={`${
+            user.role === "master" ? "md:w-1/2" : "md:w-2/3"
+          } w-full`}
+          placeholder="Buscar cliente por nombre, email o DNI"
+        />
+        {user.role === "master" && (
+          <div className="relative">
+            <select
+              className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+              onChange={(e) => setOpticaSearch(e.target.value)}
+              value={opticaSearch}
             >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-          </div>
-          <input
-            type="search"
-            id="search"
-            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="Buscar clientes por nombre, e-mail o dni..."
-            autoComplete="off"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="relative">
-          <select
-            className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            onChange={(e) => setOpticaSearch(e.target.value)}
-            value={opticaSearch}
-          >
-            <option value="" disabled>
-              Filtrar por óptica
-            </option>
-            <option value="">Todas las ópticas</option>
-            {opticas.map((optica) => (
-              <option key={optica.id} value={optica.id}>
-                {optica.nombre}
+              <option value="" disabled>
+                Filtrar por óptica
               </option>
-            ))}
-          </select>
-        </div>
-        <div className="relative flex items-center justify-end w-full md:w-1/2">
+              <option value="">Todas las ópticas</option>
+              {opticas.map((optica) => (
+                <option key={optica.id} value={optica.id}>
+                  {optica.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        <div className="relative flex items-center justify-end w-full pt-2 md:pt-0">
           <MenuButton
             text="Nuevo cliente"
             icon={
@@ -445,6 +461,7 @@ function Dashboard() {
                 tlf: "",
                 email: "",
                 password: "",
+                role: "user",
               });
               setModalInfoCliente(true);
             }}
@@ -648,9 +665,7 @@ function Dashboard() {
               </tbody>
             </table>
           </div>
-          {loading && (
-            <Spinner />
-          )}
+          {loading && <Spinner />}
           {filteredClientes.length === 0 && !loading && (
             <p className="p-4 my-4 text-center">
               No hay clientes que coincidan con la búsqueda
@@ -686,28 +701,28 @@ function Dashboard() {
                         <div className="font-medium text-gray-900 dark:text-babypowder">
                           {cliente.name} {cliente.surname}
                         </div>
-                        <div className="space-y-2">
-                          <div className="space-x-2">
-                            <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                              <svg
-                                className="w-4 h-4 me-1.5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeWidth="2"
-                                  d="m3.5 5.5 7.893 6.036a1 1 0 0 0 1.214 0L20.5 5.5M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
-                                />
-                              </svg>
-                              {cliente.email}
-                            </span>
-                            <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                        <div className="flex flex-col space-y-2">
+                          <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                            <svg
+                              className="w-4 h-4 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeWidth="2"
+                                d="m3.5 5.5 7.893 6.036a1 1 0 0 0 1.214 0L20.5 5.5M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
+                              />
+                            </svg>
+                            {cliente.email}
+                          </span>
+                          <div className="flex flex-row space-x-2">
+                            <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                               <svg
                                 className="w-4 h-4 me-1.5"
                                 aria-hidden="true"
@@ -727,8 +742,6 @@ function Dashboard() {
                               </svg>
                               {cliente.dni}
                             </span>
-                          </div>
-                          <div>
                             <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                               <svg
                                 className="w-4 h-4 me-1.5"
@@ -928,25 +941,22 @@ function Dashboard() {
         )}
         {/* Modal borrar cliente*/}
         <Modal
-          className="justify-center bg-gray-200 bg-opacity-50 py-96"
-          size="md"
-          show={modalDelete}
+          open={modalDelete}
           onClose={() => setModalDelete(false)}
-        >
-          <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-            <Modal.Header>
-              <div className="flex">
-                <Lottie
-                  animationData={deleteAnimation}
-                  style={{ height: 60 }}
-                  loop={false}
-                />
-                <h2 className="my-4 text-2xl font-bold text-center">
-                  Eliminar cliente:
-                </h2>
-              </div>
-            </Modal.Header>
-            <Modal.Body className="justify-center p-4">
+          title={
+            <div className="flex">
+              <Lottie
+                animationData={deleteAnimation}
+                style={{ height: 60 }}
+                loop={false}
+              />
+              <h2 className="my-4 text-2xl font-bold text-center">
+                Eliminar cliente
+              </h2>
+            </div>
+          }
+          text={
+            <div>
               <div className="flex items-center justify-center mb-4">
                 <span className="text-2xl font-semibold text-center text-redpantone">
                   {selectedName} {selectedSurname}
@@ -959,45 +969,48 @@ function Dashboard() {
                   datos y no podrá ser recuperada.
                 </p>
               </div>
-              <div className="flex justify-end">
-                <DangerButton
-                  action={() => handleDeleteCliente(selectedId)}
-                  classes={"mt-6 "}
-                  text="Eliminar"
-                />
-              </div>
-            </Modal.Body>
-          </div>
-        </Modal>
+            </div>
+          }
+          bottom={
+            <div className="flex justify-end w-full">
+              <DangerButton
+                action={() => handleDeleteCliente(selectedId)}
+                classes={"mt-6 "}
+                text="Eliminar"
+              />
+            </div>
+          }
+        />
         {/* Modal de información del cliente */}
         <Modal
-          className="justify-center bg-gray-200 bg-opacity-50 py-96"
-          size="md"
-          show={modalInfoCliente}
+          open={modalInfoCliente}
           onClose={() => {
             setModalInfoCliente(false), setErrorForm({});
           }}
-        >
-          <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-            <Modal.Header>
-              <div className="flex">
-                <Lottie
-                  animationData={profileAnimation}
-                  style={{ height: 60 }}
-                  loop={false}
-                />
-                <h2 className="my-4 text-2xl font-bold text-center">
-                  Datos del cliente
-                </h2>
-              </div>
-            </Modal.Header>
-            <Modal.Body>
-              <form onSubmit={(e) => e.preventDefault()}>
+          title={
+            <div className="flex">
+              <Lottie
+                animationData={profileAnimation}
+                style={{ height: 60 }}
+                loop={false}
+              />
+              <h2 className="my-4 text-2xl font-bold text-center">
+                Datos del cliente
+              </h2>
+            </div>
+          }
+          text={
+            loading ? (
+              <Spinner />
+            ) : (
+              <div>
                 <InputField
                   text={"Nombre"}
                   value={formData.name ? formData.name : ""}
                   error={errorForm.name}
-                  onChange={(e) => setFormData({ ...formData, name: e })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e, password: e + e })
+                  }
                 />
                 <InputField
                   text={"Apellidos"}
@@ -1011,42 +1024,66 @@ function Dashboard() {
                   error={errorForm.email}
                   onChange={(e) => setFormData({ ...formData, email: e })}
                 />
-                <InputField
-                  text={"DNI"}
-                  value={formData.dni ? formData.dni : ""}
-                  error={errorForm.dni}
-                  onChange={(e) => setFormData({ ...formData, dni: e })}
-                />
-                <InputField
-                  text={"Teléfono"}
-                  value={formData.tlf ? formData.tlf : ""}
-                  error={errorForm.tlf}
-                  onChange={(e) => setFormData({ ...formData, tlf: e })}
-                />
-                <div className="flex justify-end">
-                  <PrimaryButton
-                    classes="mt-6"
-                    text={formData.id ? "Actualizar" : "Crear"}
-                    action={() =>
-                      formData.id
-                        ? handleUpdateCliente(formData.id)
-                        : [
-                            setFormData({
-                              ...formData,
-                              password: formData.name + formData.name,
-                            }),
-                            handleAddCliente(),
-                          ]
-                    }
+                <div className="flex flex-col md:flex-row md:space-x-3">
+                  <InputField
+                    text={"DNI"}
+                    value={formData.dni ? formData.dni : ""}
+                    error={errorForm.dni}
+                    onChange={(e) => setFormData({ ...formData, dni: e })}
+                  />
+                  <InputField
+                    text={"Teléfono"}
+                    option
+                    value={formData.tlf ? formData.tlf : ""}
+                    error={errorForm.tlf}
+                    onChange={(e) => setFormData({ ...formData, tlf: e })}
                   />
                 </div>
-              </form>
-            </Modal.Body>
-          </div>
-        </Modal>
+                {user.role === "master" && formData.id === "" && (
+                  <InputField
+                    type="select"
+                    placeholder={"Selecciona una óptica"}
+                    value={
+                      opticas.map((optica) => ({
+                        value: optica.id,
+                        display: optica.nombre,
+                        disabled: false,
+                      })) || []
+                    }
+                    defaultValue={formData.optica ? formData.optica : ""}
+                    error={errorForm.optica}
+                    onChange={(e) => setFormData({ ...formData, optica: e })}
+                  />
+                )}
+              </div>
+            )
+          }
+          bottom={
+            <div className="flex justify-end w-full">
+              <PrimaryButton
+                classes="my-2"
+                text={formData.id ? "Actualizar" : "Añadir"}
+                action={() => {
+                  if (formData.id) {
+                    handleUpdateCliente(formData.id);
+                  } else {
+                    const newData = {
+                      ...formData,
+                      password: formData.name + formData.name,
+                      optica: formData.optica || user?.optica_id || "",
+                    };
+
+                    setFormData(newData);
+                    handleAddCliente(newData);
+                  }
+                }}
+              />
+            </div>
+          }
+        />
       </div>
     </div>
   );
 }
 
-export default Dashboard;
+export default ListaClientes;
