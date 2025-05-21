@@ -62,7 +62,7 @@ function App() {
               <div className="flex flex-col min-h-screen">
                 <Background />
                 <Navbar />
-                <main className="px-10 pt-10 pb-10 my-auto">
+                <main className="px-10 pt-10 pb-10">
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
