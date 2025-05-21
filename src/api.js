@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:5000";
+const user = JSON.parse(localStorage.getItem("user"));
 
 // Verificar email
 export const verifyEmail = async (token) => {
@@ -80,6 +81,18 @@ export const registerUser = async (userData) => {
 // Editar usuario
 export const updateUser = async (userData) => {
   const res = await axios.put(`${API_URL}/users`, userData);
+  return res.data;
+};
+
+//Actualizar contraseña
+export const updatePassword = async (userData) => {
+  const token = user.token
+
+  const res = await axios.put(`${API_URL}/update-password`, userData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return res.data;
 };
 

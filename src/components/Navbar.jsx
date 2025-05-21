@@ -46,13 +46,7 @@ const Navbar = () => {
     <nav className="w-full px-4 pt-4 border-t-2 md:px-10 bg-inherit">
       <div className="flex flex-wrap items-center justify-between max-w-screen-xl gap-4 mx-auto">
         <a
-          href={
-            user?.role === "user"
-              ? "/dashboard"
-              : user?.role === "admin" || user?.role === "master"
-              ? "/admin-dashboard"
-              : "/"
-          }
+          href={user?.id ? "/dashboard" : "/"}
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <img
@@ -232,9 +226,7 @@ const Navbar = () => {
             {user && (
               <li>
                 <a
-                  href={
-                    user?.role === "user" ? "/dashboard" : "/admin-dashboard"
-                  }
+                  href="/dashboard"
                   className="block px-3 py-2 m-2 duration-300 cursor-pointer rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
                 >
                   <div className="flex items-center space-x-2">

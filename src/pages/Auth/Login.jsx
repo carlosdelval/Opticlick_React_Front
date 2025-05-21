@@ -74,7 +74,7 @@ const Login = () => {
           email_verified: res.email_verified,
         });
 
-        navigate(res.role === "user" ? "/dashboard" : "/admin-dashboard");
+        navigate("/dashboard");
       } else {
         setError_user("Respuesta inesperada del servidor.");
       }

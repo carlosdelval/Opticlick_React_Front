@@ -1,11 +1,13 @@
 import React, { useContext } from "react";
-import { getCitasGraduadasUser, getGraduacion } from "../../api";
+import { getGraduacion } from "../../api";
 import Lottie from "lottie-react";
 import activityAnimation from "../../assets/activity.json";
 import fileAnimation from "../../assets/file.json";
 import Modal from "../../components/Modal";
 import Alert from "../../components/Alert";
 import AuthContext from "../../context/AuthContext";
+import SearchBar from "../../components/SearchBar";
+import { CitasContext } from "../../context/CitasContext";
 import { saveAs } from "file-saver";
 import Documentacion from "../../pdf/GeneradorPdf";
 import ReactPDF from "@react-pdf/renderer";
@@ -14,8 +16,8 @@ import Spinner from "../../components/Spinner";
 
 const Historial = () => {
   const { user } = useContext(AuthContext);
-  const [citas, setCitas] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const { fetchCitasGraduadasUser, citasGraduadasUser, loading, setLoading } =
+    useContext(CitasContext);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [openAccordions, setOpenAccordions] = React.useState({});
@@ -31,23 +33,7 @@ const Historial = () => {
   const [selectedHora, setSelectedHora] = React.useState(null);
 
   React.useEffect(() => {
-    const fetchCitas = async () => {
-      if (!user) return;
-      try {
-        const data = await getCitasGraduadasUser(user.id);
-        setCitas(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      } catch (err) {
-        console.error("Error fetching citas:", err);
-        setError("No se pudieron cargar las citas.");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
-    fetchCitas();
+    fetchCitasGraduadasUser(user.id);
   }, [user?.id]);
 
   const handleOpenModal = (id, fecha, hora) => {
@@ -120,7 +106,7 @@ const Historial = () => {
 
   // Filtrar las graduaciones por fecha u hora
   const filteredCitas = React.useMemo(() => {
-    return citas.filter((cita) => {
+    return citasGraduadasUser.filter((cita) => {
       const normalizedHora = cita.hora
         .toLowerCase()
         .normalize("NFD")
@@ -169,7 +155,7 @@ const Historial = () => {
         normalizedSearchTerm.startsWith(monthName)
       );
     });
-  }, [citas, searchTerm]);
+  }, [citasGraduadasUser, searchTerm]);
 
   // Paginación de las citas filtradas
   const totalFilteredPages = Math.ceil(filteredCitas.length / itemsPerPage);
@@ -199,34 +185,11 @@ const Historial = () => {
 
       {/* Barrita de búsqueda */}
       <div className="mb-4">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg
-              className="w-4 h-4 dark:text-white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-          </div>
-          <input
-            type="search"
-            id="search"
-            className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            placeholder="Buscar graduación por fecha, hora u óptica..."
-            autoComplete="off"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        <SearchBar
+          placeholder="Buscar graduación por fecha, hora u óptica..."
+          value={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
       </div>
 
       <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg">
@@ -479,7 +442,7 @@ const Historial = () => {
                       aria-hidden={!openAccordions[cita.id]}
                     >
                       <div className="flex p-4 border-t dark:border-gray-700">
-                        <div className="flex justify-end space-x-2">
+                        <div className="flex justify-end w-full space-x-2">
                           <SecondaryButton
                             action={() =>
                               handleOpenModal(
@@ -638,7 +601,7 @@ const Historial = () => {
               </div>
             }
             bottom={
-              <div className="flex w-full justify-end">
+              <div className="flex justify-end w-full">
                 <SecondaryButton
                   action={handleDownloadPDF}
                   classes={"mt-4 px-6"}

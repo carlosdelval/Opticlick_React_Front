@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import AuthContext from "../../context/AuthContext";
+import UserContext from "../../context/UserContext";
 import PrimaryButton from "../../components/PrimaryButton";
 import DangerButton from "../../components/DangerButton";
 import InputField from "../../components/InputField";
 import Lottie from "lottie-react";
 import userProfileAnimation from "../../assets/profile.json";
 import deleteAnimation from "../../assets/delete.json";
-import { deleteUser } from "../../api";
 import Modal from "../../components/Modal";
 import Alert from "../../components/Alert";
 
 const Profile = () => {
   const { user, setUser } = React.useContext(AuthContext);
+  const { eliminarCliente, actualizarCliente, actualizarContrasena } =
+    React.useContext(UserContext);
   const [modalDelete, setModalDelete] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -85,12 +87,12 @@ const Profile = () => {
 
   const validateFormPass = () => {
     let newErrors = {};
-    if (!formData.password.trim()) {
+    if (!formData.password) {
       newErrors.password = "La contraseña es obligatoria";
     } else if (formData.password.length < 8) {
       newErrors.password = "La contraseña debe tener al menos 8 caracteres";
     }
-    if (!formData.new_password.trim()) {
+    if (!formData.new_password) {
       newErrors.new_password = "La contraseña es obligatoria";
     } else if (formData.new_password.length < 8) {
       newErrors.new_password = "La contraseña debe tener al menos 8 caracteres";
@@ -107,60 +109,35 @@ const Profile = () => {
     if (!validateFormPass()) return;
 
     try {
-      const response = await fetch("http://localhost:5000/update-password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`, // 📌 Enviar el token
-        },
-        body: JSON.stringify({
-          password: formData.password,
-          new_password: formData.new_password,
-          confirm_password: formData.confirm_password,
-        }),
+      await actualizarContrasena({
+        id: user.id,
+        password: formData.password,
+        new_password: formData.new_password,
       });
+      setFormData({
+        ...formData,
+        password: "",
+        new_password: "",
+        confirm_password: "",
+      });
+      setErrors({ password: "", new_password: "", confirm_password: "" });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess("Contraseña actualizada correctamente.");
-        setError(null);
-        // Reset password fields
-        setFormData((prevData) => ({
-          ...prevData,
-          password: "",
-          new_password: "",
-          confirm_password: "",
-        }));
-        // Clear any errors related to password fields
-        setErrors((prevErrors) => {
-          const newErrors = { ...prevErrors };
-          delete newErrors.password;
-          delete newErrors.new_password;
-          delete newErrors.confirm_password;
-          return newErrors;
-        });
-      } else {
-        if (data.error === "Contraseña incorrecta") {
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            password: data.error,
-          }));
-        } else {
-          setError(data.error || "Error al actualizar la contraseña");
-          setSuccess(null);
-        }
-      }
+      setSuccess("Contraseña actualizada correctamente.");
+      setError(null);
     } catch (error) {
       console.error("Error:", error);
-      setError("Hubo un problema con la actualización.");
+      setErrors({ password: error.error });
+      !error.error && setError("Error al actualizar la contraseña");
+      setSuccess(null);
     }
   };
 
   const handleDelete = () => async () => {
     try {
-      await deleteUser(user.id);
+      await eliminarCliente(user.id);
       setUser(null);
+      localStorage.removeItem("rememberedEmail");
+      localStorage.removeItem("rememberedPassword");
       localStorage.removeItem("user");
       alert("Cuenta eliminada correctamente.");
       window.location.href = "/";
@@ -174,30 +151,27 @@ const Profile = () => {
     if (!validateFormInfo()) return;
 
     try {
-      const response = await fetch("http://localhost:5000/update-profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`, // 📌 Enviar el token
-        },
-        body: JSON.stringify(formData),
+      const response = await actualizarCliente({
+        id: user.id,
+        name: formData.name,
+        surname: formData.surname,
+        dni: formData.dni,
+        tlf: formData.tlf,
+        email: formData.email,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // 📌 Actualizar el estado global y el localStorage
-        const updatedUser = { ...user, ...formData };
-        delete updatedUser.password;
-        delete updatedUser.confirm_password;
-
-        setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-
-        setSuccess("Perfil actualizado correctamente.");
+      if (response) {
+        setSuccess("Información actualizada correctamente.");
+        user.name = formData.name;
+        user.surname = formData.surname;
+        user.dni = formData.dni;
+        user.tlf = formData.tlf;
+        user.email = formData.email;
+        setUser(user);
+        localStorage.setItem("user", JSON.stringify(user));
         setError(null);
       } else {
-        setError(data.error || "Error al actualizar el perfil");
+        setError("Error al actualizar la información");
         setSuccess(null);
       }
     } catch (error) {

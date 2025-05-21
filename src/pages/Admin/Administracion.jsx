@@ -1,33 +1,34 @@
 import React from "react";
-import {
-  getAdmins,
-  deleteUser,
-  updateUser,
-  getOpticas,
-  getAdminsOptica,
-  registerUser,
-  setOptica,
-} from "../../api";
+import OpticasContext from "../../context/OpticasContext";
+import UserContext from "../../context/UserContext";
 import Lottie from "lottie-react";
 import dynamicRoleAnimation from "../../assets/admins.json";
 import profileAnimation from "../../assets/profile.json";
-import bcrypt from "bcryptjs-react";
 import SecondaryDanger from "../../components/SecondaryDanger";
 import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import DangerButton from "../../components/DangerButton";
 import Spinner from "../../components/Spinner";
 import deleteAnimation from "../../assets/delete.json";
-import { Modal, Popover } from "flowbite-react";
+import { Popover } from "flowbite-react";
+import Modal from "../../components/Modal";
 import Alert from "../../components/Alert";
 import InputField from "../../components/InputField";
 import MenuButton from "../../components/MenuButton";
 import SearchBar from "../../components/SearchBar";
 
 function Administracion() {
-  const [admins, setAdmins] = React.useState([]);
-  const [opticas, setOpticas] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const { opticas, asignarOptica } = React.useContext(OpticasContext);
+  const {
+    fetchAdmins,
+    fetchAdminsOptica,
+    eliminarCliente,
+    actualizarCliente,
+    registrarCliente,
+    loading,
+    setLoading,
+    admins,
+  } = React.useContext(UserContext);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [modalDelete, setModalDelete] = React.useState(false);
@@ -60,7 +61,8 @@ function Administracion() {
     role: "admin",
   });
 
-  const handleAddAdmin = async () => {
+  const handleAddAdmin = async (data) => {
+    setLoading(true);
     try {
       if (!validateForm()) {
         return;
@@ -71,41 +73,27 @@ function Administracion() {
         dni: "",
         tlf: "",
         email: "",
-        optica: "",
       });
-
-      // Generate password and set role BEFORE registering
-      const passwordToHash =
-        formData.name.toLowerCase() + formData.name.toLowerCase();
-      const hashedPassword = bcrypt.hashSync(passwordToHash, 10);
-
-      const userData = {
-        ...formData,
-        password: hashedPassword,
-        role: "admin",
-      };
-
-      const data = await registerUser(userData);
-      await setOptica(data.id, formData.optica);
-
-      setAdmins((prev) => [
-        ...prev,
-        {
-          id: data.id,
-          name: formData.name,
-          surname: formData.surname,
-          dni: formData.dni,
-          tlf: formData.tlf,
-          email: formData.email,
-          optica_id: parseInt(formData.optica),
-        },
-      ]);
-
+      const result = await registrarCliente(data);
+      if (result?.id && data.optica) {
+        console.log(result.id, data.optica);
+        await asignarOptica(result.id, data.optica);
+      }
+      if (opticaSearch) {
+        fetchAdminsOptica(opticaSearch);
+      } else {
+        fetchAdmins();
+      }
+      setSearchTerm("");
       setModalInfoAdmin(false);
-      setSuccess("Admin registrado correctamente");
+      setSuccess("Cliente registrado correctamente");
       setError(null);
+      setLoading(false);
     } catch (err) {
-      console.error("Error registering admin:", err);
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+      console.error("Error registering client:", err);
       if (err.response && err.response.status === 400) {
         const errorMessage = err.response.data.error || "";
         if (errorMessage.toLowerCase().includes("dni")) {
@@ -124,67 +112,28 @@ function Administracion() {
         }
       } else if (err.response && err.response.status === 500) {
         setModalInfoAdmin(false);
-        setError("No se pudo registrar el admin");
+        setError("No se pudo registrar el cliente");
         setSuccess(null);
       }
     }
   };
 
   React.useEffect(() => {
-    const fetchAdmin = async () => {
-      try {
-        const data = await getAdmins();
-        setAdmins(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      } catch (err) {
-        console.error("Error fetching admins:", err);
-        setError("No se pudieron cargar los administradores");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
-
-    const fetchOpticas = async () => {
-      try {
-        const data = await getOpticas();
-        setOpticas(data);
-      } catch (err) {
-        console.error("Error fetching opticas:", err);
-        setError("No se pudieron cargar las ópticas");
-      }
-    };
-
-    const fetchAdminOptica = async () => {
-      try {
-        setLoading(true);
-        const data = await getAdminsOptica(opticaSearch);
-        setAdmins(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 250);
-      } catch (err) {
-        console.error("Error fetching clients by optica:", err);
-        setError("No se pudieron cargar los clientes de esta óptica");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
     if (opticaSearch) {
-      fetchAdminOptica();
+      fetchAdminsOptica(opticaSearch);
     } else {
-      fetchAdmin();
-      fetchOpticas();
+      fetchAdmins();
     }
   }, [opticaSearch]);
 
   const handleDeleteAdmin = async (id) => {
     try {
-      await deleteUser(id);
-      setAdmins((prev) => prev.filter((admin) => admin.id !== id));
+      await eliminarCliente(id);
+      if (opticaSearch) {
+        fetchAdminsOptica(opticaSearch);
+      } else {
+        fetchAdmins();
+      }
       setModalDelete(false);
       setSuccess("Admin eliminado correctamente");
       setError(null);
@@ -265,24 +214,13 @@ function Administracion() {
         email: "",
         optica: "",
       });
-      await updateUser(formData);
-      await setOptica(formData.id, parseInt(formData.optica));
+      await actualizarCliente(formData);
       // Update admin in the UI
-      setAdmins((prevAdmins) =>
-        prevAdmins.map((admin) =>
-          admin.id === formData.id
-            ? {
-                ...admin,
-                name: formData.name,
-                surname: formData.surname,
-                dni: formData.dni,
-                tlf: formData.tlf,
-                email: formData.email,
-                optica_id: parseInt(formData.optica),
-              }
-            : admin
-        )
-      );
+      if (opticaSearch) {
+        fetchAdminsOptica(opticaSearch);
+      } else {
+        fetchAdmins();
+      }
       setModalInfoAdmin(false);
       setSuccess("Admin actualizado correctamente");
       setError(null);
@@ -401,36 +339,37 @@ function Administracion() {
       )}
 
       {/* Barrita de búsqueda */}
-      <div className="mb-4 space-y-2 md:flex md:space-x-3 md:space-y-0">
-        <SearchBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          className="w-full md:w-1/2"
-          placeholder="Buscar por nombre, email o DNI"
-        />
-        <div className="relative">
-          <select
-            className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            onChange={(e) => setOpticaSearch(e.target.value)}
-            value={opticaSearch}
-          >
-            <option value="" disabled>
-              Filtrar por óptica
-            </option>
-            <option value="">Todas las ópticas</option>
-            {opticas.map((optica) => (
-              <option key={optica.id} value={optica.id}>
-                {optica.nombre}
+      <div className="mb-2 space-y-2 md:mb-4 md:flex md:space-x-3 md:space-y-0">
+        <div className="space-y-2 lg:flex lg:space-y-0 lg:space-x-3">
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            className="w-full md:w-1/2"
+            placeholder="Buscar por nombre, email o DNI"
+          />
+          <div className="relative">
+            <select
+              className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+              onChange={(e) => setOpticaSearch(e.target.value)}
+              value={opticaSearch}
+            >
+              <option value="" disabled>
+                Filtrar por óptica
               </option>
-            ))}
-          </select>
+              <option value="">Todas las ópticas</option>
+              {opticas.map((optica) => (
+                <option key={optica.id} value={optica.id}>
+                  {optica.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="relative flex items-center justify-end w-full md:w-1/2">
+        <div className="relative flex items-center justify-end w-full lg:w-1/2">
           <MenuButton
             text="Añadir administrador"
             icon={
               <svg
-                className="w-5 h-5"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -885,25 +824,22 @@ function Administracion() {
         )}
         {/* Modal borrar cliente*/}
         <Modal
-          className="justify-center bg-gray-200 bg-opacity-50 py-96"
-          size="md"
-          show={modalDelete}
+          open={modalDelete}
           onClose={() => setModalDelete(false)}
-        >
-          <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-            <Modal.Header>
-              <div className="flex">
-                <Lottie
-                  animationData={deleteAnimation}
-                  style={{ height: 60 }}
-                  loop={false}
-                />
-                <h2 className="my-4 text-2xl font-bold text-center">
-                  Eliminar admin:
-                </h2>
-              </div>
-            </Modal.Header>
-            <Modal.Body className="justify-center p-4">
+          title={
+            <div className="flex">
+              <Lottie
+                animationData={deleteAnimation}
+                style={{ height: 60 }}
+                loop={false}
+              />
+              <h2 className="my-4 text-2xl font-bold text-center">
+                Eliminar admin:
+              </h2>
+            </div>
+          }
+          text={
+            <div>
               <div className="flex items-center justify-center mb-4">
                 <span className="text-2xl font-semibold text-center text-redpantone">
                   {selectedName} {selectedSurname}
@@ -916,39 +852,41 @@ function Administracion() {
                   datos y no podrá ser recuperada.
                 </p>
               </div>
-              <div className="flex justify-end">
-                <DangerButton
-                  action={() => handleDeleteAdmin(selectedId)}
-                  classes={"mt-6 "}
-                  text="Eliminar"
-                />
-              </div>
-            </Modal.Body>
-          </div>
-        </Modal>
+            </div>
+          }
+          bottom={
+            <div className="flex justify-end w-full">
+              <DangerButton
+                action={() => handleDeleteAdmin(selectedId)}
+                text="Eliminar"
+              />
+            </div>
+          }
+        />
         {/* Modal de información del cliente */}
         <Modal
-          className="justify-center bg-gray-200 bg-opacity-50 py-96"
-          size="md"
-          show={modalInfoAdmin}
+          open={modalInfoAdmin}
           onClose={() => {
             setModalInfoAdmin(false), setErrorForm({});
           }}
-        >
-          <div className="justify-center p-4 border-2 border-black rounded-md shadow-sm dark:border-gray-700">
-            <Modal.Header>
-              <div className="flex">
-                <Lottie
-                  animationData={profileAnimation}
-                  style={{ height: 60 }}
-                  loop={false}
-                />
-                <h2 className="my-4 text-2xl font-bold text-center">
-                  Datos del admin
-                </h2>
+          title={
+            <div className="flex">
+              <Lottie
+                animationData={profileAnimation}
+                style={{ height: 60 }}
+                loop={false}
+              />
+              <h2 className="my-4 text-2xl font-bold text-center">
+                Datos del admin
+              </h2>
+            </div>
+          }
+          text={
+            loading ? (
+              <div className="flex items-center justify-center">
+                <Spinner />
               </div>
-            </Modal.Header>
-            <Modal.Body>
+            ) : (
               <form onSubmit={(e) => e.preventDefault()}>
                 <InputField
                   text={"Nombre"}
@@ -982,42 +920,46 @@ function Administracion() {
                     onChange={(e) => setFormData({ ...formData, tlf: e })}
                   />
                 </div>
-                <InputField
-                  text="Óptica"
-                  type={"select"}
-                  value={opticas.map((optica) => ({
-                    value: optica.id,
-                    display: optica.nombre,
-                  }))}
-                  defaultValue={formData.id ? formData.optica : ""}
-                  placeholder={"Selecciona una óptica"}
-                  error={errorForm.optica}
-                  onChange={(e) => setFormData({ ...formData, optica: e })}
-                />
-
-                <div className="flex justify-end">
-                  <PrimaryButton
-                    classes="mt-6"
-                    text={formData.id ? "Actualizar" : "Crear"}
-                    action={() => {
-                      if (formData.id) {
-                        handleUpdateAdmin(formData.id);
-                      } else {
-                        // Set the role here before calling handleAddAdmin
-                        setFormData((prev) => ({
-                          ...prev,
-                          password: prev.name + prev.name,
-                          role: "admin",
-                        }));
-                        handleAddAdmin();
-                      }
-                    }}
+                {!formData.id && (
+                  <InputField
+                    text="Óptica"
+                    type={"select"}
+                    value={opticas.map((optica) => ({
+                      value: optica.id,
+                      display: optica.nombre,
+                    }))}
+                    defaultValue={formData.id ? formData.optica : ""}
+                    placeholder={"Selecciona una óptica"}
+                    error={errorForm.optica}
+                    onChange={(e) => setFormData({ ...formData, optica: e })}
                   />
-                </div>
+                )}
               </form>
-            </Modal.Body>
-          </div>
-        </Modal>
+            )
+          }
+          bottom={
+            <div className="flex justify-end w-full">
+              <PrimaryButton
+                text={formData.id ? "Actualizar" : "Crear"}
+                action={() => {
+                  if (formData.id) {
+                    handleUpdateAdmin(formData.id);
+                  } else {
+                    const newData = {
+                      ...formData,
+                      password: formData.name + formData.name,
+                      optica_id: formData.optica,
+                      role: "admin",
+                    };
+
+                    setFormData(newData);
+                    handleAddAdmin(newData);
+                  }
+                }}
+              />
+            </div>
+          }
+        />
       </div>
     </div>
   );

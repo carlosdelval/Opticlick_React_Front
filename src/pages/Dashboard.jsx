@@ -1,39 +1,46 @@
 import React from "react";
-import AuthContext from "../../context/AuthContext";
-import {
-  deleteCita,
-  addGraduacion,
-  setGraduada,
-  getCitasOptica,
-} from "../../api";
+import AuthContext from "../context/AuthContext";
+import { addGraduacion, setGraduada } from "../api";
 import Lottie from "lottie-react";
-import calendarAnimation from "../../assets/calendar.json";
-import glassesAnimation from "../../assets/Glasses.json";
-import callMissedAnimation from "../../assets/call-missed-red.json";
-import SecondaryDanger from "../../components/SecondaryDanger";
-import SecondaryButton from "../../components/SecondaryButton";
-import PrimaryButton from "../../components/PrimaryButton";
-import DangerButton from "../../components/DangerButton";
-import Spinner from "../../components/Spinner";
-import Modal from "../../components/Modal";
-import Alert from "../../components/Alert";
-import notificacionAnimation from "../../assets/notification.json";
-import mensajeAnimation from "../../assets/chat.json";
-import { NotificationsContext } from "../../context/NotificationsContext";
-import InputField from "../../components/InputField";
-import Documentacion from "../../pdf/GeneradorPdf";
+import calendarAnimation from "../assets/calendar.json";
+import glassesAnimation from "../assets/Glasses.json";
+import callMissedAnimation from "../assets/call-missed-red.json";
+import SecondaryDanger from "../components/SecondaryDanger";
+import SecondaryButton from "../components/SecondaryButton";
+import PrimaryButton from "../components/PrimaryButton";
+import DangerButton from "../components/DangerButton";
+import MenuButton from "../components/MenuButton";
+import Spinner from "../components/Spinner";
+import Modal from "../components/Modal";
+import Alert from "../components/Alert";
+import ModalReserva from "./User/ModalReserva";
+import notificacionAnimation from "../assets/notification.json";
+import mensajeAnimation from "../assets/chat.json";
+import { NotificationsContext } from "../context/NotificationsContext";
+import { CitasContext } from "../context/CitasContext";
+import InputField from "../components/InputField";
+import Documentacion from "../pdf/GeneradorPdf";
 import ReactPDF from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 
-const AdminDashboard = () => {
+const Dashboard = () => {
   const { user } = React.useContext(AuthContext);
-  const [citas, setCitas] = React.useState([]);
+  const {
+    fetchCitasOptica,
+    eliminarCita,
+    loading,
+    setLoading,
+    fetchCitasUser,
+    citasUser,
+    citasOptica,
+  } = React.useContext(CitasContext);
   const { novedades, marcarLeida, addNotificacion } =
     React.useContext(NotificationsContext);
-  const [loading, setLoading] = React.useState(true);
+  const [citas, setCitas] = React.useState([]);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [generatePdf, setGeneratePdf] = React.useState(false);
+  const [openModalReserva, setOpenModalReserva] = React.useState(false);
   const [openModalGraduar, setOpenModalGraduar] = React.useState(false);
   const [openModalMensaje, setOpenModalMensaje] = React.useState(false);
   const [openModalAnular, setOpenModalAnular] = React.useState(false);
@@ -57,22 +64,18 @@ const AdminDashboard = () => {
   };
 
   React.useEffect(() => {
-    const fetchCitasOptica = async () => {
-      try {
-        setLoading(true);
-        const data = await getCitasOptica(user.optica_id);
-        setCitas(data);
-      } catch (err) {
-        console.error("Error fetching appointments:", err);
-        setError("No se pudieron cargar las citas de esta óptica");
-        setSuccess(null);
-      } finally {
-        setTimeout(() => setLoading(false), 250);
-      }
-    };
+    setLoading(true);
+    user.role === "admin"
+      ? fetchCitasOptica(user.optica_id)
+      : fetchCitasUser(user.id);
+    setTimeout(() => {
+      setLoading(false);
+    }, 300);
+  }, [user.optica_id, user.id]);
 
-    fetchCitasOptica();
-  }, [user.optica_id]);
+  React.useEffect(() => {
+    user.role === "admin" ? setCitas(citasOptica) : setCitas(citasUser);
+  }, [citasOptica, citasUser]);
 
   const handleEnviarMensaje = async (id) => {
     // Validar datos antes de continuar
@@ -84,10 +87,10 @@ const AdminDashboard = () => {
       return;
     }
     const nuevaNotificacion = {
-      user_id: id,
-      optica_id: user.optica_id,
-      tipo: 1,
-      destinatario: 1,
+      user_id: user.role === "admin" ? id : user.id,
+      optica_id: user.role === "admin" ? user.optica_id : id,
+      tipo: user.role === "admin" ? 2 : 1,
+      destinatario: user.role === "admin" ? 1 : 0,
       titulo: `${user.name} ${user.surname}`,
       descripcion: formData.mensaje,
     };
@@ -122,7 +125,9 @@ const AdminDashboard = () => {
     setOpenModalGraduar(true);
     setId(id);
   };
-
+  const handleOpenModalReserva = () => {
+    setOpenModalReserva(true);
+  };
   const handleOpenModalMensaje = (id) => {
     setOpenModalMensaje(true);
     setId(id);
@@ -132,6 +137,7 @@ const AdminDashboard = () => {
     setOpenModalAnular(false);
     setOpenModalGraduar(false);
     setOpenModalMensaje(false);
+    setOpenModalReserva(false);
     setFormData({
       eje: "",
       cilindro: "",
@@ -148,13 +154,18 @@ const AdminDashboard = () => {
 
   const handleDeleteCita = async (id) => {
     try {
-      await deleteCita(id);
-      setCitas(citas.filter((cita) => cita.id !== id));
+      await eliminarCita(id);
+      user.role === "admin" ? fetchCitasOptica(user.optica_id) : fetchCitasUser(user.id);
       setOpenModalAnular(false);
-      setSuccess("Cita anulada correctamente.");
+      setSuccess("Cita anulada correctamente");
       setError(null);
+      // Scroll to top of page
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     } catch (err) {
-      console.error("Error deleting appointment:", err);
+      console.error("Error al anular cita:", err);
       setError("No se pudo anular la cita.");
       setSuccess(null);
       setOpenModalAnular(false);
@@ -222,7 +233,7 @@ const AdminDashboard = () => {
       }
 
       // 4. Actualizar estado
-      setCitas(citas.filter((c) => c.id !== id));
+      fetchCitasOptica(user.optica_id);
       setOpenModalGraduar(false);
       setSuccess(
         `Graduación registrada correctamente${
@@ -295,6 +306,34 @@ const AdminDashboard = () => {
               type="success"
             />
           )}
+          {user.role === "user" && (
+            <div className="relative flex items-center justify-center w-full pb-4">
+              <MenuButton
+                text="Reservar cita"
+                classes={"w-full"}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m11.5 11.5 2.071 1.994M4 10h5m11 0h-1.5M12 7V4M7 7V4m10 3V4m-7 13H8v-2l5.227-5.292a1.46 1.46 0 0 1 2.065 2.065L10 17Zm-5 3h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
+                    />
+                  </svg>
+                }
+                action={() => handleOpenModalReserva()}
+              />
+            </div>
+          )}
           <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
             {loading && <Spinner />}
             {citas.length === 0 && !loading && (
@@ -354,7 +393,7 @@ const AdminDashboard = () => {
                                 {formattedDate}
                               </div>
                               <div className="space-y-2">
-                                <div className="space-x-2">
+                                {user.role === "user" && (
                                   <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                                     <svg
                                       className="w-4 h-4 me-1.5"
@@ -371,29 +410,51 @@ const AdminDashboard = () => {
                                         d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                                       />
                                     </svg>
-                                    {cita.user_name} {cita.user_surname}
+                                    {cita.optica_nombre}
                                   </span>
-                                  <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
-                                    <svg
-                                      className="w-4 h-4 me-1.5"
-                                      aria-hidden="true"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="24"
-                                      height="24"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
-                                      />
-                                    </svg>
-                                    {cita.telefono}
-                                  </span>
-                                </div>
+                                )}
+                                {user.role === "admin" && (
+                                  <div className="space-x-2">
+                                    <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                      <svg
+                                        className="w-4 h-4 me-1.5"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                        />
+                                      </svg>
+                                      {cita.user_name} {cita.user_surname}
+                                    </span>
+                                    <span className="bg-babypowder text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
+                                      <svg
+                                        className="w-4 h-4 me-1.5"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          stroke="currentColor"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"
+                                        />
+                                      </svg>
+                                      {cita.telefono}
+                                    </span>
+                                  </div>
+                                )}
                                 <div>
                                   <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
                                     <svg
@@ -439,38 +500,40 @@ const AdminDashboard = () => {
                         >
                           <div className="flex p-4 border-t dark:border-gray-700">
                             <div className="flex justify-end w-full space-x-2">
-                              <SecondaryButton
-                                action={() => handleOpenModalGraduar(cita.id)}
-                                text="Graduar cita"
-                                classes={"px-4"}
-                                icon={
-                                  <svg
-                                    className="w-6 h-6"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
-                                    />
-                                    <path
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                                    />
-                                  </svg>
-                                }
-                              />
+                              {user.role === "admin" && (
+                                <SecondaryButton
+                                  action={() => handleOpenModalGraduar(cita.id)}
+                                  text="Graduar cita"
+                                  classes={"px-4"}
+                                  icon={
+                                    <svg
+                                      className="w-6 h-6"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="24"
+                                      height="24"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
+                                      />
+                                      <path
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                      />
+                                    </svg>
+                                  }
+                                />
+                              )}
                               <SecondaryButton
                                 text="Enviar mensaje"
                                 classes={"px-4"}
                                 action={() => {
-                                  handleOpenModalMensaje(cita.user_id);
+                                  handleOpenModalMensaje(user.role === "admin" ? cita.user_id : cita.optica_id);
                                 }}
                                 icon={
                                   <svg
@@ -949,8 +1012,14 @@ const AdminDashboard = () => {
           </div>
         }
       />
+      {/* Modal reservar cita*/}
+      <ModalReserva
+        isOpen={openModalReserva}
+        onClose={handleCloseModal}
+        onReservaExitosa={() => fetchCitasUser(user.id)}
+      />
     </div>
   );
 };
 
-export default AdminDashboard;
+export default Dashboard;

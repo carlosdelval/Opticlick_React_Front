@@ -1,15 +1,7 @@
 import React from "react";
 import AuthContext from "../../context/AuthContext";
-import {
-  getClientes,
-  deleteUser,
-  updateUser,
-  getOpticas,
-  getClientesOptica,
-  registerUser,
-  setOptica,
-  deleteUserOptica,
-} from "../../api";
+import UserContext from "../../context/UserContext";
+import OpticasContext from "../../context/OpticasContext";
 import Lottie from "lottie-react";
 import teamAnimation from "../../assets/clients.json";
 import profileAnimation from "../../assets/profile.json";
@@ -28,9 +20,20 @@ import SearchBar from "../../components/SearchBar";
 
 function ListaClientes() {
   const { user } = React.useContext(AuthContext);
-  const [clientes, setClientes] = React.useState([]);
-  const [opticas, setOpticas] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const {
+    clientes,
+    setClientes,
+    fetchClientes,
+    fetchClientesOptica,
+    eliminarCliente,
+    eliminarClienteOptica,
+    registrarCliente,
+    actualizarCliente,
+    loading,
+    setLoading,
+  } = React.useContext(UserContext);
+  const { opticas, fetchOpticas, asignarOptica } =
+    React.useContext(OpticasContext);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [modalDelete, setModalDelete] = React.useState(false);
@@ -75,15 +78,12 @@ function ListaClientes() {
         tlf: "",
         email: "",
       });
-      const result = await registerUser(data);
+      const result = await registrarCliente(data);
       if (result.id && data.optica) {
         console.log(result.id, data.optica);
-        await setOptica(result.id, data.optica);
+        await asignarOptica(result.id, data.optica);
       }
-      const newCliente = {
-        ...data,
-      };
-      setClientes((prev) => [...prev, newCliente]);
+      fetchClientesOptica(opticaSearch);
       setSearchTerm("");
       setModalInfoCliente(false);
       setSuccess("Cliente registrado correctamente");
@@ -119,54 +119,11 @@ function ListaClientes() {
   };
 
   React.useEffect(() => {
-    const fetchClientes = async () => {
-      try {
-        const data = await getClientes();
-        setClientes(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      } catch (err) {
-        console.error("Error fetching clients:", err);
-        setError("No se pudieron cargar los clientes");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
-
-    const fetchOpticas = async () => {
-      try {
-        const data = await getOpticas();
-        setOpticas(data);
-      } catch (err) {
-        console.error("Error fetching opticas:", err);
-        setError("No se pudieron cargar las ópticas");
-      }
-    };
-
-    const fetchClientesOptica = async () => {
-      try {
-        setLoading(true);
-        const data = await getClientesOptica(opticaSearch);
-        setClientes(data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 250);
-      } catch (err) {
-        console.error("Error fetching clients by optica:", err);
-        setError("No se pudieron cargar los clientes de esta óptica");
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
-
     if (user.role === "admin") {
       setOpticaSearch(user.optica_id);
     }
     if (opticaSearch) {
-      fetchClientesOptica();
+      fetchClientesOptica(opticaSearch);
     } else {
       fetchClientes();
       fetchOpticas();
@@ -178,8 +135,12 @@ function ListaClientes() {
   const handleDeleteCliente = async (id) => {
     if (user.role === "master") {
       try {
-        await deleteUser(id);
-        setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+        await eliminarCliente(id);
+        if (opticaSearch) {
+          fetchClientesOptica(opticaSearch);
+        } else {
+          fetchClientes();
+        }
         setModalDelete(false);
         setSuccess("Cliente eliminado correctamente");
         setError(null);
@@ -191,8 +152,7 @@ function ListaClientes() {
       }
     } else {
       try {
-        await deleteUserOptica(id, user.optica_id);
-        setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+        await eliminarClienteOptica(id, user.optica_id);
         setModalDelete(false);
         setSuccess("Cliente eliminado correctamente");
         setError(null);
@@ -268,7 +228,7 @@ function ListaClientes() {
         tlf: "",
         email: "",
       });
-      await updateUser(formData);
+      await actualizarCliente(formData);
       setClientes((prev) =>
         prev.map((cliente) => {
           if (cliente.id === id) {
@@ -402,7 +362,8 @@ function ListaClientes() {
       )}
 
       {/* Barrita de búsqueda */}
-      <div className="mb-4 space-y-2 md:flex md:space-x-3 md:space-y-0">
+      <div className="mb-2 md:mb-4 space-y-2 md:flex md:space-x-3 md:space-y-0">
+        <div className="lg:flex space-y-2 lg:space-y-0 lg:space-x-3">
         <SearchBar
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -430,6 +391,7 @@ function ListaClientes() {
             </select>
           </div>
         )}
+        </div>
         <div className="relative flex items-center justify-end w-full pt-2 md:pt-0">
           <MenuButton
             text="Nuevo cliente"
