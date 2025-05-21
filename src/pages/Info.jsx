@@ -24,7 +24,7 @@ const Info = () => {
   }, []);
 
   return (
-    <div className="flex flex-col w-full max-w-6xl gap-8 p-4 mx-auto md:flex-row">
+    <div className="flex flex-col w-full gap-8 my-auto md:mx-auto max-w-7xl md:flex-row">
       <div className="p-4 bg-white border-2 border-black rounded-lg shadow-lg md:w-1/4 h-min animate-fade-in">
         <h3 className="mb-4 text-xl font-semibold text-gray-800">Menú</h3>
         <ul className="space-y-2">
