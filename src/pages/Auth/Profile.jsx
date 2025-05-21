@@ -10,16 +10,22 @@ import deleteAnimation from "../../assets/delete.json";
 import Modal from "../../components/Modal";
 import Alert from "../../components/Alert";
 import Spinner from "../../components/Spinner";
+import ToggleSwitch from "../../components/ToggleSwitch";
+import traducciones from "../../lang/traducciones";
 
 const Profile = () => {
   const { user, setUser } = React.useContext(AuthContext);
   const { eliminarCliente, actualizarCliente, actualizarContrasena } =
     React.useContext(UserContext);
   const [modalDelete, setModalDelete] = useState(false);
-  const [activeTab, setActiveTab] = useState("datos");
+  const [activeTab, setActiveTab] = useState("configuracion");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [correo, setCorreo] = useState(false);
+  const [navegador, setNavegador] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [idioma, setIdioma] = useState("es");
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
@@ -29,6 +35,38 @@ const Profile = () => {
     password: "",
     confirm_password: "",
   });
+
+  // Cargar desde localStorage
+  useEffect(() => {
+    const storedCorreo = localStorage.getItem("correo") === "true";
+    const storedNavegador = localStorage.getItem("navegador") === "true";
+    const storedDarkMode = localStorage.getItem("darkMode") === "true";
+    const storedIdioma = localStorage.getItem("idioma") || "es";
+
+    setCorreo(storedCorreo);
+    setNavegador(storedNavegador);
+    setDarkMode(storedDarkMode);
+    setIdioma(storedIdioma);
+  }, []);
+
+  // Guardar cambios
+  useEffect(() => {
+    localStorage.setItem("correo", correo);
+  }, [correo]);
+
+  useEffect(() => {
+    localStorage.setItem("navegador", navegador);
+  }, [navegador]);
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", darkMode);
+  }, [darkMode]);
+
+  useEffect(() => {
+    localStorage.setItem("idioma", idioma);
+  }, [idioma]);
+
+  const t = traducciones[idioma];
 
   useEffect(() => {
     if (user) {
@@ -206,7 +244,7 @@ const Profile = () => {
           <div className="flex mb-4 space-x-2 text-start">
             <Lottie
               animationData={userProfileAnimation}
-              loop={false}
+              loop={true}
               style={{ height: 60 }}
             />
             <h2 className="my-3 text-4xl font-semibold dark:text-babypowder">
@@ -444,46 +482,50 @@ const Profile = () => {
         {activeTab === "configuracion" && !loading && (
           <div className="space-y-4 animate-fade-in">
             <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
-              Configuración
+              {t.configuracion}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Aquí puedes cambiar la configuración de tu cuenta.
-            </p>
+            <p className="text-gray-600 dark:text-gray-400">{t.descripcion}</p>
+
             <div className="flex flex-col space-y-4">
               <h2 className="text-lg font-semibold dark:text-babypowder">
-                Notificaciones
+                {t.notificaciones}
               </h2>
-              <label class="inline-flex items-center me-5 cursor-pointer">
-                <input type="checkbox" value="" class="sr-only peer" />
-                <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-vistablue dark:peer-focus:ring-chryslerblue dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-chryslerblue dark:peer-checked:bg-chryslerblue"></div>
-                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                  Activar notificaciones por correo electrónico
-                </span>
-              </label>
-              <label class="inline-flex items-center me-5 cursor-pointer">
-                <input type="checkbox" value="" class="sr-only peer" />
-                <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-vistablue dark:peer-focus:ring-chryslerblue dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-chryslerblue dark:peer-checked:bg-chryslerblue"></div>
-                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                  Activar notificaciones en este navegador
-                </span>
-              </label>
+
+              <ToggleSwitch
+                label={t.correo}
+                checked={correo}
+                onChange={() => setCorreo(!correo)}
+              />
+              <ToggleSwitch
+                label={t.navegador}
+                checked={navegador}
+                onChange={() => setNavegador(!navegador)}
+              />
             </div>
+
             <div className="flex flex-col space-y-4">
               <h2 className="text-lg font-semibold dark:text-babypowder mt-4">
-                Configuración de la página
+                {t.pagina}
               </h2>
-              <label class="inline-flex items-center me-5 cursor-pointer">
-                <input type="checkbox" value="" class="sr-only peer" />
-                <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-vistablue dark:peer-focus:ring-chryslerblue dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-chryslerblue dark:peer-checked:bg-chryslerblue"></div>
-                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                  Activar modo oscuro
-                </span>
-              </label>
+              <ToggleSwitch
+                label={t.darkMode}
+                checked={darkMode}
+                onChange={() => setDarkMode(!darkMode)}
+              />
             </div>
+
             <div className="flex flex-col space-y-4">
               <h2 className="text-lg font-semibold dark:text-babypowder mt-4">
-                Idioma
+                {t.idioma}
               </h2>
+              <select
+                value={idioma}
+                onChange={(e) => setIdioma(e.target.value)}
+                className="w-48 p-2 rounded border dark:bg-gray-800 dark:text-white"
+              >
+                <option value="es">Español</option>
+                <option value="en">English</option>
+              </select>
             </div>
           </div>
         )}
