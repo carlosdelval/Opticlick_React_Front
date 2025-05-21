@@ -12,6 +12,7 @@ import VerifyEmail from "./pages/Auth/Verify_email";
 import Profile from "./pages/Auth/Profile";
 import Historial from "./pages/User/Historial";
 import Who from "./pages/Who";
+import Info from "./pages/Info";
 import Footer from "./components/Footer";
 import errorAnimation from "./assets/404";
 import Lottie from "lottie-react";
@@ -68,6 +69,7 @@ function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/verify-email" element={<VerifyEmail />} />
                     <Route path="/business" element={<Who />} />
+                    <Route path="/informacion" element={<Info />} />
 
                     <Route
                       path="/dashboard"

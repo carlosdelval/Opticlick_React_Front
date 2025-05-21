@@ -28,7 +28,7 @@ const Footer = () => {
         <div className="space-y-2 text-sm text-center">
           <ul className="flex flex-wrap justify-center gap-4">
             <li>
-              <a href="#" className="duration-300 hover:text-chryslerblue">
+              <a href="informacion#privacy"  className="duration-300 hover:text-chryslerblue">
                 Política de Privacidad
               </a>
             </li>
@@ -38,17 +38,17 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="#" className="duration-300 hover:text-chryslerblue">
+              <a href="informacion#terms" className="duration-300 hover:text-chryslerblue">
                 Condiciones de Uso
               </a>
             </li>
             <li>
-              <a href="#" className="duration-300 hover:text-chryslerblue">
+              <a href="informacion#legal" className="duration-300 hover:text-chryslerblue">
                 Información legal
               </a>
             </li>
             <li>
-              <a href="business" className="duration-300 hover:text-chryslerblue">
+              <a href="informacion#contact" className="duration-300 hover:text-chryslerblue">
                 Contacto
               </a>
             </li>
