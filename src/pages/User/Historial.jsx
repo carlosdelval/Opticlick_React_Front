@@ -192,11 +192,11 @@ const Historial = () => {
         />
       </div>
 
-      <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg">
-        <div className="overflow-x-auto bg-white dark:bg-gray-800">
+      <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg dark:border-gray-400">
+        <div className="overflow-x-auto bg-white dark:bg-gray-700">
           <div className="hidden md:block">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:text-black dark:bg-vistablue">
+            <table className="min-w-full divide-y divide-gray-400">
+              <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:bg-gray-900">
                 <tr>
                   <th className="px-6 py-3">Fecha</th>
                   <th className="px-6 py-3">Hora</th>
@@ -204,7 +204,7 @@ const Historial = () => {
                   <th className="px-6 py-3 text-right"></th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-700 dark:divide-gray-400">
                 {!loading &&
                   currentFilteredCitas.map((cita) => {
                     const date = new Date(cita.fecha);
@@ -216,7 +216,7 @@ const Historial = () => {
                     return (
                       <tr
                         key={cita.id}
-                        className="transition-colors duration-300 hover:bg-blue-50 dark:hover:bg-gray-700"
+                        className="transition-colors duration-300 ease-out hover:bg-blue-50 dark:hover:bg-gray-800"
                       >
                         <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
                           <div className="text-sm text-gray-500 dark:text-gray-200">
@@ -331,7 +331,7 @@ const Historial = () => {
             className="md:hidden"
             id="accordion-color"
             data-accordion="collapse"
-            data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
+            data-active-classes="bg-blue-100 dark:bg-gray-700 text-blue-600 dark:text-babypowder"
           >
             {!loading &&
               currentFilteredCitas.map((cita, index) => {
@@ -357,7 +357,7 @@ const Historial = () => {
                 return (
                   <div
                     key={cita.id}
-                    className="border-b border-gray-200 dark:border-gray-700"
+                    className="border-b border-gray-200 dark:border-gray-300"
                   >
                     <h2 id={`accordion-color-heading-${index}`}>
                       <button
@@ -441,7 +441,7 @@ const Historial = () => {
                       }`}
                       aria-hidden={!openAccordions[cita.id]}
                     >
-                      <div className="flex p-4 border-t dark:border-gray-700">
+                      <div className="flex p-4 border-t dark:border-gray-300 dark:bg-gray-800">
                         <div className="flex justify-end w-full space-x-2">
                           <SecondaryButton
                             action={() =>
@@ -482,7 +482,7 @@ const Historial = () => {
           </div>
           {/* Paginación */}
           {!loading && filteredCitas.length > 0 && (
-            <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+            <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-700">
               <nav className="flex items-center space-x-2">
                 <button
                   onClick={() =>
@@ -492,7 +492,7 @@ const Historial = () => {
                   className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                     currentPage === 1
                       ? "text-gray-400"
-                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                   }`}
                 >
                   <svg
@@ -513,8 +513,8 @@ const Historial = () => {
                     onClick={() => setCurrentPage(index + 1)}
                     className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
                       currentPage === index + 1
-                        ? "bg-chryslerblue text-white"
-                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                        ? "bg-chryslerblue text-white dark:text-babypowder dark:bg-vistablue"
+                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                     }`}
                   >
                     {index + 1}
@@ -531,7 +531,7 @@ const Historial = () => {
                   className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                     currentPage === totalFilteredPages
                       ? "text-gray-400"
-                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                   }`}
                 >
                   <svg
@@ -565,25 +565,25 @@ const Historial = () => {
               </div>
             }
             text={
-              <div>
+              <div className="dark:text-babypowder">
                 <div className="flex items-center justify-center mb-4">
                   <span className="text-2xl font-semibold text-center">
                     Día{" "}
-                    <span className="text-chryslerblue">{selectedFecha}</span> a
+                    <span className="text-chryslerblue dark:text-vistablue">{selectedFecha}</span> a
                     las{" "}
-                    <span className="text-chryslerblue">{selectedHora}</span>
+                    <span className="text-chryslerblue dark:text-vistablue">{selectedHora}</span>
                   </span>
                 </div>
-                <div className="my-6 overflow-x-auto rounded-lg shadow-md">
-                  <table className="min-w-full border-2 border-black divide-y divide-gray-200">
-                    <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
+                <div className="my-6 overflow-x-auto border-black rounded-lg shadow-md dark:border-gray-300">
+                  <table className="min-w-full border-2 divide-y divide-gray-200 dark:divide-gray-400">
+                    <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue dark:bg-gray-900 text-babypowder">
                       <tr>
                         <th className="px-6 py-3">Eje</th>
                         <th className="px-6 py-3">Cilindro</th>
                         <th className="px-6 py-3">Esfera</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 ">
+                    <tbody className="divide-y divide-gray-400">
                       <tr>
                         <td className="px-6 py-4 text-sm font-bold whitespace-nowrap">
                           {graduacion.eje}

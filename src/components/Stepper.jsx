@@ -80,9 +80,8 @@ export default function Stepper({
       {...rest}
     >
       <div
-        className={`mx-auto w-full max-w-md rounded-4xl shadow-xl ${stepCircleContainerClassName}`}
+        className={`bg-white dark:bg-gray-700 mx-auto w-full max-w-md rounded-4xl shadow-xl ${stepCircleContainerClassName}`}
         style={{
-          backgroundColor: "white",
           borderRadius: "20px",
           border: "2px solid black",
         }}
@@ -143,8 +142,8 @@ export default function Stepper({
                   onClick={handleBack}
                   className={`duration-350 rounded px-2 py-1 transition ${
                     currentStep === 1
-                      ? "pointer-events-none opacity-50 text-neutral-400"
-                      : "text-neutral-400 hover:text-neutral-700"
+                      ? "pointer-events-none opacity-50 text-neutral-400 dark:text-neutral-700"
+                      : "text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 dark:text-neutral-200"
                   }`}
                   {...backButtonProps}
                 >
@@ -153,7 +152,7 @@ export default function Stepper({
               )}
               <button
                 onClick={isLastStep ? handleComplete : handleNext}
-                className="select-none duration-350 flex items-center justify-center rounded-full bg-chryslerblue py-1.5 px-3.5 font-medium tracking-tight text-white transition hover:bg-vistablue active:bg-chryslerblue"
+                className="select-none duration-350 flex items-center justify-center rounded-full bg-chryslerblue py-1.5 px-3.5 font-medium tracking-tight text-white transition hover:bg-vistablue active:bg-chryslerblue dark:bg-vistablue dark:hover:bg-chryslerblue dark:active:bg-vistablue"
                 {...nextButtonProps}
               >
                 {isLastStep ? "Reservar" : nextButtonText}
@@ -263,10 +262,15 @@ function StepIndicator({ step, currentStep }) {
             backgroundColor: "white",
             color: "black",
             border: "2px solid black",
+            dark: {
+              backgroundColor: "#374151", // dark:bg-gray-700
+              color: "white",
+              border: "2px solid #4B5563"
+            }
           },
           active: {
             scale: 1,
-            backgroundColor: "#531CB3",
+            backgroundColor: "#1E40AF", // vistablue instead of chryslerblue (#531CB3)
             color: "white",
             border: "2px solid black",
           },
@@ -278,7 +282,7 @@ function StepIndicator({ step, currentStep }) {
           },
         }}
         transition={{ duration: 0.3 }}
-        className="flex items-center justify-center w-8 h-8 font-semibold rounded-full"
+        className="flex items-center justify-center w-8 h-8 font-semibold rounded-full dark:border-gray-500"
       >
         {status === "complete" ? (
           <CheckIcon className="w-4 h-4 text-white" />
@@ -297,7 +301,7 @@ function StepConnector({ isComplete }) {
   };
 
   return (
-    <div className="relative mx-2 h-0.5 flex-1 overflow-hidden rounded bg-neutral-600">
+    <div className="relative mx-2 h-0.5 flex-1 overflow-hidden rounded bg-neutral-600 dark:bg-neutral-400">
       <motion.div
         className="absolute top-0 left-0 h-full"
         variants={lineVariants}

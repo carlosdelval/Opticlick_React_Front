@@ -7,6 +7,7 @@ export default {
     Flowbite,
     "./node_modules/tailwind-datepicker-react/dist/**/*.js",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
@@ -16,6 +17,14 @@ export default {
         redpantone: "#E71D36",
         lightcoral: "#F07C79",
         aquamarine: "#23F0C7",
+        dark: {
+          grey: "#0E0E0E",
+          vista: "#4A6A95",
+          chrysler: "#3D158A",
+          pantone: "#B31324",
+          coral: "#C0605A",
+          white: "#EDEDED",
+        },
       },
       keyframes: {
         translate: {

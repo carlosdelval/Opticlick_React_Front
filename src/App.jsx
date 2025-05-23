@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import ProtectedRoute from "./middleware/ProtectedRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Auth/Login";
@@ -32,18 +33,30 @@ function App() {
     window.Buffer = Buffer;
   }
 
+  //Modo oscuro
+  useEffect(() => {
+    const darkMode = localStorage.getItem("darkMode") === "true";
+    const root = document.documentElement;
+
+    if (darkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, []);
+
   // Componente para la página 404
   const NotFound = () => {
     return (
       <div className="flex items-center justify-center h-[60vh] animate-fade-in">
-        <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+        <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-300 dark:bg-gray-700 rounded-2xl">
           <Lottie
             animationData={errorAnimation}
             loop={true}
             className="w-40 h-40 mx-auto"
             style={{ height: "200px", width: "200px" }}
           />
-          <p className="py-4 text-gray-600">¡Oops! Página no encontrada.</p>
+          <p className="py-4 text-gray-600 dark:text-babypowder">¡Oops! Página no encontrada.</p>
           <PrimaryButton
             text="Volver a inicio"
             action={() => (window.location.href = "/")}
@@ -74,7 +87,9 @@ function App() {
                     <Route
                       path="/dashboard"
                       element={
-                        <ProtectedRoute allowedRoles={["user", "admin", "master"]}>
+                        <ProtectedRoute
+                          allowedRoles={["user", "admin", "master"]}
+                        >
                           <Dashboard />
                         </ProtectedRoute>
                       }

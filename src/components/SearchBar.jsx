@@ -21,7 +21,7 @@ const SearchBar = ({searchTerm, setSearchTerm, className, placeholder}) => {
       <input
         type="search"
         id="search"
-        className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+        className="block w-full p-4 pl-10 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-400 dark:placeholder-gray-200 dark:text-babypowder dark:focus:bg-gray-900 dark:focus:border-vistablue"
         placeholder={placeholder}
         autoComplete="off"
         value={searchTerm}

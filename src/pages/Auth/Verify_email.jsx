@@ -66,18 +66,18 @@ const VerifyEmail = () => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl animate-fade-in">
+      <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-400 dark:bg-gray-700 dark:text-babypowder rounded-2xl animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
             <img
               src="./logo.png"
               alt="OptiClick"
-              className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
+              className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)] dark:drop-shadow-[0_0_30px_theme(colors.vistablue)]"
             />
           </a>
         </div>
         <div className="mb-4 text-center">
-          <h1 className="font-bold leading-none tracking-tight underline text-7xl md:text-5xl lg:text-6xl dark:text-white underline-offset-3 decoration-8 decoration-vistablue dark:decoration-blue-600">
+          <h1 className="font-bold leading-none tracking-tight underline text-7xl md:text-5xl lg:text-6xl dark:text-babypowder underline-offset-3 decoration-8 decoration-vistablue">
             OptiClick
           </h1>
           <p className="mt-2 text-gray-700">
@@ -101,9 +101,7 @@ const VerifyEmail = () => {
               <span className="font-medium">{success}</span>
             </Alert>
           )}
-          {loading && (
-            <Spinner />
-          )}
+          {loading && <Spinner />}
         </div>
       </div>
     </div>

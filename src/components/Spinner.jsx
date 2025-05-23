@@ -1,9 +1,9 @@
 const Spinner = () => {
   return (
-    <output className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
+    <output className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-700">
       <svg
         aria-hidden="true"
-        className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-chryslerblue"
+        className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-chryslerblue dark:fill-vistablue"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

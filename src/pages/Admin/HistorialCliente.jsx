@@ -239,11 +239,11 @@ const HistorialCliente = () => {
         />
       </div>
 
-      <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg">
-        <div className="overflow-x-auto bg-white dark:bg-gray-800">
+      <div className="overflow-hidden border-2 border-black rounded-lg shadow-lg dark:border-gray-400">
+        <div className="overflow-x-auto bg-white dark:bg-gray-700">
           <div className="hidden md:block">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:text-black dark:bg-vistablue">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-300">
+              <thead className="text-xs font-bold tracking-wider text-left uppercase bg-chryslerblue text-babypowder dark:bg-gray-900">
                 <tr>
                   <th className="px-6 py-3">Fecha</th>
                   <th className="px-6 py-3">Hora</th>
@@ -251,7 +251,7 @@ const HistorialCliente = () => {
                   <th className="px-6 py-3 text-right"></th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-700 dark:divide-gray-300">
                 {!loading &&
                   currentFilteredCitas.map((cita) => {
                     const date = new Date(cita.fecha);
@@ -263,7 +263,7 @@ const HistorialCliente = () => {
                     return (
                       <tr
                         key={cita.id}
-                        className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                        className="transition-colors ease-out hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         <td className="px-6 py-4 text-sm font-medium text-left text-gray-900 dark:text-babypowder whitespace-nowrap">
                           <span className="bg-blue-100 text-chryslerblue text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-vistablue border border-vistablue">
@@ -431,7 +431,7 @@ const HistorialCliente = () => {
                 return (
                   <div
                     key={cita.id}
-                    className="border-b border-gray-200 dark:border-gray-700"
+                    className="border-b border-gray-200 dark:border-gray-300"
                   >
                     <h2 id={`accordion-color-heading-${index}`}>
                       <button
@@ -440,7 +440,7 @@ const HistorialCliente = () => {
                           openAccordions[cita.id]
                             ? "bg-blue-50 dark:bg-gray-800"
                             : ""
-                        } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
+                        } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800 ease-out transition-colors duration-300`}
                         data-accordion-target={`#accordion-color-body-${index}`}
                         onClick={() => toggleAccordion(cita.id)}
                         aria-expanded={openAccordions[cita.id] || false}
@@ -510,7 +510,7 @@ const HistorialCliente = () => {
                       </button>
                     </h2>
                     <div
-                      className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
+                      className={`transition-all bg-blue-50 dark:bg-gray-800 duration-200 overflow-hidden ${
                         openAccordions[cita.id] ? "max-h-96" : "max-h-0"
                       }`}
                       aria-hidden={!openAccordions[cita.id]}
@@ -595,7 +595,7 @@ const HistorialCliente = () => {
                   className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                     currentPage === 1
                       ? "text-gray-400"
-                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                   }`}
                 >
                   <svg
@@ -616,8 +616,8 @@ const HistorialCliente = () => {
                     onClick={() => setCurrentPage(index + 1)}
                     className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
                       currentPage === index + 1
-                        ? "bg-chryslerblue text-white"
-                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                        ? "bg-chryslerblue text-white dark:text-babypowder dark:bg-vistablue"
+                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                     }`}
                   >
                     {index + 1}
@@ -634,7 +634,7 @@ const HistorialCliente = () => {
                   className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                     currentPage === totalFilteredPages
                       ? "text-gray-400"
-                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                   }`}
                 >
                   <svg

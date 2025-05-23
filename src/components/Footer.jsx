@@ -8,7 +8,7 @@ const Footer = () => {
     <footer className="px-10 py-10 mt-auto bg-inherit md:py-5">
       <div className="grid items-center grid-cols-1 gap-6 mx-auto font-semibold md:grid-cols-3">
         {/* Columna izquierda: info y créditos */}
-        <div className="space-y-2 text-sm text-center md:text-left">
+        <div className="space-y-2 text-sm text-center md:text-left dark:text-babypowder">
           <p>
             &copy; {new Date().getFullYear()} OptiClick. Todos los derechos
             reservados.
@@ -28,27 +28,27 @@ const Footer = () => {
         <div className="space-y-2 text-sm text-center">
           <ul className="flex flex-wrap justify-center gap-4">
             <li>
-              <a href="informacion#privacy"  className="duration-300 hover:text-chryslerblue">
+              <a href="informacion#privacy" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
                 Política de Privacidad
               </a>
             </li>
             <li>
-              <a href="business" className="duration-300 hover:text-chryslerblue">
+              <a href="business" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
                 Quiénes Somos
               </a>
             </li>
             <li>
-              <a href="informacion#terms" className="duration-300 hover:text-chryslerblue">
+              <a href="informacion#terms" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
                 Condiciones de Uso
               </a>
             </li>
             <li>
-              <a href="informacion#legal" className="duration-300 hover:text-chryslerblue">
+              <a href="informacion#legal" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
                 Información legal
               </a>
             </li>
             <li>
-              <a href="informacion#contact" className="duration-300 hover:text-chryslerblue">
+              <a href="informacion#contact" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
                 Contacto
               </a>
             </li>
@@ -61,7 +61,7 @@ const Footer = () => {
             <div className="flex flex-col gap-3 xl:flex-row">
               <button
                 type="button"
-                className="flex items-center justify-center w-48 mt-3 text-white bg-black h-14 rounded-xl"
+                className="flex items-center justify-center w-48 mt-3 text-white bg-black h-14 rounded-xl dark:text-black dark:bg-babypowder"
               >
                 <div className="mr-3">
                   <svg viewBox="0 0 384 512" width="30">
@@ -80,7 +80,7 @@ const Footer = () => {
               </button>
               <button
                 type="button"
-                className="flex items-center justify-center w-48 mt-3 text-white bg-black rounded-lg h-14"
+                className="flex items-center justify-center w-48 mt-3 text-white bg-black rounded-lg dark:bg-babypowder dark:text-black h-14"
               >
                 <div className="mr-3">
                   <svg viewBox="30 336.7 120.9 129.2" width="30">
@@ -115,7 +115,7 @@ const Footer = () => {
             <a
               href="#"
               aria-label="Instagram"
-              className="duration-300 hover:text-chryslerblue"
+              className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue"
             >
               <svg
                 className="w-6 h-6"
@@ -137,7 +137,7 @@ const Footer = () => {
             <a
               href="#"
               aria-label="Facebook"
-              className="duration-300 hover:text-chryslerblue"
+              className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue"
             >
               <svg
                 className="w-6 h-6"
@@ -158,7 +158,7 @@ const Footer = () => {
             <a
               href="#"
               aria-label="X"
-              className="duration-300 hover:text-chryslerblue"
+              className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue"
             >
               <svg
                 className="w-6 h-6"

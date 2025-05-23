@@ -228,7 +228,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 dark:text-babypowder">
       <div ref={modalRef} className="w-96">
         {" "}
         <Stepper
@@ -238,7 +238,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
             loading ? (
               <Spinner />
             ) : (
-              <div className="flex flex-col items-center justify-center w-full h-32 space-y-2 bg-white dark:bg-gray-800">
+              <div className="flex flex-col items-center justify-center w-full h-32 space-y-2 bg-white dark:bg-gray-700 dark:text-babypowder">
                 <Lottie
                   animationData={Success}
                   style={{ height: 100 }}
@@ -325,12 +325,12 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                     disabled={disabled}
                     className={`p-4 rounded-lg border flex-shrink-0 ${
                       disabled
-                        ? "bg-gray-200 text-gray-500"
+                        ? "bg-gray-200 text-gray-500 dark:bg-gray-500 dark:text-gray-300 cursor-not-allowed"
                         : formData.fecha &&
                           new Date(formData.fecha).toDateString() ===
                             dia.toDateString()
-                        ? "bg-chryslerblue text-white"
-                        : "bg-white text-black"
+                        ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
+                        : "bg-white text-black dark:bg-gray-800 dark:text-babypowder"
                     }`}
                   >
                     <div className="capitalize">
@@ -351,9 +351,9 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
               <button
                 type="button"
                 disabled={esHoy && horaActual >= "14:00"}
-                className={`px-4 py-1 rounded-l bg-blue-100 ${
+                className={`px-4 py-1 rounded-l bg-blue-100 dark:bg-chryslerblue ${
                   formData.turno === "mañana"
-                    ? "bg-chryslerblue text-white"
+                    ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
                     : ""
                 } ${esHoy && horaActual >= "14:00" ? "opacity-50" : ""}`}
                 onClick={() => {
@@ -367,8 +367,8 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
               <button
                 type="button"
                 disabled={esSabado}
-                className={`px-4 py-1 rounded-r bg-blue-100 ${
-                  formData.turno === "tarde" ? "bg-chryslerblue text-white" : ""
+                className={`px-4 py-1 rounded-r bg-blue-100 dark:bg-chryslerblue ${
+                  formData.turno === "tarde" ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder" : ""
                 } ${esSabado ? "opacity-50 cursor-not-allowed" : ""}`}
                 onClick={() => {
                   !esSabado && handleTurno("tarde");
@@ -378,7 +378,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                 Tarde
               </button>
             </div>
-            <p className="mt-2 text-sm text-redpantone">{errors.turno}</p>
+            <p className="mt-2 text-sm text-redpantone dark:text-lightcoral">{errors.turno}</p>
           </Step>
           <Step canProceed={validatePaso3}>
             <div
@@ -401,12 +401,12 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                     onClick={() => handleHoraClick(hora, index)}
                     className={`px-4 py-2 rounded border flex-shrink-0 ${
                       isDisabled
-                        ? "bg-gray-200 text-gray-300 cursor-not-allowed"
+                        ? "bg-gray-200 text-gray-500 dark:bg-gray-500 dark:text-gray-300 cursor-not-allowed"
                         : ""
                     } ${
                       formData.hora === hora
-                        ? "bg-chryslerblue text-white"
-                        : "bg-white text-black"
+                        ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
+                        : "bg-white text-black dark:bg-gray-800 dark:text-babypowder"
                     }`}
                   >
                     {hora}

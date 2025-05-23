@@ -51,7 +51,7 @@ const Who = () => {
       </div>
       <div className="flex flex-col gap-16 pt-10 md:flex-row md:pt-20">
         {titleLoaded && (
-          <div className="flex flex-col md:w-1/2 text-center">
+          <div className="flex flex-col text-center md:w-1/2">
             <FadeContent
               blur={true}
               duration={1000}
@@ -61,7 +61,7 @@ const Who = () => {
               <p className="text-2xl font-semibold md:text-6xl text-chryslerblue dark:text-vistablue">
                 La mejor app de gestión y reservas para tu negocio.
               </p>
-              <p className="mt-8 text-xl text-black dark:text-white">
+              <p className="mt-8 text-xl text-black dark:text-babypowder">
                 <span className="font-semibold">
                   OptiClick es la solución para gestionar tu negocio y tu agenda
                   todo en uno.
@@ -87,7 +87,7 @@ const Who = () => {
               <img
                 src="vista_movil.png"
                 alt="Vista móvil de OptiClick"
-                className="rounded justify-end md:ml-auto"
+                className="justify-end rounded md:ml-auto"
               />
             </FadeContent>
           </div>

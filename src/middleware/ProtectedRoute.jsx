@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   // Si no hay authchecked O si loading está activo, muestra un spinner o nada
   if (!authChecked || loading) {
     return (
-      <div className="flex items-center justify-center my-auto mx-auto max-w-md bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+      <div className="flex items-center justify-center max-w-md mx-auto my-auto bg-white border-2 border-black shadow-xl dark:border-gray-300 dark:bg-gray-700 rounded-2xl">
         <div className="z-10 text-center w-96">
           <Spinner/>
         </div>
@@ -31,7 +31,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
       <>
         <Background />
         <div className="flex items-center justify-center">
-          <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+          <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-300 dark:bg-gray-700 rounded-2xl">
             <div className="flex justify-center mb-4">
               <a href="/" className="inline-block">
                 <img
@@ -68,7 +68,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (!user.email_verified) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl">
+        <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-300 dark:bg-gray-700 rounded-2xl dark:text-babypowder">
           <div className="flex justify-center mb-4">
             <a href="/" className="inline-block">
               <img
@@ -82,7 +82,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
             <h1 className="font-bold leading-none tracking-tight underline text-7xl md:text-5xl lg:text-6xl dark:text-white underline-offset-3 decoration-8 decoration-vistablue dark:decoration-blue-600">
               OptiClick
             </h1>
-            <p className="mt-2 text-gray-700">
+            <p className="mt-2 text-gray-700 dark:text-gray-300">
               Tu sistema de gestión de citas ópticas
             </p>
           </div>
@@ -91,7 +91,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
               <h2 className="my-4 text-2xl font-bold text-center">
                 Verifica tu correo electrónico para continuar
               </h2>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-gray-600 dark:text-gray-300">
                 ¿No has recibido el correo?{" "}
                 <button
                   onClick={async () => {
@@ -130,7 +130,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
               <h2 className="my-4 text-2xl font-bold text-center">
                 ¡Correo de verificación enviado!
               </h2>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-gray-600 dark:text-gray-300">
                 Revisa tu bandeja de entrada y la carpeta de spam.
               </p>
             </div>

@@ -47,14 +47,14 @@ const Navbar = () => {
       <div className="flex flex-wrap items-center justify-between max-w-screen-xl gap-4 mx-auto">
         <a
           href={user?.id ? "/dashboard" : "/"}
-          className="flex items-center space-x-3 rtl:space-x-reverse"
+          className="flex items-center space-x-3 rounded-lg rtl:space-x-reverse dark:bg-babypowder dark:p-2 dark:border-gray-300"
         >
           <img
             src="/logo.png"
             className="h-8 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.chryslerblue)]"
             alt="OptiClick Logo"
           />
-          <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl dark:hover:text-vistablue dark:text-babypowder hover:text-chryslerblue">
+          <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl hover:text-chryslerblue dark:text-chryslerblue">
             OptiClick
           </span>
         </a>
@@ -105,7 +105,7 @@ const Navbar = () => {
                 className="hidden text-sm rounded-full md:flex bg-inherit md:me-0"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               >
-                <div className="flex py-2 my-2 text-sm text-black duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder">
+                <div className="flex py-2 my-2 text-sm text-black duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
                   <span className="p-1 font-medium">{user.name}</span>
                   <svg
                     className="w-6 h-6 my-1"
@@ -128,10 +128,10 @@ const Navbar = () => {
               {isUserMenuOpen && (
                 <div
                   id="user-menu-dropdown"
-                  className="absolute right-0 z-50 my-2 text-base list-none bg-white border-2 border-black divide-y divide-gray-100 rounded-lg shadow-sm top-full dark:bg-gray-700 dark:divide-gray-600"
+                  className="absolute right-0 z-50 my-2 text-base list-none bg-white border-2 border-black divide-y divide-gray-100 rounded-lg shadow-sm top-full dark:bg-gray-700 dark:divide-gray-600 dark:border-gray-400"
                 >
                   <div className="px-4 py-3">
-                    <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
+                    <span className="block text-sm text-gray-500 truncate dark:text-gray-300">
                       {user.email}
                     </span>
                   </div>
@@ -139,7 +139,7 @@ const Navbar = () => {
                     <li>
                       <a
                         href="/profile"
-                        className="block px-4 py-2 text-sm font-semibold text-gray-700 duration-300 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white hover:text-chryslerblue"
+                        className="block px-4 py-2 text-sm font-semibold text-gray-700 duration-300 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 dark:text-babypowder dark:hover:text-white hover:text-chryslerblue"
                       >
                         <div className="flex space-x-2">
                           <svg
@@ -166,7 +166,7 @@ const Navbar = () => {
                     <li>
                       <button
                         onClick={logout}
-                        className="block w-full px-4 py-2 text-sm font-semibold text-gray-700 duration-300 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white hover:text-chryslerblue"
+                        className="block w-full px-4 py-2 text-sm font-semibold text-gray-700 duration-300 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 dark:text-babypowder dark:hover:text-white hover:text-chryslerblue"
                       >
                         <div className="flex space-x-2">
                           <svg
@@ -198,7 +198,7 @@ const Navbar = () => {
           <NotificationDropdown />
           <button
             type="button"
-            className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder md:hidden"
+            className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue md:hidden"
             onClick={() => setIsNavOpen(!isNavOpen)}
           >
             <svg

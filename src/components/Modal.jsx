@@ -37,7 +37,7 @@ const Modal = ({ title, text, bottom, open, onClose }) => {
       <div className="relative w-full max-w-md">
         <div className="relative bg-white border-2 border-black rounded-lg shadow-sm dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 border-b border-gray-200 rounded-t md:p-5 dark:border-gray-600">
-            <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+            <h3 className="text-xl font-medium text-gray-900 dark:text-babypowder">
               {title}
             </h3>
             <button
@@ -63,7 +63,7 @@ const Modal = ({ title, text, bottom, open, onClose }) => {
               <span className="sr-only">Close modal</span>
             </button>
           </div>
-          <div className="p-4 space-y-4 md:p-5">{text}</div>
+          <div className="p-4 space-y-4 md:p-5 dark:text-babypowder">{text}</div>
           <div className="flex items-center p-4 border-t border-gray-200 rounded-b md:p-5 dark:border-gray-600">
             {bottom}
           </div>

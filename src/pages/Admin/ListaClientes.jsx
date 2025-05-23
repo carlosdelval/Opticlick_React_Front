@@ -347,7 +347,7 @@ function ListaClientes() {
     <div className="my-auto md:max-w-7xl md:mx-auto">
       <div className="flex mb-4 space-x-3 text-start">
         <Lottie animationData={teamAnimation} style={{ height: 60 }} />
-        <h2 className="my-2 text-4xl font-semibold">Todos tus clientes</h2>
+        <h2 className="my-2 text-4xl font-semibold dark:text-babypowder">Todos tus clientes</h2>
       </div>
 
       {error && (
@@ -362,8 +362,8 @@ function ListaClientes() {
       )}
 
       {/* Barrita de búsqueda */}
-      <div className="mb-2 md:mb-4 space-y-2 md:flex md:space-x-3 md:space-y-0">
-        <div className="lg:flex space-y-2 lg:space-y-0 lg:space-x-3">
+      <div className="mb-2 space-y-2 md:mb-4 md:flex md:space-x-3 md:space-y-0">
+        <div className="space-y-2 lg:flex lg:space-y-0 lg:space-x-3">
         <SearchBar
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -375,7 +375,7 @@ function ListaClientes() {
         {user.role === "master" && (
           <div className="relative">
             <select
-              className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg md:w-96 focus:bg-blue-50 focus:border-chryslerblue focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+              className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg dark:bg-gray-700 md:w-96 focus:bg-blue-50 focus:border-chryslerblue dark:focus:border-chryslerblue focus:outline-none dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
               onChange={(e) => setOpticaSearch(e.target.value)}
               value={opticaSearch}
             >
@@ -431,11 +431,11 @@ function ListaClientes() {
         </div>
       </div>
 
-      <div className="overflow-hidden bg-white border-2 border-black rounded-lg shadow-lg dark:border-gray-700 dark:bg-gray-800">
+      <div className="overflow-hidden bg-white border-2 border-black rounded-lg shadow-lg dark:border-gray-400 dark:bg-gray-700">
         <div className="overflow-x-auto">
           <div className="hidden md:block">
-            <table className="min-w-full bg-white divide-y divide-gray-200">
-              <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue text-babypowder">
+            <table className="min-w-full bg-white divide-y divide-gray-200 dark:divide-gray-300">
+              <thead className="text-xs font-medium tracking-wider text-left uppercase bg-chryslerblue dark:bg-gray-900 text-babypowder">
                 <tr>
                   <th className="px-6 py-3">Nombre</th>
                   <th className="px-6 py-3">Email</th>
@@ -443,12 +443,12 @@ function ListaClientes() {
                   <th className="px-6 py-3"></th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-300 dark:bg-gray-700 dark:text-babypowder">
                 {!loading &&
                   currentFilteredClientes.map((cliente) => (
                     <tr
                       key={cliente.id}
-                      className="transition-colors duration-300 hover:bg-blue-50"
+                      className="transition-colors duration-300 ease-out hover:bg-blue-50 dark:hover:bg-gray-800"
                     >
                       <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
                         <Popover
@@ -456,9 +456,9 @@ function ListaClientes() {
                           trigger="hover"
                           content={
                             <div className="flex flex-col items-start p-2 text-xs bg-blue-100 border rounded-lg shadow-md border-vistablue text-chryslerblue dark:bg-gray-800 dark:text-white dark:border-gray-700">
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-2 dark:text-vistablue">
                                 <svg
-                                  className="w-4 h-4 dark:text-white"
+                                  className="w-4 h-4 "
                                   aria-hidden="true"
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="24"
@@ -475,7 +475,7 @@ function ListaClientes() {
                                   />
                                 </svg>
 
-                                <span className="font-semibold dark:text-gray-400">
+                                <span className="font-semibold">
                                   {cliente.tlf}
                                 </span>
                               </div>
@@ -748,7 +748,7 @@ function ListaClientes() {
                     </button>
                   </h2>
                   <div
-                    className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
+                    className={`transition-all bg-blue-50 duration-200 overflow-hidden dark:bg-gray-800 ${
                       openAccordions[cliente.id] ? "max-h-96" : "max-h-0"
                     }`}
                   >
@@ -836,15 +836,15 @@ function ListaClientes() {
         </div>
         {/* Paginación */}
         {!loading && filteredClientes.length > 0 && (
-          <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+          <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-700">
             <nav className="flex items-center space-x-2">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                   currentPage === 1
-                    ? "text-gray-400"
-                    : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                      ? "text-gray-400"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                 }`}
               >
                 <svg
@@ -865,8 +865,8 @@ function ListaClientes() {
                   onClick={() => setCurrentPage(index + 1)}
                   className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
                     currentPage === index + 1
-                      ? "bg-chryslerblue text-white"
-                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                        ? "bg-chryslerblue text-white dark:text-babypowder dark:bg-vistablue"
+                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                   }`}
                 >
                   {index + 1}
@@ -882,8 +882,8 @@ function ListaClientes() {
                 disabled={currentPage === totalFilteredPages}
                 className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                   currentPage === totalFilteredPages
-                    ? "text-gray-400"
-                    : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                      ? "text-gray-400"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                 }`}
               >
                 <svg

@@ -112,11 +112,11 @@ const Register = () => {
   return (
     <div className="flex items-center justify-center gap-16 md:px-8">
       <div className="flex-col items-start hidden max-w-xl md:flex">
-        <h3 className="mb-4 font-bold text-center md:text-2xl lg:text-6xl">
+        <h3 className="mb-4 font-bold text-center md:text-2xl lg:text-6xl dark:text-babypowder">
           Consulta{" "}
           <RotatingText
             texts={["Todas tus citas", "Tus Graduaciones", "Tu historial"]}
-            mainClassName="px-2 sm:px-2 md:px-3 text-chryslerblue justify-center"
+            mainClassName="px-2 sm:px-2 md:px-3 text-chryslerblue dark:text-vistablue justify-center"
             staggerFrom={"last"}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
@@ -128,19 +128,19 @@ const Register = () => {
           />
         </h3>
       </div>
-      <div className="w-full max-w-md p-8 bg-white border-2 border-black shadow-lg rounded-2xl dark:border-gray-700 animate-fade-in">
+      <div className="w-full max-w-md p-8 bg-white border-2 border-black shadow-lg rounded-2xl dark:border-gray-400 dark:bg-gray-700 animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
             <img
               src="./logo.png"
               alt="OptiClick"
-              className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
+              className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue) dark:drop-shadow-[0_0_30px_theme(colors.vistablue)]"
             />
           </a>
         </div>
         <div className="flex items-center gap-2 mb-4">
           <Lottie animationData={registerAnimation} style={{ height: 60 }} />
-          <h2 className="text-2xl font-bold">Registro</h2>
+          <h2 className="text-2xl font-bold dark:text-babypowder">Registro</h2>
         </div>
         <form onSubmit={handleSubmit}>
           <InputField

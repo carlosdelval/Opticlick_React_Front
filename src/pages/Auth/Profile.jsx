@@ -38,8 +38,8 @@ const Profile = () => {
 
   // Cargar desde localStorage
   useEffect(() => {
-    const storedCorreo = localStorage.getItem("correo") === "true";
-    const storedNavegador = localStorage.getItem("navegador") === "true";
+    const storedCorreo = localStorage.getItem("notis_correo") === "true";
+    const storedNavegador = localStorage.getItem("notis_navegador") === "true";
     const storedDarkMode = localStorage.getItem("darkMode") === "true";
     const storedIdioma = localStorage.getItem("idioma") || "es";
 
@@ -51,11 +51,11 @@ const Profile = () => {
 
   // Guardar cambios
   useEffect(() => {
-    localStorage.setItem("correo", correo);
+    localStorage.setItem("notis_correo", correo);
   }, [correo]);
 
   useEffect(() => {
-    localStorage.setItem("navegador", navegador);
+    localStorage.setItem("notis_navegador", navegador);
   }, [navegador]);
 
   useEffect(() => {
@@ -238,9 +238,9 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex flex-col md:gap-8 my-auto md:flex-row md:max-w-7xl md:mx-auto">
-      <div className="flex flex-col md:w-1/4 md:space-y-2 space-y-8">
-        <div className="p-4 bg-white border-2 border-black rounded-lg shadow-lg h-min animate-fade-in">
+    <div className="flex flex-col my-auto md:gap-8 md:flex-row md:max-w-7xl md:mx-auto">
+      <div className="flex flex-col space-y-8 md:w-1/4 md:space-y-2">
+        <div className="p-4 bg-white border-2 border-black rounded-lg shadow-lg h-min animate-fade-in dark:bg-gray-700 dark:border-gray-400">
           <div className="flex mb-4 space-x-2 text-start">
             <Lottie
               animationData={userProfileAnimation}
@@ -257,8 +257,8 @@ const Profile = () => {
                 key={tab}
                 className={`p-3 rounded-md cursor-pointer w-full text-left transition-all duration-200 ${
                   activeTab === tab
-                    ? "bg-blue-100 font-medium text-chryslerblue border-l-4 border-chryslerblue"
-                    : "hover:bg-blue-50 hover:text-blue-70"
+                    ? "bg-blue-100 font-medium text-chryslerblue border-l-4 border-chryslerblue dark:border-vistablue dark:bg-gray-900 dark:text-babypowder"
+                    : "hover:bg-blue-50 hover:text-blue-70 dark:hover:bg-gray-800 dark:text-gray-400"
                 }`}
                 onClick={() => setActiveTab(tab)}
               >
@@ -374,9 +374,9 @@ const Profile = () => {
           )}
         </div>
       </div>
-      <div className="p-6 bg-white border-2 border-black rounded-lg shadow-lg md:w-3/4 animate-fade-in h-min">
+      <div className="p-6 bg-white border-2 border-black rounded-lg shadow-lg md:w-3/4 animate-fade-in h-min dark:bg-gray-700 dark:border-gray-400">
         {loading && (
-          <div className="w-auto h-auto flex justify-center items-center">
+          <div className="flex items-center justify-center w-auto h-auto">
             <Spinner />
           </div>
         )}
@@ -484,7 +484,7 @@ const Profile = () => {
             <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
               {t.configuracion}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">{t.descripcion}</p>
+            <p className="text-gray-600 dark:text-gray-300">{t.descripcion}</p>
 
             <div className="flex flex-col space-y-4">
               <h2 className="text-lg font-semibold dark:text-babypowder">
@@ -504,7 +504,7 @@ const Profile = () => {
             </div>
 
             <div className="flex flex-col space-y-4">
-              <h2 className="text-lg font-semibold dark:text-babypowder mt-4">
+              <h2 className="mt-4 text-lg font-semibold dark:text-babypowder">
                 {t.pagina}
               </h2>
               <ToggleSwitch
@@ -515,13 +515,13 @@ const Profile = () => {
             </div>
 
             <div className="flex flex-col space-y-4">
-              <h2 className="text-lg font-semibold dark:text-babypowder mt-4">
+              <h2 className="mt-4 text-lg font-semibold dark:text-babypowder">
                 {t.idioma}
               </h2>
               <select
                 value={idioma}
                 onChange={(e) => setIdioma(e.target.value)}
-                className="w-48 p-2 rounded border dark:bg-gray-800 dark:text-white"
+                className="w-48 p-2 border rounded dark:bg-gray-800 dark:text-white"
               >
                 <option value="es">Español</option>
                 <option value="en">English</option>
@@ -530,14 +530,14 @@ const Profile = () => {
           </div>
         )}
         {activeTab === "delete" && !loading && (
-          <div className="space-y-4 animate-fade-in">
-            <h2 className="text-2xl font-semibold dark:text-babypowder">
+          <div className="space-y-4 animate-fade-in dark:text-babypowder">
+            <h2 className="text-2xl font-semibold">
               Eliminar mi cuenta
             </h2>
             <p className="my-4">
               Si desea eliminar su cuenta, haga clic en el botón de abajo.
               <br />
-              <span className="font-semibold text-redpantone">
+              <span className="font-semibold text-redpantone dark:text-lightcoral">
                 Esta acción no se puede deshacer.
               </span>
             </p>

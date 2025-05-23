@@ -93,13 +93,13 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center flex-grow">
-      <div className="p-8 bg-white border-2 border-black shadow-lg rounded-2xl w-96 dark:border-gray-700 animate-fade-in">
-        <div className="flex justify-center mb-4">
+      <div className="p-8 bg-white border-2 border-black shadow-lg rounded-2xl w-96 dark:border-gray-400 dark:bg-gray-700 dark:text-babypowder animate-fade-in">
+            <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
             <img
               src="./logo.png"
               alt="OptiClick"
-              className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
+              className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)] dark:drop-shadow-[0_0_30px_theme(colors.vistablue)]"
             />
           </a>
         </div>
@@ -138,7 +138,7 @@ const Login = () => {
               checked={remember}
               id="rememberCheckbox"
               type="checkbox"
-              className="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-chryslerblue dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              className="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-chryslerblue dark:focus:ring-vistablue dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             />
             <label
               htmlFor="rememberCheckbox"

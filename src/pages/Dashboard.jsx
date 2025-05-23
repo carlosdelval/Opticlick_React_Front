@@ -334,10 +334,10 @@ const Dashboard = () => {
               />
             </div>
           )}
-          <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
+          <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-700 dark:border-gray-400">
             {loading && <Spinner />}
             {citas.length === 0 && !loading && (
-              <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
+              <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-700">
                 <p className="p-4 my-4 text-center">
                   ¡No tienes citas programadas!
                 </p>
@@ -374,7 +374,7 @@ const Dashboard = () => {
                     !loading && (
                       <div
                         key={cita.id}
-                        className="bg-white border-b border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+                        className="bg-white border-b border-gray-200 dark:border-gray-400 dark:bg-gray-700"
                       >
                         <h2 id={`accordion-color-heading-${index}`}>
                           <button
@@ -383,7 +383,7 @@ const Dashboard = () => {
                               openAccordions[cita.id]
                                 ? "bg-blue-50 dark:bg-gray-800"
                                 : ""
-                            } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800`}
+                            } flex items-center justify-between w-full gap-3 p-5 font-medium text-gray-500 rtl:text-right dark:border-gray-700 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800 ease-out duration-300`}
                             data-accordion-target={`#accordion-color-body-${index}`}
                             onClick={() => toggleAccordion(cita.id)}
                             aria-expanded={openAccordions[cita.id] || false}
@@ -493,7 +493,7 @@ const Dashboard = () => {
                           </button>
                         </h2>
                         <div
-                          className={`transition-all bg-blue-50 duration-200 overflow-hidden ${
+                          className={`transition-all bg-blue-50 dark:bg-gray-800 duration-200 overflow-hidden ${
                             openAccordions[cita.id] ? "max-h-96" : "max-h-0"
                           }`}
                           aria-hidden={!openAccordions[cita.id]}
@@ -589,17 +589,17 @@ const Dashboard = () => {
             </div>
             {/* Paginación */}
             {!loading && citas.length > 0 && (
-              <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+              <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-700">
                 <nav className="flex items-center space-x-2">
                   <button
                     onClick={() =>
                       setCurrentPageCita((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPageCita === 1}
-                    className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
+                    className={`inline-flex items-center justify-center p-2 border border-gray-300 dark:border-gray-400 rounded-md ${
                       currentPageCita === 1
-                        ? "text-gray-400"
-                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                        ? "text-gray-400 dark:text-babypowder"
+                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                     }`}
                   >
                     <svg
@@ -620,8 +620,8 @@ const Dashboard = () => {
                       onClick={() => setCurrentPageCita(index + 1)}
                       className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
                         currentPageCita === index + 1
-                          ? "bg-chryslerblue text-white"
-                          : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                          ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
+                          : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                       }`}
                     >
                       {index + 1}
@@ -637,8 +637,8 @@ const Dashboard = () => {
                     disabled={currentPageCita === totalFilteredPages}
                     className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                       currentPageCita === totalFilteredPages
-                        ? "text-gray-400"
-                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                        ? "text-gray-400 dark:text-babypowder"
+                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                     }`}
                   >
                     <svg
@@ -672,8 +672,8 @@ const Dashboard = () => {
                 Tus novedades
               </h2>
             </div>
-            <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:bg-gray-800">
-              <div className="flex flex-col items-center justify-center w-full bg-white dark:bg-gray-800">
+            <div className="overflow-x-auto bg-white border-2 border-black rounded-lg shadow-lg dark:border-gray-400 dark:bg-gray-700">
+              <div className="flex flex-col items-center justify-center w-full bg-white dark:bg-gray-700">
                 {loading && <Spinner />}
                 {novedades &&
                   !loading &&
@@ -681,13 +681,13 @@ const Dashboard = () => {
                   currentFilteredNotis.map((notificacion) => (
                     <div
                       key={notificacion.id}
-                      className="flex items-center justify-between w-full p-4 space-x-2 duration-300 ease-out border-b dark:border-gray-700 hover:bg-blue-50"
+                      className="flex items-center justify-between w-full p-4 space-x-2 duration-300 ease-out border-b dark:border-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800"
                     >
                       <div className="flex-col items-center w-full space-y-2">
                         <div className="flex items-center space-x-2">
                           {notificacion.tipo === 2 ? (
                             <svg
-                              className="w-8 h-8"
+                              className="w-8 h-8 dark:text-babypowder"
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
                               width="24"
@@ -705,7 +705,7 @@ const Dashboard = () => {
                             </svg>
                           ) : (
                             <svg
-                              className="w-8 h-8"
+                              className="w-8 h-8 dark:text-babypowder"
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
                               width="24"
@@ -785,7 +785,7 @@ const Dashboard = () => {
                     </div>
                   ))}
                 {novedades.length === 0 && !loading && (
-                  <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-800">
+                  <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-700">
                     <p className="p-4 my-4 font-semibold text-center">
                       ¡No tienes notificaciones!
                     </p>
@@ -794,7 +794,7 @@ const Dashboard = () => {
               </div>
               {/* Paginación */}
               {!loading && novedades.length > 0 && (
-                <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-800">
+                <div className="flex items-center justify-center py-4 bg-white dark:bg-gray-700">
                   <nav className="flex items-center space-x-2">
                     <button
                       onClick={() =>
@@ -803,8 +803,8 @@ const Dashboard = () => {
                       disabled={currentPageNotis === 1}
                       className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                         currentPageNotis === 1
-                          ? "text-gray-400"
-                          : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                          ? "text-gray-400 dark:text-babypowder"
+                          : "text-gray-700 hover:bg-blue-50 dark:text-babypowder dark:hover:bg-gray-800"
                       }`}
                     >
                       <svg
@@ -825,8 +825,8 @@ const Dashboard = () => {
                         onClick={() => setCurrentPageNotis(index + 1)}
                         className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
                           currentPageNotis === index + 1
-                            ? "bg-chryslerblue text-white"
-                            : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                            ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
+                            : "text-gray-700 hover:bg-blue-50 dark:text-babypowder dark:hover:bg-gray-800"
                         }`}
                       >
                         {index + 1}
@@ -842,8 +842,8 @@ const Dashboard = () => {
                       disabled={currentPageNotis === totalFilteredPagesNotis}
                       className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                         currentPageNotis === totalFilteredPagesNotis
-                          ? "text-gray-400"
-                          : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                          ? "text-gray-400 dark:text-babypowder"
+                          : "text-gray-700 hover:bg-blue-50 dark:text-babypowder dark:hover:bg-gray-800"
                       }`}
                     >
                       <svg
@@ -956,7 +956,7 @@ const Dashboard = () => {
             <div className="my-2">
               <textarea
                 rows="4"
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:border-chryslerblue"
+                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:border-chryslerblue dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 focus:ring-chryslerblue dark:focus:border-chryslerblue"
                 placeholder="Escribe tu mensaje aquí..."
                 value={formData.mensaje}
                 onChange={(e) => {
@@ -965,7 +965,7 @@ const Dashboard = () => {
                 }}
               ></textarea>
               {formError.mensaje && (
-                <p className="py-1 text-sm text-redpantone">
+                <p className="py-1 text-sm text-redpantone dark:text-lightcoral">
                   {formError.mensaje}
                 </p>
               )}

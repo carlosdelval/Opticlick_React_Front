@@ -18,9 +18,9 @@ const Home = () => {
     <div className="flex items-center justify-center flex-grow">
       <div className="flex flex-col space-y-4">
         <div className="text-center">
-          <h3 className="text-2xl font-semibold dark:text-gray-600">
+          <h3 className="text-2xl font-semibold dark:text-babypowder">
             {"¡Más de "}
-            <GradientText colors={["#531CB3", "#23F0C7"]}>
+            <GradientText colors={localStorage.getItem("darkMode") ? ["#8AAADC","#23F0C7"] : ["#531CB3", "#23F0C7"]}>
               <CountUp
                 to={1000000}
                 from={999900}
@@ -35,21 +35,21 @@ const Home = () => {
         </div>
 
         <div className="flex items-center justify-center">
-          <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-700 rounded-2xl animate-fade-in">
+          <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-400 dark:bg-gray-700 rounded-2xl animate-fade-in">
             <div className="flex justify-center mb-4">
               <a href="/" className="inline-block">
                 <img
                   src="./logo.png"
                   alt="OptiClick"
-                  className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
+                  className="w-20 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.vistablue)] dark:drop-shadow-[0_0_30px_theme(colors.vistablue)]"
                 />
               </a>
             </div>
             <div className="mb-4 text-center">
-              <h1 className="font-bold leading-none tracking-tight underline text-7xl md:text-5xl lg:text-6xl dark:text-white underline-offset-3 decoration-8 decoration-vistablue dark:decoration-blue-600">
+              <h1 className="font-bold leading-none tracking-tight underline text-7xl md:text-5xl lg:text-6xl dark:text-babypowder underline-offset-3 decoration-8 decoration-vistablue">
                 OptiClick
               </h1>
-              <p className="mt-2 text-gray-700">
+              <p className="mt-2 text-gray-700 dark:text-gray-200">
                 Tu sistema de gestión de citas ópticas
               </p>
             </div>
@@ -77,7 +77,7 @@ const Home = () => {
                 </svg>
               }
             />
-            <p className="mt-4 text-sm text-gray-600">
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
               ¿No tienes cuenta?{" "}
               <a
                 href="register"
