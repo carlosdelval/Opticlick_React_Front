@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AuthContext from "../context/AuthContext";
 import PrimaryButton from "./PrimaryButton";
 import NotificationDropdown from "./NotificacionDropdown";
+import DarkModeSwitch from "./DarkModeSwitch";
 
 const Navbar = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -47,20 +48,23 @@ const Navbar = () => {
       <div className="flex flex-wrap items-center justify-between max-w-screen-xl gap-4 mx-auto">
         <a
           href={user?.id ? "/dashboard" : "/"}
-          className="flex items-center space-x-3 rounded-lg rtl:space-x-reverse dark:bg-babypowder dark:p-2 dark:border-gray-300"
+          className="flex items-center space-x-3 rounded-lg rtl:space-x-reverse"
         >
           <img
             src="/logo.png"
-            className="h-8 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.chryslerblue)]"
+            className="h-8 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.chryslerblue)] dark:hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
             alt="OptiClick Logo"
           />
-          <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl hover:text-chryslerblue dark:text-chryslerblue">
+          <span className="self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
             OptiClick
           </span>
         </a>
-        <div className="flex items-center space-x-3 md:order-2 md:space-x-0 rtl:space-x-reverse">
+        <div className="flex items-center space-x-6 md:order-2 md:space-x-0 rtl:space-x-reverse">
           {!user && authChecked && (
             <ul className="flex-col hidden font-medium rounded-lg md:flex md:p-0 md:space-x-8 md:flex-row md:mt-0 md:items-center">
+              <li className="md:py-2">
+                <DarkModeSwitch />
+              </li>
               <li className="md:py-2">
                 <PrimaryButton
                   action={() => (window.location.href = "/business")}
@@ -195,7 +199,10 @@ const Navbar = () => {
               )}
             </div>
           )}
-          <NotificationDropdown />
+          <div className="flex md:hidden">
+            <DarkModeSwitch />
+          </div>
+          {user && <NotificationDropdown />}
           <button
             type="button"
             className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm duration-300 rounded-lg cursor-pointer hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue md:hidden"

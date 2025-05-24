@@ -319,7 +319,7 @@ function Administracion() {
   );
 
   return (
-    <div className="my-auto md:max-w-7xl md:mx-auto">
+    <div className="my-auto md:max-w-7xl md:mx-auto dark:text-babypowder">
       <div className="flex mb-2 space-x-3 text-start">
         <Lottie animationData={dynamicRoleAnimation} style={{ height: 80 }} />
         <h2 className="my-5 text-4xl font-semibold dark:text-babypowder">

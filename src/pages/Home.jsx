@@ -15,7 +15,7 @@ const Home = () => {
     }
   }, [user, navigate]);
   return (
-    <div className="flex items-center justify-center flex-grow">
+    <div className="flex items-center justify-center flex-grow h-auto">
       <div className="flex flex-col space-y-4">
         <div className="text-center">
           <h3 className="text-2xl font-semibold dark:text-babypowder">
@@ -81,7 +81,7 @@ const Home = () => {
               ¿No tienes cuenta?{" "}
               <a
                 href="register"
-                className="font-bold duration-300 text-vistablue hover:underline hover:text-chryslerblue"
+                className="font-bold duration-300 text-vistablue hover:underline hover:text-chryslerblue dark:hover:text-dark-vista"
               >
                 Regístrate aquí
               </a>

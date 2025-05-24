@@ -8,7 +8,7 @@ import AuthContext from "../../context/AuthContext";
 import { NotificationsContext } from "../../context/NotificationsContext";
 import { CitasContext } from "../../context/CitasContext";
 import Lottie from "lottie-react";
-import Success from "../../assets/Success.json";
+import Success from "../../assets/success.json";
 import Spinner from "../../components/Spinner";
 
 const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
@@ -355,7 +355,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                   formData.turno === "mañana"
                     ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
                     : ""
-                } ${esHoy && horaActual >= "14:00" ? "opacity-50" : ""}`}
+                } ${esHoy && horaActual >= "14:00" ? "opacity-50 cursor-not-allowed" : ""}`}
                 onClick={() => {
                   handleTurno("mañana");
                   setErrors({});
@@ -366,10 +366,10 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
               </button>
               <button
                 type="button"
-                disabled={esSabado}
+                disabled={esSabado || (esHoy && horaActual >= "20:30")}
                 className={`px-4 py-1 rounded-r bg-blue-100 dark:bg-chryslerblue ${
                   formData.turno === "tarde" ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder" : ""
-                } ${esSabado ? "opacity-50 cursor-not-allowed" : ""}`}
+                } ${esSabado || (esHoy && horaActual >= "20:30") ? "opacity-50 cursor-not-allowed" : ""}`}
                 onClick={() => {
                   !esSabado && handleTurno("tarde");
                   setErrors({});

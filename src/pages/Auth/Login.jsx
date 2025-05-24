@@ -157,7 +157,7 @@ const Login = () => {
           ¿No tienes cuenta?{" "}
           <a
             href="/register"
-            className="font-bold duration-300 text-vistablue hover:text-chryslerblue hover:underline"
+            className="font-bold duration-300 text-vistablue hover:text-chryslerblue dark:hover:text-dark-vista hover:underline"
           >
             Regístrate aquí
           </a>

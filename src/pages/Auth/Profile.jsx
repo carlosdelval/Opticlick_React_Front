@@ -12,6 +12,7 @@ import Alert from "../../components/Alert";
 import Spinner from "../../components/Spinner";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import traducciones from "../../lang/traducciones";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 const Profile = () => {
   const { user, setUser } = React.useContext(AuthContext);
@@ -24,7 +25,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [correo, setCorreo] = useState(false);
   const [navegador, setNavegador] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, setDarkMode } = useDarkMode();
   const [idioma, setIdioma] = useState("es");
   const [formData, setFormData] = useState({
     name: "",
@@ -57,10 +58,6 @@ const Profile = () => {
   useEffect(() => {
     localStorage.setItem("notis_navegador", navegador);
   }, [navegador]);
-
-  useEffect(() => {
-    localStorage.setItem("darkMode", darkMode);
-  }, [darkMode]);
 
   useEffect(() => {
     localStorage.setItem("idioma", idioma);
@@ -531,9 +528,7 @@ const Profile = () => {
         )}
         {activeTab === "delete" && !loading && (
           <div className="space-y-4 animate-fade-in dark:text-babypowder">
-            <h2 className="text-2xl font-semibold">
-              Eliminar mi cuenta
-            </h2>
+            <h2 className="text-2xl font-semibold">Eliminar mi cuenta</h2>
             <p className="my-4">
               Si desea eliminar su cuenta, haga clic en el botón de abajo.
               <br />

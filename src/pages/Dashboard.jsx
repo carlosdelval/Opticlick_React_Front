@@ -13,7 +13,7 @@ import MenuButton from "../components/MenuButton";
 import Spinner from "../components/Spinner";
 import Modal from "../components/Modal";
 import Alert from "../components/Alert";
-import ModalReserva from "./User/ModalReserva";
+import ModalReserva from "./user/ModalReserva";
 import notificacionAnimation from "../assets/notification.json";
 import mensajeAnimation from "../assets/chat.json";
 import { NotificationsContext } from "../context/NotificationsContext";
@@ -155,7 +155,9 @@ const Dashboard = () => {
   const handleDeleteCita = async (id) => {
     try {
       await eliminarCita(id);
-      user.role === "admin" ? fetchCitasOptica(user.optica_id) : fetchCitasUser(user.id);
+      user.role === "admin"
+        ? fetchCitasOptica(user.optica_id)
+        : fetchCitasUser(user.id);
       setOpenModalAnular(false);
       setSuccess("Cita anulada correctamente");
       setError(null);
@@ -533,7 +535,11 @@ const Dashboard = () => {
                                 text="Enviar mensaje"
                                 classes={"px-4"}
                                 action={() => {
-                                  handleOpenModalMensaje(user.role === "admin" ? cita.user_id : cita.optica_id);
+                                  handleOpenModalMensaje(
+                                    user.role === "admin"
+                                      ? cita.user_id
+                                      : cita.optica_id
+                                  );
                                 }}
                                 icon={
                                   <svg
@@ -785,7 +791,7 @@ const Dashboard = () => {
                     </div>
                   ))}
                 {novedades.length === 0 && !loading && (
-                  <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-700">
+                  <div className="flex items-center justify-center w-full h-32 bg-white dark:bg-gray-700 dark:text-babypowder">
                     <p className="p-4 my-4 font-semibold text-center">
                       ¡No tienes notificaciones!
                     </p>
