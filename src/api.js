@@ -86,7 +86,7 @@ export const updateUser = async (userData) => {
 
 //Actualizar contraseña
 export const updatePassword = async (userData) => {
-  const token = user.token
+  const token = user.token;
 
   const res = await axios.put(`${API_URL}/update-password`, userData, {
     headers: {
@@ -105,6 +105,22 @@ export const getOpticas = async () => {
 // Obtener óptica por id
 export const getOptica = async (id) => {
   const res = await axios.get(`${API_URL}/opticas/${id}`);
+  return res.data;
+};
+
+// Agregar óptica
+export const addOptica = async (optica) => {
+  const res = await axios.post(`${API_URL}/opticas`, optica);
+  return res.data;
+};
+// Editar óptica
+export const updateOptica = async (id, optica) => {
+  const res = await axios.put(`${API_URL}/opticas/${id}`, optica);
+  return res.data;
+};
+// Eliminar óptica
+export const deleteOptica = async (id) => {
+  const res = await axios.delete(`${API_URL}/opticas/${id}`);
   return res.data;
 };
 

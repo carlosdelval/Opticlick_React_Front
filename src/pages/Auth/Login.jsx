@@ -1,7 +1,6 @@
 import { useState, useContext, useEffect } from "react";
-import { login as loginAPI } from "../../api";
-import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
+import { login as loginAPI } from "../../api";
 import PrimaryButton from "../../components/PrimaryButton";
 import InputField from "../../components/InputField";
 import Lottie from "lottie-react";
@@ -9,7 +8,6 @@ import loginAnimation from "../../assets/login.json";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -73,8 +71,6 @@ const Login = () => {
           id: res.id,
           email_verified: res.email_verified,
         });
-
-        navigate("/dashboard");
       } else {
         setError_user("Respuesta inesperada del servidor.");
       }
@@ -94,7 +90,7 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center flex-grow">
       <div className="p-8 bg-white border-2 border-black shadow-lg rounded-2xl w-96 dark:border-gray-400 dark:bg-gray-700 dark:text-babypowder animate-fade-in">
-            <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
             <img
               src="./logo.png"

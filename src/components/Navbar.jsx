@@ -230,7 +230,7 @@ const Navbar = () => {
           } items-center justify-between w-full md:flex md:w-auto md:order-1`}
         >
           <ul className="flex flex-col p-4 mt-4 font-medium rounded-lg md:p-0 md:space-x-8 md:flex-row md:mt-0">
-            {user && (
+            {user && user.role != "master" && (
               <li>
                 <a
                   href="/dashboard"
@@ -288,34 +288,7 @@ const Navbar = () => {
                 </a>
               </li>
             )}
-            {user?.role && user?.role != "user" && (
-              <li>
-                <a
-                  href="/lista-clientes"
-                  className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
-                >
-                  <div className="flex items-center space-x-2">
-                    <svg
-                      className="w-5 h-5"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeWidth="2"
-                        d="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3.05A2.5 2.5 0 1 1 9 5.5M19.5 17h.5a1 1 0 0 0 1-1 3 3 0 0 0-3-3h-1m0-3.05a2.5 2.5 0 1 0-2-4.45m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3 1 1 0 0 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
-                      />
-                    </svg>
-                    <span>Listado clientes</span>
-                  </div>
-                </a>
-              </li>
-            )}
+
             {user && user.role === "master" && (
               <li>
                 <a
@@ -348,6 +321,34 @@ const Navbar = () => {
                       />
                     </svg>
                     <span>Administración</span>
+                  </div>
+                </a>
+              </li>
+            )}
+            {user?.role && user?.role != "user" && (
+              <li>
+                <a
+                  href="/lista-clientes"
+                  className="block px-3 py-2 m-2 duration-300 cursor-pointerblock rounded-xl hover:text-chryslerblue hover:dark:text-vistablue dark:text-babypowder"
+                >
+                  <div className="flex items-center space-x-2">
+                    <svg
+                      className="w-5 h-5"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeWidth="2"
+                        d="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3.05A2.5 2.5 0 1 1 9 5.5M19.5 17h.5a1 1 0 0 0 1-1 3 3 0 0 0-3-3h-1m0-3.05a2.5 2.5 0 1 0-2-4.45m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3 1 1 0 0 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
+                      />
+                    </svg>
+                    <span>{user?.role === "admin" ? "Listado clientes" : "Listado usuarios"}</span>
                   </div>
                 </a>
               </li>

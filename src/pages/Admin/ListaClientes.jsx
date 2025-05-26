@@ -347,7 +347,7 @@ function ListaClientes() {
     <div className="my-auto md:max-w-7xl md:mx-auto dark:text-babypowder">
       <div className="flex mb-4 space-x-3 text-start">
         <Lottie animationData={teamAnimation} style={{ height: 60 }} />
-        <h2 className="my-2 text-4xl font-semibold dark:text-babypowder">Todos tus clientes</h2>
+        <h2 className="my-2 text-4xl font-semibold dark:text-babypowder">{user?.role === "admin" ? "Todos tus clientes" : "Usuarios de la aplicación"}</h2>
       </div>
 
       {error && (
