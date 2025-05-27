@@ -15,11 +15,6 @@ const Home = () => {
   }, [user, navigate]);
   return (
     <div className="flex items-center justify-center flex-grow h-auto flex-col">
-      <div className="flex flex-col items-center w-full max-w-4xl p-6 space-y-6">
-        <h1 className="font-bold leading-none tracking-tight underline text-7xl md:text-5xl lg:text-6xl dark:text-babypowder underline-offset-3 decoration-8 decoration-vistablue">
-          OptiClick
-        </h1>
-      </div>
       <div className="flex flex-col space-y-4">
         <div className="text-center">
           <h3 className="text-2xl font-semibold dark:text-babypowder">
