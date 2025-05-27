@@ -21,6 +21,12 @@ export const login = async (userData) => {
   return res.data;
 };
 
+// Iniciar sesión con Google
+export const loginConGoogle = async (userData) => {
+  const res = await axios.post(`${API_URL}/login-google`, userData);
+  return res.data;
+};
+
 // Obtener usuarios clientes
 export const getClientes = async () => {
   const res = await axios.get(`${API_URL}/users`);

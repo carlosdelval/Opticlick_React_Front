@@ -7,7 +7,7 @@ import Lottie from "lottie-react";
 import loginAnimation from "../../assets/login.json";
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
+  const { login, loginWithGoogle } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -89,7 +89,7 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center flex-grow">
-      <div className="p-8 bg-white border-2 border-black shadow-lg rounded-2xl w-96 dark:border-gray-400 dark:bg-gray-700 dark:text-babypowder animate-fade-in">
+      <div className="p-8 space-y-4 bg-white border-2 border-black shadow-lg rounded-2xl w-96 dark:border-gray-400 dark:bg-gray-700 dark:text-babypowder animate-fade-in">
         <div className="flex justify-center mb-4">
           <a href="/" className="inline-block">
             <img
@@ -149,7 +149,22 @@ const Login = () => {
             disabled={loading}
           />
         </form>
-        <p className="my-2 text-sm text-gray-500">
+        {/* Google Login Button */}
+        <div className="justify-center pt-4 border-t border-gray-300">
+          <button
+            onClick={loginWithGoogle}
+            className="flex w-full gap-2 px-4 py-2 transition duration-150 border rounded-lg border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow"
+          >
+            <img
+              className="w-6 h-6"
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              loading="lazy"
+              alt="google logo"
+            />
+            <span>Iniciar sesión con Google</span>
+          </button>
+        </div>
+        <p className="text-sm text-gray-500 ">
           ¿No tienes cuenta?{" "}
           <a
             href="/register"

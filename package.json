@@ -17,6 +17,7 @@
     "buffer": "^6.0.3",
     "date-fns": "^4.1.0",
     "file-saver": "^2.0.5",
+    "firebase": "^11.8.1",
     "flowbite-react": "^0.10.2",
     "framer-motion": "^12.10.1",
     "frontend": "file:",

@@ -438,42 +438,54 @@ const Profile = () => {
             <h2 className="mb-4 text-2xl font-semibold dark:text-babypowder">
               Contraseña
             </h2>
-            <form onSubmit={handleSubmitPass} className="space-y-4">
-              <InputField
-                label="Contraseña actual"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, password: value }))
-                }
-                error={errors.password}
-              />
-              <InputField
-                label="Nueva contraseña"
-                name="new_password"
-                type="password"
-                value={formData.new_password}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, new_password: value }))
-                }
-                error={errors.new_password}
-              />
-              <InputField
-                label="Confirmar contraseña"
-                name="confirm_password"
-                type="password"
-                value={formData.confirm_password}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, confirm_password: value }))
-                }
-                error={errors.confirm_password}
-              />
-              <PrimaryButton
-                text="Confirmar contraseña"
-                classes="py-2"
-              ></PrimaryButton>
-            </form>
+            {user?.password != "" && (
+              <form onSubmit={handleSubmitPass} className="space-y-4">
+                <InputField
+                  label="Contraseña actual"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, password: value }))
+                  }
+                  error={errors.password}
+                />
+                <InputField
+                  label="Nueva contraseña"
+                  name="new_password"
+                  type="password"
+                  value={formData.new_password}
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, new_password: value }))
+                  }
+                  error={errors.new_password}
+                />
+                <InputField
+                  label="Confirmar contraseña"
+                  name="confirm_password"
+                  type="password"
+                  value={formData.confirm_password}
+                  onChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      confirm_password: value,
+                    }))
+                  }
+                  error={errors.confirm_password}
+                />
+                <PrimaryButton
+                  text="Confirmar contraseña"
+                  classes="py-2"
+                ></PrimaryButton>
+              </form>
+            )}
+            {user?.password === "" && (
+              <p className="text-redpantone dark:text-lightcoral">
+                No tienes contraseña establecida porque te has registrado con
+                Google. Si deseas establecer una contraseña, puedes registrate
+                desde la página de registro.
+              </p>
+            )}
           </div>
         )}
         {activeTab === "configuracion" && !loading && (

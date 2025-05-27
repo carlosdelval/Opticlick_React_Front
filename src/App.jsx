@@ -1,8 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
 import ProtectedRoute from "./middleware/ProtectedRoute";
 import Home from "./pages/Home";
-import Login from "./pages/auth/Login";
+import Login from "./pages/Auth/Login";
 import Register from "./pages/auth/Register";
 import Background from "./components/Background";
 import Dashboard from "./pages/Dashboard";
