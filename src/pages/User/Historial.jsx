@@ -166,10 +166,13 @@ const Historial = () => {
 
   return (
     <div className="my-auto md:max-w-7xl md:mx-auto">
-      <div className="flex mb-4 space-x-3 text-start">
-        <Lottie animationData={activityAnimation} style={{ height: 80 }} />
-        <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
-          Tu historial de graduaciones, {user?.name}
+      <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:space-y-0 md:text-left">
+        <Lottie
+          animationData={activityAnimation}
+          className="h-24 md:h-16"
+        />
+        <h2 className="text-2xl md:text-4xl font-semibold dark:text-babypowder">
+          Tus próximas citas, {user?.name}
         </h2>
       </div>
       {error && (
@@ -569,9 +572,13 @@ const Historial = () => {
                 <div className="flex items-center justify-center mb-4">
                   <span className="text-2xl font-semibold text-center">
                     Día{" "}
-                    <span className="text-chryslerblue dark:text-vistablue">{selectedFecha}</span> a
-                    las{" "}
-                    <span className="text-chryslerblue dark:text-vistablue">{selectedHora}</span>
+                    <span className="text-chryslerblue dark:text-vistablue">
+                      {selectedFecha}
+                    </span>{" "}
+                    a las{" "}
+                    <span className="text-chryslerblue dark:text-vistablue">
+                      {selectedHora}
+                    </span>
                   </span>
                 </div>
                 <div className="my-6 overflow-x-auto border-black rounded-lg shadow-md dark:border-gray-300">

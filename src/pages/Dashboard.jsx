@@ -289,12 +289,13 @@ const Dashboard = () => {
       <div className="flex flex-col justify-between w-full md:flex-row">
         {/* Contenedor de citas */}
         <div className="overflow-hidden md:w-1/2">
-          <div className="flex mb-4 space-x-3 text-start">
+          <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:space-y-0 md:text-left">
             <Lottie
               animationData={calendarAnimation}
-              className="h-28 md:h-16"
+              className="h-24 md:h-16"
+              loop={false}
             />
-            <h2 className="mt-4 text-4xl font-semibold dark:text-babypowder">
+            <h2 className="text-2xl md:text-4xl font-semibold dark:text-babypowder">
               Tus próximas citas, {user?.name}
             </h2>
           </div>
