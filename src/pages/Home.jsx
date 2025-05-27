@@ -8,19 +8,29 @@ import GradientText from "../components/GradientText";
 const Home = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-
   useEffect(() => {
     if (user?.id) {
       navigate("/dashboard");
     }
   }, [user, navigate]);
   return (
-    <div className="flex items-center justify-center flex-grow h-auto">
+    <div className="flex items-center justify-center flex-grow h-auto flex-col">
+      <div className="flex flex-col items-center w-full max-w-4xl p-6 space-y-6">
+        <h1 className="font-bold leading-none tracking-tight underline text-7xl md:text-5xl lg:text-6xl dark:text-babypowder underline-offset-3 decoration-8 decoration-vistablue">
+          OptiClick
+        </h1>
+      </div>
       <div className="flex flex-col space-y-4">
         <div className="text-center">
           <h3 className="text-2xl font-semibold dark:text-babypowder">
             {"¡Más de "}
-            <GradientText colors={localStorage.getItem("darkMode") ? ["#8AAADC","#23F0C7"] : ["#531CB3", "#23F0C7"]}>
+            <GradientText
+              colors={
+                localStorage.getItem("darkMode")
+                  ? ["#8AAADC", "#23F0C7"]
+                  : ["#531CB3", "#23F0C7"]
+              }
+            >
               <CountUp
                 to={1000000}
                 from={999900}
@@ -33,7 +43,6 @@ const Home = () => {
             {" de citas gestionadas!"}
           </h3>
         </div>
-
         <div className="flex items-center justify-center">
           <div className="z-10 max-w-md p-10 text-center bg-white border-2 border-black shadow-xl dark:border-gray-400 dark:bg-gray-700 rounded-2xl animate-fade-in">
             <div className="flex justify-center mb-4">

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://opticlick-react-back.onrender.com";
 const user = JSON.parse(localStorage.getItem("user"));
 
 // Verificar email
