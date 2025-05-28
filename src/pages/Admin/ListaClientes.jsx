@@ -345,9 +345,17 @@ function ListaClientes() {
 
   return (
     <div className="my-auto md:max-w-7xl md:mx-auto dark:text-babypowder">
-      <div className="flex mb-4 space-x-3 text-start">
-        <Lottie animationData={teamAnimation} style={{ height: 60 }} />
-        <h2 className="my-2 text-4xl font-semibold dark:text-babypowder">{user?.role === "admin" ? "Todos tus clientes" : "Usuarios de la aplicación"}</h2>
+      <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:space-y-0 md:text-left">
+        <Lottie
+          animationData={teamAnimation}
+          className="h-24 md:h-16"
+          loop={false}
+        />
+        <h2 className="my-2 text-4xl font-semibold dark:text-babypowder">
+          {user?.role === "admin"
+            ? "Todos tus clientes"
+            : "Usuarios de la aplicación"}
+        </h2>
       </div>
 
       {error && (
@@ -364,37 +372,38 @@ function ListaClientes() {
       {/* Barrita de búsqueda */}
       <div className="mb-2 space-y-2 md:mb-4 md:flex md:space-x-3 md:space-y-0">
         <div className="space-y-2 lg:flex lg:space-y-0 lg:space-x-3">
-        <SearchBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          className={`${
-            user.role === "master" ? "md:w-1/2" : "md:w-2/3"
-          } w-full`}
-          placeholder="Buscar cliente por nombre, email o DNI"
-        />
-        {user.role === "master" && (
-          <div className="relative">
-            <select
-              className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg dark:bg-gray-700 md:w-96 focus:bg-blue-50 focus:border-chryslerblue dark:focus:border-chryslerblue focus:outline-none dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-              onChange={(e) => setOpticaSearch(e.target.value)}
-              value={opticaSearch}
-            >
-              <option value="" disabled>
-                Filtrar por óptica
-              </option>
-              <option value="">Todas las ópticas</option>
-              {opticas.map((optica) => (
-                <option key={optica.id} value={optica.id}>
-                  {optica.nombre}
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            className={`${
+              user.role === "master" ? "md:w-1/2" : "md:w-2/3"
+            } w-full`}
+            placeholder="Buscar cliente por nombre, email o DNI"
+          />
+          {user.role === "master" && (
+            <div className="relative">
+              <select
+                className="block w-full p-4 text-sm text-gray-900 bg-white border-2 border-black rounded-lg dark:bg-gray-700 md:w-96 focus:bg-blue-50 focus:border-chryslerblue dark:focus:border-chryslerblue focus:outline-none dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                onChange={(e) => setOpticaSearch(e.target.value)}
+                value={opticaSearch}
+              >
+                <option value="" disabled>
+                  Filtrar por óptica
                 </option>
-              ))}
-            </select>
-          </div>
-        )}
+                <option value="">Todas las ópticas</option>
+                {opticas.map((optica) => (
+                  <option key={optica.id} value={optica.id}>
+                    {optica.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
         <div className="relative flex items-center justify-end w-full pt-2 md:pt-0">
           <MenuButton
             text="Nuevo cliente"
+            classes="w-full md:w-auto"
             icon={
               <svg
                 className="w-5 h-5"
@@ -727,24 +736,26 @@ function ListaClientes() {
                           </div>
                         </div>
                       </div>
-                      <svg
-                        data-accordion-icon
-                        className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
-                          openAccordions[cliente.id] ? "rotate-180" : ""
-                        }`}
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 10 6"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 5 5 1 1 5"
-                        />
-                      </svg>
+                      <div className="absolute right-12 flex items-center justify-center">
+                        <svg
+                          data-accordion-icon
+                          className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
+                            openAccordions[cliente.id] ? "rotate-180" : ""
+                          }`}
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 10 6"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 5 5 1 1 5"
+                          />
+                        </svg>
+                      </div>
                     </button>
                   </h2>
                   <div
@@ -843,8 +854,8 @@ function ListaClientes() {
                 disabled={currentPage === 1}
                 className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                   currentPage === 1
-                      ? "text-gray-400"
-                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
+                    ? "text-gray-400"
+                    : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                 }`}
               >
                 <svg
@@ -865,8 +876,8 @@ function ListaClientes() {
                   onClick={() => setCurrentPage(index + 1)}
                   className={`inline-flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md ${
                     currentPage === index + 1
-                        ? "bg-chryslerblue text-white dark:text-babypowder dark:bg-vistablue"
-                        : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
+                      ? "bg-chryslerblue text-white dark:text-babypowder dark:bg-vistablue"
+                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                   }`}
                 >
                   {index + 1}
@@ -882,8 +893,8 @@ function ListaClientes() {
                 disabled={currentPage === totalFilteredPages}
                 className={`inline-flex items-center justify-center p-2 border border-gray-300 rounded-md ${
                   currentPage === totalFilteredPages
-                      ? "text-gray-400"
-                      : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
+                    ? "text-gray-400"
+                    : "text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-gray-800"
                 }`}
               >
                 <svg
