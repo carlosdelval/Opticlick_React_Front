@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import bcrypt from "bcryptjs-react";
 import Lottie from "lottie-react";
 import registerAnimation from "../../assets/register.json";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -19,6 +18,7 @@ const Register = () => {
     password: "",
     confirm_password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -71,17 +71,17 @@ const Register = () => {
     if (!validate()) return;
 
     try {
-      const hashedPassword = bcrypt.hashSync(formData.password, 10);
-      const response = await registerUser({
-        ...formData,
-        password: hashedPassword,
-      });
+      setIsLoading(true);
+      const response = await registerUser(formData);
 
       if (response) {
         alert("¡Te has registrado con éxito, bienvenido!");
         navigate("/login");
       }
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
+      console.error("Error al registrar el usuario:", error);
       if (
         error.response &&
         error.response.data &&
@@ -203,7 +203,7 @@ const Register = () => {
               error={errors.confirm_password}
             />
           </div>
-          <PrimaryButton text="Registrar" classes="w-full p-2 mt-4" />
+          <PrimaryButton text={isLoading ? "Cargando..." : "Registrar"} classes="w-full p-2 mt-4" />
         </form>
         <p className="mt-2 text-sm text-gray-500">
           ¿Ya tienes cuenta?{" "}
