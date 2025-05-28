@@ -18,6 +18,7 @@ const Historial = () => {
   const { user } = useContext(AuthContext);
   const { fetchCitasGraduadasUser, citasGraduadasUser, loading, setLoading } =
     useContext(CitasContext);
+  const [pdfLoading, setPdfLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [success, setSuccess] = React.useState(null);
   const [openAccordions, setOpenAccordions] = React.useState({});
@@ -68,7 +69,7 @@ const Historial = () => {
 
   // Handle para descarga de PDF
   const handleDownloadPDF = async () => {
-    setLoading(true);
+    setPdfLoading(true);
     const docProps = {
       nombre: user?.name + " " + user?.surname || "Cliente",
       graduacion: graduacion,
@@ -91,7 +92,7 @@ const Historial = () => {
       saveAs(blob, `graduacion_${docProps.nombre.replace(/\s+/g, "_")}.pdf`);
     }
     setTimeout(() => {
-      setLoading(false);
+      setPdfLoading(false);
     }, 500);
   };
 
@@ -167,10 +168,7 @@ const Historial = () => {
   return (
     <div className="my-auto md:max-w-7xl md:mx-auto">
       <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:space-y-0 md:text-left">
-        <Lottie
-          animationData={activityAnimation}
-          className="h-24 md:h-16"
-        />
+        <Lottie animationData={activityAnimation} className="h-24 md:h-16" />
         <h2 className="text-2xl md:text-4xl font-semibold dark:text-babypowder">
           Tus próximas citas, {user?.name}
         </h2>
@@ -614,23 +612,27 @@ const Historial = () => {
                   classes={"mt-4 px-6"}
                   text="Descargar PDF"
                   icon={
-                    <svg
-                      className="w-6 h-6"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
-                      />
-                    </svg>
+                    pdfLoading ? (
+                      <Spinner />
+                    ) : (
+                      <svg
+                        className="w-6 h-6"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 17v-5h1.5a1.5 1.5 0 1 1 0 3H5m12 2v-5h2m-2 3h2M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m6 4v5h1.375A1.627 1.627 0 0 0 14 15.375v-1.75A1.627 1.627 0 0 0 12.375 12H11Z"
+                        />
+                      </svg>
+                    )
                   }
                 />
               </div>

@@ -108,7 +108,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
     try {
       const cita = {
         ...formData,
-        fecha: new Date(formData.fecha.getTime() + 86400000),
+        fecha: new Date(new Date(formData.fecha).setDate(new Date(formData.fecha).getDate() + 1)).toISOString().split('T')[0] // Convert to YYYY-MM-DD format and add one day
       };
 
       // Primero creamos la notificación con los datos actualizados
