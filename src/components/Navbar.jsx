@@ -47,7 +47,7 @@ const Navbar = () => {
     <nav className="w-full px-4 pt-4 border-t-2 md:px-10 bg-inherit">
       <div className="flex flex-wrap items-center justify-between max-w-screen-xl gap-4 mx-auto">
         <a
-          href={user?.id ? "/dashboard" : "/"}
+          href={user ? (user.role === "master" ? "/administracion" : "/dashboard") : "/"}
           className="flex items-center space-x-3 rounded-lg rtl:space-x-reverse"
         >
           <img
@@ -55,7 +55,7 @@ const Navbar = () => {
             className="h-14 md:h-8 transition-all duration-300 hover:drop-shadow-[0_0_10px_theme(colors.chryslerblue)] dark:hover:drop-shadow-[0_0_10px_theme(colors.vistablue)]"
             alt="OptiClick Logo"
           />
-          <span className="hidden md:flex self-center text-2xl font-semibold duration-300 cursor-pointer whitespace-nowrap rounded-xl hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
+          <span className="self-center hidden text-2xl font-semibold duration-300 cursor-pointer md:flex whitespace-nowrap rounded-xl hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
             OptiClick
           </span>
         </a>

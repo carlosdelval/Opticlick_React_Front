@@ -1,9 +1,11 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import PrimaryButton from "../components/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import CountUp from "../components/CountUp";
 import GradientText from "../components/GradientText";
+import cookies from "../assets/cookies.json";
+import Lottie from "lottie-react";
 
 const Home = () => {
   const { user } = useContext(AuthContext);
@@ -13,8 +15,22 @@ const Home = () => {
       navigate("/dashboard");
     }
   }, [user, navigate]);
+  const [showCookieConsent, setShowCookieConsent] = useState(true);
+
+  useEffect(() => {
+    const cookieConsent = localStorage.getItem("cookieConsent");
+    if (cookieConsent === "true") {
+      setShowCookieConsent(false);
+    }
+  }, []);
+
+  const acceptCookies = () => {
+    localStorage.setItem("cookieConsent", "true");
+    setShowCookieConsent(false);
+  };
+
   return (
-    <div className="flex items-center justify-center flex-grow h-auto flex-col">
+    <div className="flex flex-col items-center justify-center flex-grow h-auto">
       <div className="flex flex-col space-y-4">
         <div className="text-center">
           <h3 className="text-2xl font-semibold dark:text-babypowder">
@@ -93,6 +109,56 @@ const Home = () => {
           </div>
         </div>
       </div>
+      {/* Cookie Consent Popup */}
+      {showCookieConsent && (
+        <div className="fixed inset-0 z-[9999] flex items-end justify-center">
+          {/* Overlay oscurecido que bloquea interacción */}
+          <div className="absolute inset-0 bg-black pointer-events-auto bg-opacity-60 backdrop-blur-sm" />
+
+          {/* Popup de cookies */}
+          <div className="relative w-full px-8 py-8 duration-300 ease-in-out bg-gray-800 shadow-lg pointer-events-auto bg-opacity-95 rounded-t-xl animate-fade-in">
+            <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+              <div className="flex flex-col items-center justify-center space-y-2 md:space-y-0 md:space-x-2 md:flex-row">
+                <Lottie
+                  animationData={cookies}
+                  alt="Cookies Animation"
+                  className="w-28 h-28 md:w-24 md:h-24"
+                  loop={true}
+                />
+                <p className="text-sm text-center text-white md:text-left text-balance">
+                  Este sitio utiliza cookies para mejorar tu experiencia. Al
+                  continuar navegando, aceptas nuestra política de cookies.
+                </p>
+              </div>
+              <div className="flex flex-col items-center justify-center space-y-3">
+                <div className="flex flex-row items-center justify-center space-x-2">
+                  <button
+                    onClick={acceptCookies}
+                    className="px-4 py-1 text-sm font-bold text-white duration-300 rounded bg-vistablue hover:bg-chryslerblue"
+                  >
+                    Aceptar
+                  </button>
+                  <button
+                    onClick={() => {
+                      localStorage.setItem("cookieConsent", "false");
+                      setShowCookieConsent(false);
+                    }}
+                    className="px-4 py-1 text-sm font-bold text-white duration-300 rounded bg-lightcoral hover:bg-redpantone"
+                  >
+                    Rechazar
+                  </button>
+                </div>
+                <a
+                  href="/informacion#privacy"
+                  className="text-sm underline duration-300 text-vistablue hover:text-chryslerblue"
+                >
+                  Más información
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

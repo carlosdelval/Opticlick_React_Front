@@ -5,7 +5,6 @@ import PrimaryButton from "../../components/PrimaryButton";
 import InputField from "../../components/InputField";
 import Lottie from "lottie-react";
 import loginAnimation from "../../assets/login.json";
-import Spinner from "../../components/Spinner";
 
 const Login = () => {
   const { login, loginWithGoogle } = useContext(AuthContext);
@@ -21,12 +20,10 @@ const Login = () => {
   // Check for saved credentials when component mounts
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
-    const savedPassword = localStorage.getItem("rememberedPassword");
 
-    if (savedEmail && savedPassword) {
+    if (savedEmail) {
       setFormData({
         email: savedEmail,
-        password: savedPassword,
       });
       setRemember(true);
     }
@@ -39,7 +36,6 @@ const Login = () => {
     // Si se desmarca, eliminamos las credenciales guardadas
     if (!isChecked) {
       localStorage.removeItem("rememberedEmail");
-      localStorage.removeItem("rememberedPassword");
     }
   };
 
@@ -55,10 +51,8 @@ const Login = () => {
       if (res.token && res.role) {
         if (remember) {
           localStorage.setItem("rememberedEmail", formData.email);
-          localStorage.setItem("rememberedPassword", formData.password);
         } else {
           localStorage.removeItem("rememberedEmail");
-          localStorage.removeItem("rememberedPassword");
         }
 
         login({
@@ -141,7 +135,7 @@ const Login = () => {
               htmlFor="rememberCheckbox"
               className="text-sm font-medium text-gray-700 ms-2 dark:text-gray-300"
             >
-              Recordar contraseña
+              Recordar usuario
             </label>
           </div>
           <PrimaryButton

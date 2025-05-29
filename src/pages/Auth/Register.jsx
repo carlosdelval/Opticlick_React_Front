@@ -18,7 +18,7 @@ const Register = () => {
     password: "",
     confirm_password: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setIsLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
