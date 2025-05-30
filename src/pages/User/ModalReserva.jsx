@@ -108,7 +108,13 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
     try {
       const cita = {
         ...formData,
-        fecha: new Date(new Date(formData.fecha).setDate(new Date(formData.fecha).getDate() + 1)).toISOString().split('T')[0] // Convert to YYYY-MM-DD format and add one day
+        fecha: new Date(
+          new Date(formData.fecha).setDate(
+            new Date(formData.fecha).getDate() + 1
+          )
+        )
+          .toISOString()
+          .split("T")[0], // Convert to YYYY-MM-DD format and add one day
       };
 
       // Primero creamos la notificación con los datos actualizados
@@ -325,7 +331,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                     disabled={disabled}
                     className={`p-4 rounded-lg border flex-shrink-0 ${
                       disabled
-                        ? "bg-gray-200 text-gray-500 dark:bg-gray-500 dark:text-gray-300 cursor-not-allowed"
+                        ? "bg-gray-500 text-gray-700 dark:bg-gray-500 dark:text-gray-300 cursor-not-allowed"
                         : formData.fecha &&
                           new Date(formData.fecha).toDateString() ===
                             dia.toDateString()
@@ -342,6 +348,9 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
               })}
             </div>
             <p className="mt-2 text-sm text-redpantone">{errors.fecha}</p>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
+              Las fechas en gris no están disponibles.
+            </p>
           </Step>
           <Step canProceed={validatePaso2}>
             <div className="flex justify-center space-y-2">
@@ -355,7 +364,11 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                   formData.turno === "mañana"
                     ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
                     : ""
-                } ${esHoy && horaActual >= "14:00" ? "opacity-50 cursor-not-allowed" : ""}`}
+                } ${
+                  esHoy && horaActual >= "14:00"
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
                 onClick={() => {
                   handleTurno("mañana");
                   setErrors({});
@@ -368,8 +381,14 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                 type="button"
                 disabled={esSabado || (esHoy && horaActual >= "20:30")}
                 className={`px-4 py-1 rounded-r bg-blue-100 dark:bg-chryslerblue ${
-                  formData.turno === "tarde" ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder" : ""
-                } ${esSabado || (esHoy && horaActual >= "20:30") ? "opacity-50 cursor-not-allowed" : ""}`}
+                  formData.turno === "tarde"
+                    ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
+                    : ""
+                } ${
+                  esSabado || (esHoy && horaActual >= "20:30")
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
                 onClick={() => {
                   !esSabado && handleTurno("tarde");
                   setErrors({});
@@ -378,7 +397,9 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                 Tarde
               </button>
             </div>
-            <p className="mt-2 text-sm text-redpantone dark:text-lightcoral">{errors.turno}</p>
+            <p className="mt-2 text-sm text-redpantone dark:text-lightcoral">
+              {errors.turno}
+            </p>
           </Step>
           <Step canProceed={validatePaso3}>
             <div
@@ -401,7 +422,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                     onClick={() => handleHoraClick(hora, index)}
                     className={`px-4 py-2 rounded border flex-shrink-0 ${
                       isDisabled
-                        ? "bg-gray-200 text-gray-500 dark:bg-gray-500 dark:text-gray-300 cursor-not-allowed"
+                        ? "bg-gray-500 text-gray-700 dark:bg-gray-500 dark:text-gray-300 cursor-not-allowed"
                         : ""
                     } ${
                       formData.hora === hora
@@ -415,6 +436,9 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
               })}
             </div>
             <p className="mt-2 text-sm text-redpantone">{errors.hora}</p>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
+              Las horas en gris no están disponibles.
+            </p>
           </Step>
         </Stepper>
       </div>

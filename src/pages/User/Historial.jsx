@@ -613,7 +613,7 @@ const Historial = () => {
                   text="Descargar PDF"
                   icon={
                     pdfLoading ? (
-                      <Spinner />
+                      "Descargando..."
                     ) : (
                       <svg
                         className="w-6 h-6"
