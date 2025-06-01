@@ -739,8 +739,8 @@ function ListaClientes() {
                       <div className="absolute right-12 flex items-center justify-center">
                         <svg
                           data-accordion-icon
-                          className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
-                            openAccordions[cliente.id] ? "rotate-180" : ""
+                          className={`w-4 h-4 transition-transform rotate-180 duration-150 shrink-0 ${
+                            openAccordions[cliente.id] ? "rotate-0" : ""
                           }`}
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"

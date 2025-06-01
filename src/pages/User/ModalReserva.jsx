@@ -244,7 +244,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
             loading ? (
               <Spinner />
             ) : (
-              <div className="flex flex-col items-center justify-center w-full h-32 space-y-2 bg-white dark:bg-gray-700 dark:text-babypowder">
+              <div className="mb-5 flex flex-col items-center justify-center w-full h-32 bg-white dark:bg-gray-700 dark:text-babypowder">
                 <Lottie
                   animationData={Success}
                   style={{ height: 100 }}
@@ -331,7 +331,7 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                     disabled={disabled}
                     className={`p-4 rounded-lg border flex-shrink-0 ${
                       disabled
-                        ? "bg-gray-500 text-gray-700 dark:bg-gray-500 dark:text-gray-300 cursor-not-allowed"
+                        ? "bg-gray-400 text-gray-300 cursor-not-allowed"
                         : formData.fecha &&
                           new Date(formData.fecha).toDateString() ===
                             dia.toDateString()
@@ -420,15 +420,14 @@ const ModalReserva = ({ onReservaExitosa, onClose, isOpen }) => {
                     disabled={isDisabled}
                     key={hora}
                     onClick={() => handleHoraClick(hora, index)}
-                    className={`px-4 py-2 rounded border flex-shrink-0 ${
-                      isDisabled
-                        ? "bg-gray-500 text-gray-700 dark:bg-gray-500 dark:text-gray-300 cursor-not-allowed"
-                        : ""
-                    } ${
-                      formData.hora === hora
-                        ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
-                        : "bg-white text-black dark:bg-gray-800 dark:text-babypowder"
-                    }`}
+                    className={`px-4 py-2 rounded border flex-shrink-0
+  ${
+    isDisabled
+      ? "bg-gray-400 text-gray-300 cursor-not-allowed"
+      : formData.hora === hora
+      ? "bg-chryslerblue text-white dark:bg-vistablue dark:text-babypowder"
+      : "bg-white text-black dark:bg-gray-800 dark:text-babypowder"
+  }`}
                   >
                     {hora}
                   </button>
