@@ -103,15 +103,16 @@ const UserProvider = ({ children }) => {
       console.error("Error deleting cliente:", error);
     }
   };
-  // Actualizar un usuario cliente
-  const actualizarCliente = async (userData) => {
-    try {
-      const data = await updateUser(userData);
-      return data;
-    } catch (error) {
-      console.error("Error updating cliente:", error);
-    }
-  };
+// Actualizar un usuario cliente
+const actualizarCliente = async (userData) => {
+  try {
+    const data = await updateUser(userData);
+    return { success: true, data }; // Éxito
+  } catch (error) {
+    console.error("Error updating cliente:", error.message);
+    return { success: false, error: error.message }; // Error con mensaje
+  }
+};
   // Actualizar contraseña de un usuario
   const actualizarContrasena = async (userData) => {
     try {

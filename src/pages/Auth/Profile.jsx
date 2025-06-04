@@ -194,44 +194,33 @@ const Profile = () => {
     e.preventDefault();
     if (!validateFormInfo()) return;
 
-    try {
-      setLoading(true);
-      const response = await actualizarCliente({
-        id: user.id,
-        name: formData.name,
-        surname: formData.surname,
-        dni: formData.dni,
-        tlf: formData.tlf,
-        email: formData.email,
-      });
+    setLoading(true);
+    const result = await actualizarCliente({
+      id: user.id,
+      name: formData.name,
+      surname: formData.surname,
+      dni: formData.dni,
+      tlf: formData.tlf,
+      email: formData.email,
+    });
 
-      if (response) {
-        user.name = formData.name;
-        user.surname = formData.surname;
-        user.dni = formData.dni;
-        user.tlf = formData.tlf;
-        user.email = formData.email;
-        setUser(user);
-        localStorage.setItem("user", JSON.stringify(user));
-        setTimeout(() => {
-          setSuccess("Información actualizada correctamente.");
-          setError(null);
-          setLoading(false);
-        }, 300);
-      } else {
-        setTimeout(() => {
-          setLoading(false);
-          setError("Error al actualizar la información");
-          setSuccess(null);
-        }, 300);
-      }
-    } catch (error) {
-      setTimeout(() => {
-        setLoading(false);
-      }, 300);
-      console.error("Error:", error);
-      setError("Hubo un problema con la actualización.");
+    if (result.success) {
+      // Actualización exitosa
+      user.name = formData.name;
+      user.surname = formData.surname;
+      user.dni = formData.dni;
+      user.tlf = formData.tlf;
+      user.email = formData.email;
+      setUser(user);
+      localStorage.setItem("user", JSON.stringify(user));
+      setSuccess("Información actualizada correctamente.");
+      setError(null);
+    } else {
+      // Hubo un error
+      setError(result.error || "Error al actualizar la información");
+      setSuccess(null);
     }
+    setLoading(false);
   };
 
   return (

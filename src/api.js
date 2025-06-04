@@ -84,10 +84,19 @@ export const registerUser = async (userData) => {
   return res.data;
 };
 
-// Editar usuario
+// Editar usuario (api.js)
 export const updateUser = async (userData) => {
-  const res = await axios.put(`${API_URL}/users`, userData);
-  return res.data;
+  try {
+    const res = await axios.put(`${API_URL}/users`, userData);
+    return res.data; // Si todo va bien, devuelve los datos
+  } catch (error) {
+    // Si hay un error (400, 500, etc.), devuelve el mensaje del backend
+    if (error.response && error.response.data && error.response.data.error) {
+      throw new Error(error.response.data.error); // Lanza el error específico del backend
+    } else {
+      throw new Error("Error al actualizar el usuario"); // Error genérico
+    }
+  }
 };
 
 //Actualizar contraseña
