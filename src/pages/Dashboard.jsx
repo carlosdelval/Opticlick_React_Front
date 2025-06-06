@@ -478,7 +478,7 @@ const Dashboard = () => {
                             <svg
                               data-accordion-icon
                               className={`w-4 h-4 rotate-180 transition-transform duration-150 shrink-0 ${
-                                openAccordions[cita.id] ? "rotate-0" : ""
+                                openAccordions[cita.id] ? "-rotate-0" : ""
                               }`}
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
