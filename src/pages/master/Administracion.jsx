@@ -994,8 +994,8 @@ function Administracion() {
                         </div>
                         <svg
                           data-accordion-icon
-                          className={`w-4 h-4 rotate-180 transition-transform duration-150 shrink-0 ${
-                            openAccordions[i.id] ? "-rotate-0" : ""
+                          className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
+                            openAccordions[i.id] ? "rotate-0" : "rotate-180"
                           }`}
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
