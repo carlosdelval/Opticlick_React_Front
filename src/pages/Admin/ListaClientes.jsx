@@ -308,26 +308,28 @@ function ListaClientes() {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // Filtrar los clientes por nombre, email o dni
   const filteredClientes = React.useMemo(() => {
     return clientes.filter((cliente) => {
-      const normalizedName = cliente.name
-        .concat(" ", cliente.surname)
+      const normalizedName = `${cliente.name || ""} ${cliente.surname || ""}`
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
-      const normalizedDni = cliente.dni
+
+      const normalizedDni = (cliente.dni || "")
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
-      const normalizedEmail = cliente.email
+
+      const normalizedEmail = (cliente.email || "")
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
-      const normalizedSearchTerm = searchTerm
+
+      const normalizedSearchTerm = (searchTerm || "")
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
+
       return (
         normalizedName.includes(normalizedSearchTerm) ||
         normalizedDni.includes(normalizedSearchTerm) ||
@@ -345,11 +347,11 @@ function ListaClientes() {
 
   return (
     <div className="my-auto md:max-w-7xl md:mx-auto dark:text-babypowder">
-      <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:space-y-0 md:text-left">
+      <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:text-left">
         <Lottie
           animationData={teamAnimation}
           className="h-24 md:h-16"
-          loop={false}
+          loop={true}
         />
         <h2 className="my-2 text-4xl font-semibold dark:text-babypowder">
           {user?.role === "admin"
@@ -740,7 +742,9 @@ function ListaClientes() {
                         <svg
                           data-accordion-icon
                           className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
-                            openAccordions[cliente.id] ? "rotate-0" : "rotate-180"
+                            openAccordions[cliente.id]
+                              ? "rotate-0"
+                              : "rotate-180"
                           }`}
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"

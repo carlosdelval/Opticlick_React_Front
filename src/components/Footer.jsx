@@ -17,7 +17,7 @@ const Footer = () => {
             Desarrollado por{" "}
             <a
               href="https://github.com/carlosdelval"
-                className="font-bold duration-300 text-chryslerblue dark:text-vistablue hover:underline hover:animate-pulse"
+              className="font-bold duration-300 text-chryslerblue dark:text-vistablue hover:underline hover:animate-pulse"
             >
               Carlos López Del Val
             </a>
@@ -28,27 +28,42 @@ const Footer = () => {
         <div className="space-y-2 text-sm text-center">
           <ul className="flex flex-wrap justify-center gap-4">
             <li>
-              <a href="informacion#privacy" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
+              <a
+                href="informacion#privacy"
+                className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue"
+              >
                 Política de Privacidad
               </a>
             </li>
             <li>
-              <a href="business" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
+              <a
+                href="business"
+                className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue"
+              >
                 Quiénes Somos
               </a>
             </li>
             <li>
-              <a href="informacion#terms" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
+              <a
+                href="informacion#terms"
+                className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue"
+              >
                 Condiciones de Uso
               </a>
             </li>
             <li>
-              <a href="informacion#legal" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
+              <a
+                href="informacion#legal"
+                className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue"
+              >
                 Información legal
               </a>
             </li>
             <li>
-              <a href="informacion#contact" className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue">
+              <a
+                href="informacion#contact"
+                className="duration-300 hover:text-chryslerblue dark:text-babypowder dark:hover:text-vistablue"
+              >
                 Contacto
               </a>
             </li>
@@ -62,6 +77,9 @@ const Footer = () => {
               <button
                 type="button"
                 className="flex items-center justify-center w-48 mt-3 text-white bg-black h-14 rounded-xl dark:text-black dark:bg-babypowder"
+                onClick={() =>
+                  (window.location.href = "https://www.apple.com/es/app-store/")
+                }
               >
                 <div className="mr-3">
                   <svg viewBox="0 0 384 512" width="30">
@@ -81,6 +99,10 @@ const Footer = () => {
               <button
                 type="button"
                 className="flex items-center justify-center w-48 mt-3 text-white bg-black rounded-lg dark:bg-babypowder dark:text-black h-14"
+                onClick={() =>
+                  (window.location.href =
+                    "https://play.google.com/store/games?hl=es_419")
+                }
               >
                 <div className="mr-3">
                   <svg viewBox="30 336.7 120.9 129.2" width="30">

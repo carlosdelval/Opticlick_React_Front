@@ -167,10 +167,10 @@ const Historial = () => {
 
   return (
     <div className="my-auto md:max-w-7xl md:mx-auto">
-      <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:space-y-0 md:text-left">
+      <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:text-left">
         <Lottie animationData={activityAnimation} className="h-24 md:h-16" />
         <h2 className="text-2xl md:text-4xl font-semibold dark:text-babypowder">
-          Tus próximas citas, {user?.name}
+          Tu historial de graduaciones, {user?.name}
         </h2>
       </div>
       {error && (

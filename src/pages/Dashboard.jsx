@@ -91,7 +91,7 @@ const Dashboard = () => {
       optica_id: user.role === "admin" ? user.optica_id : id,
       tipo: user.role === "admin" ? 2 : 1,
       destinatario: user.role === "admin" ? 1 : 0,
-      titulo: `${user.name} ${user.surname}`,
+      titulo: user.name && user.surname ? `${user.name} ${user.surname}` : user.name || "Usuario",
       descripcion: formData.mensaje,
     };
     try {
@@ -289,7 +289,7 @@ const Dashboard = () => {
       <div className="flex flex-col justify-between w-full md:flex-row">
         {/* Contenedor de citas */}
         <div className="overflow-hidden md:w-1/2">
-          <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:space-y-0 md:text-left">
+          <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:text-left">
             <Lottie
               animationData={calendarAnimation}
               className="h-24 md:h-16"
@@ -478,7 +478,7 @@ const Dashboard = () => {
                             <svg
                               data-accordion-icon
                               className={`w-4 h-4 transition-transform duration-150 shrink-0 ${
-                                openAccordions[cita.id] ? "rotate-0" : "rotate-180"
+                                openAccordions[cita.id] ? "rotate-0" : "rotate-180 "
                               }`}
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
