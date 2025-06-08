@@ -350,7 +350,7 @@ function ListaClientes() {
       <div className="flex flex-col items-center text-center mb-4 space-y-3 md:flex-row md:items-start md:space-x-3 md:text-left">
         <Lottie
           animationData={teamAnimation}
-          className="h-24 md:h-16"
+          className="h-32 md:h-16"
           loop={true}
         />
         <h2 className="my-2 text-4xl font-semibold dark:text-babypowder">

@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (userData) => {
+    setLoading(true); // ✅ mostrar spinner
     if (userData.role === "admin") {
       try {
         const optica = await getOpticaUsuario(userData.id);
@@ -48,34 +49,32 @@ export const AuthProvider = ({ children }) => {
     } else {
       navigate("/dashboard");
     }
+    setLoading(false); // ✅ ocultar spinner
   };
 
   const loginWithGoogle = async () => {
     try {
+      setLoading(true); // ✅ mostrar spinner
+
       const result = await signInWithPopup(auth, googleProvider);
       const googleUser = result.user;
 
-      // Prepara los datos para el backend
       const googleData = {
         email: googleUser.email,
         name: googleUser.displayName || googleUser.email.split("@")[0],
       };
 
-      // Envía al endpoint de Google
       const backendResponse = await loginConGoogle(googleData);
 
-      // Verifica si hay error en la respuesta
       if (backendResponse.error) {
         throw new Error(backendResponse.error);
       }
 
-      // Prepara los datos para el login local
       const userData = {
-        ...backendResponse, // Usa los datos devueltos por el backend
+        ...backendResponse,
         token: backendResponse.token,
       };
 
-      // Completa con datos adicionales si es admin
       if (userData.role === "admin") {
         try {
           const optica = await getOpticaUsuario(userData.id);
@@ -85,15 +84,15 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      // Guarda en estado y localStorage
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
 
-      // Redirección
       navigate(userData.role === "master" ? "/administracion" : "/dashboard");
     } catch (error) {
       console.error("Error con login de Google:", error);
-      // Aquí puedes mostrar un mensaje de error al usuario
+      // Aquí puedes mostrar una notificación de error si quieres
+    } finally {
+      setLoading(false); // ✅ ocultar spinner
     }
   };
 
